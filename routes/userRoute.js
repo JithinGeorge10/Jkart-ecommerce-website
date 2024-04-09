@@ -16,7 +16,7 @@ router.post('/resendOtp', userController.resendOtp)
 router.post('/login', userController.userLogin)
 router.get('/shop',userController.shopPage)
 router.get('/singleProduct',userController.singleProduct)
-
+router.post('/searchProducts',userController.searchProducts)
 
 
 module.exports = router

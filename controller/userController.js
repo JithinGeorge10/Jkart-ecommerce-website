@@ -11,51 +11,51 @@ const landingPage = async (req, res) => {
 
         const productDetails = await productCollection.aggregate([
             {
-              $group: {
-                _id: '$parentCategory',
-                minPrice: { $min: '$productPrice' }
-              }
+                $group: {
+                    _id: '$parentCategory',
+                    minPrice: { $min: '$productPrice' }
+                }
             },
             {
-              $lookup: {
-                from: 'categories',
-                localField: '_id',
-                foreignField: '_id',
-                as: 'category'
-              }
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'category'
+                }
             },
             { $unwind: '$category' }, // Unwind the category array
             {
-              $lookup: {
-                from: 'products',
-                let: { parentCategory: '$_id', minPrice: '$minPrice' },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $and: [
-                          { $eq: ['$parentCategory', '$$parentCategory'] },
-                          { $eq: ['$productPrice', '$$minPrice'] }
-                        ]
-                      }
-                    }
-                  },
-                  { $project: { productImage: 1, _id: 0,parentCategory:1 } }
-                ],
-                as: 'product'
-              }
+                $lookup: {
+                    from: 'products',
+                    let: { parentCategory: '$_id', minPrice: '$minPrice' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$parentCategory', '$$parentCategory'] },
+                                        { $eq: ['$productPrice', '$$minPrice'] }
+                                    ]
+                                }
+                            }
+                        },
+                        { $project: { productImage: 1, _id: 0, parentCategory: 1 } }
+                    ],
+                    as: 'product'
+                }
             },
             { $unwind: '$product' }, // Unwind the product array
             {
-              $project: {
-                categoryName: '$category.categoryName',
-                minPrice: 1,
-                productImage: '$product.productImage',
-                parentCategory:'$product.parentCategory'
-              }
+                $project: {
+                    categoryName: '$category.categoryName',
+                    minPrice: 1,
+                    productImage: '$product.productImage',
+                    parentCategory: '$product.parentCategory'
+                }
             }
-          ])
-        
+        ])
+
         if (req.session.logged) {
             res.render('userPages/landingPage', { userLogged: req.session.logged, productDetails })
         } else {
@@ -226,14 +226,18 @@ const userLogin = async (req, res) => {
 
 const shopPage = async (req, res) => {
     try {
-       if(req.query.id){
-        const productDetails = await productCollection.find({ isListed: true,parentCategory:req.query.id })
-        res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails })
-       }else{
-        const productDetails = await productCollection.find({ isListed: true})
-        res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails })
-       }
-       
+        if (req.query.searchId) {
+            var searchDetails = await productCollection.find({ productName: { $regex: req.query.searchId, $options: 'i' } })
+            res.render('userPages/shop', { userLogged: req.session.logged, productDet: searchDetails })
+        }
+        else if (req.query.id) {
+            var productDetails = await productCollection.find({ isListed: true, parentCategory: req.query.id })
+            res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails })
+        } else {
+            const productDetails = await productCollection.find({ isListed: true })
+            res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails })
+        }
+
     } catch (err) {
         console.log(err);
     }
@@ -249,9 +253,23 @@ const singleProduct = async (req, res) => {
     }
 }
 
+const searchProducts = async (req, res) => {
+    try {
+        const searchedProduct = await productCollection.find({
+            productName: { $regex: req.body.searchElement, $options: 'i' }
+        })
+        if (searchedProduct.length > 0) {
 
+            res.send({ searchProduct: true })
+        } else {
+            res.send({ searchProduct: false })
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 module.exports = {
     landingPage, signUp, login, register, saveUser, logout, otpPage, verifyOtp, resendOtp, userLogin,
-    shopPage, singleProduct
+    shopPage, singleProduct, searchProducts
 }

@@ -138,6 +138,43 @@
 
           </div>
 
+
+          <div class="input-group">
+            <div class="form-outline" data-mdb-input-init>
+              <input type="search" name="searchValue" style="height: 40px;" id="searchValue"
+                placeholder="Search Products" class="form-control" />
+            </div>
+            <button type="button" onclick="fnSearch()" class="btn btn-primary" data-mdb-ripple-init>
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+
+
+          <script>
+            async function fnSearch() {
+              const searchValue = document.getElementById('searchValue').value
+              let response = await fetch('/searchProducts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ searchElement: searchValue })
+              })
+              console.log("Response from server:", response);
+
+              let result = await response.json()
+              console.log("Parsed result:", result);
+
+              if (result.searchProduct) {
+                window.location.href = '/shop?searchId='+ encodeURIComponent(searchValue);
+              } else {
+                await Swal.fire({
+                  icon: "error",
+                  title: "No results",
+                });
+              }
+            }
+          </script>
+
+
           <div class="row">
 
             <% for(let i=0; i<productDet.length; i++){ %>
