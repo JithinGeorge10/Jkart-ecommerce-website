@@ -243,7 +243,6 @@ const singleProduct = async (req, res) => {
     try {
         const productDetails = await productCollection.findOne({ _id: req.query.id })
         const categoryDetails = await categoryCollection.findOne({ _id: req.query.id })
-        console.log(productDetails)
         res.render('userPages/singleProduct', { userLogged: req.session.logged, productDet: productDetails, categoryDet: categoryDetails })
     } catch (err) {
         console.log(err);

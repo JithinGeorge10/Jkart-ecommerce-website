@@ -3,7 +3,6 @@ const transpoter = require('../services/sendOTP')
 
 let sendotp = async (user,otp) => {
     try {
-console.log(user.email)
         await transpoter.sendMail({
             from: process.env.MAILID,
             to: user.email,

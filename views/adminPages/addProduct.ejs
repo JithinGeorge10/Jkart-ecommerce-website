@@ -160,6 +160,11 @@
               icon: "error",
               title: "No Value in Product Name"
             })
+          }if(result.minImage){
+            await Swal.fire({
+              icon: "error",
+              title: "Add atleast 3 images"
+            })
           }
         }
       })

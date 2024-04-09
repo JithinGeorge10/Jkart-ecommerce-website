@@ -40,10 +40,13 @@ const addProductGet = async (req, res) => {
 const addProducts = async (req, res) => {
     try {
         let imgFiles = []
-        for (let i = 0; i < req.files.length; i++) {
-            imgFiles[i] = req.files[i].filename
+        if (req.files.length < 3) {
+            res.send({ minImage: true })
+        }else{
+            for (let i = 0; i < req.files.length; i++) {
+                imgFiles[i] = req.files[i].filename
+            }
         }
-
         const addproduct = new productCollection({
             productName: req.body.productName,
             parentCategory: req.body.parentCategory,
@@ -69,8 +72,6 @@ const addProducts = async (req, res) => {
 
 const editProduct = async (req, res) => {
     try {
-
-
         const categoryDetail = await categoryCollection.find()
         const categoryDet = await categoryCollection.findOne({ _id: req.query.cid })
         const productDet = await productCollection.findOne({ _id: req.query.pid })
@@ -83,8 +84,11 @@ const editProduct = async (req, res) => {
 
 const editProducts = async (req, res) => {
     try {
-        console.log(req.files)
-        if (req.files.length < 3) {
+        if (req.files.length === 0) {
+            // No new images uploaded, retain existing images
+            const existingProduct = await productCollection.findOne({ _id: req.params.id });
+            var imgFiles = existingProduct.productImage;
+        }else if (req.files.length < 3) {
             res.send({ noImage: true })
         } else{
             var imgFiles = []
@@ -92,10 +96,7 @@ const editProducts = async (req, res) => {
                 imgFiles[i] = req.files[i].filename
             }
         }
-           //dfhbsjdbfjs
-           
-       
-
+         
         const productDetails = await productCollection.find({ _id: { $ne: req.params.id }, productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') } })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
             res.send({ noValue: true })
