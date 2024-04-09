@@ -222,22 +222,27 @@ const userLogin = async (req, res) => {
     }
 }
 
-
-
 const shopPage = async (req, res) => {
     try {
+        console.log(req.session.startPrice)
+        console.log(req.session.endPrice)
+        const categoryDetails = await categoryCollection.find({ isListed: true })
+        let query = { isListed: true };
         if (req.query.searchId) {
-            var searchDetails = await productCollection.find({ productName: { $regex: req.query.searchId, $options: 'i' } })
-            res.render('userPages/shop', { userLogged: req.session.logged, productDet: searchDetails })
-        }
-        else if (req.query.id) {
-            var productDetails = await productCollection.find({ isListed: true, parentCategory: req.query.id })
-            res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails })
-        } else {
-            const productDetails = await productCollection.find({ isListed: true })
-            res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails })
-        }
+            query.productName = { $regex: req.query.searchId, $options: 'i' };
+        } else if (req.query.id) {
+            query.parentCategory = req.query.id;
 
+        } else if (req.session.startPrice == 0) {
+            query.productPrice = { $gte: 0, $lte: req.session.endPrice }
+        } else if (req.session.startPrice && req.session.startPrice) {
+            query.productPrice = { $gte: req.session.startPrice, $lte: req.session.endPrice }
+        }
+        req.session.startPrice=null
+        req.session.endPrice=null
+        console.log(query)
+        const productDetails = await productCollection.find(query);
+        res.render('userPages/shop', { userLogged: req.session.logged, productDet: productDetails, categoryDetails });
     } catch (err) {
         console.log(err);
     }
@@ -269,7 +274,34 @@ const searchProducts = async (req, res) => {
     }
 }
 
+const filterByPrice = async (req, res) => {
+    try {
+        let startPrice, endPrice
+        if (req.query.priceRange == 0) {
+            startPrice = 0
+            endPrice = 499
+        } else if (req.query.priceRange == 1) {
+            startPrice = 500
+            endPrice = 1000
+        } else if (req.query.priceRange == 2) {
+            startPrice = 1000
+            endPrice = 1500
+        } else if (req.query.priceRange == 3) {
+            startPrice = 1500
+            endPrice = 100000
+        }
+        console.log(req.query.priceRange)
+        req.session.startPrice = startPrice
+        req.session.endPrice = endPrice
+        res.redirect('/shop')
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 module.exports = {
     landingPage, signUp, login, register, saveUser, logout, otpPage, verifyOtp, resendOtp, userLogin,
-    shopPage, singleProduct, searchProducts
+    shopPage, singleProduct, searchProducts, filterByPrice
 }

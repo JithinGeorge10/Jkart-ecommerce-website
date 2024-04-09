@@ -47,31 +47,15 @@
                         <ul class="nav navbar-nav side-nav" id="accordion2" role="tablist" aria-multiselectable="true">
                           <li>
                             <div class="" role="tab" id="heading1">
-                              <a href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#women"
-                                aria-controls="women">Women</a>
+
+                            <% for(let i=0;i<categoryDetails.length;i++){ %>
+                              <a href="/shop?id=<%=categoryDetails[i]._id%>" 
+                                aria-controls="categoryName<%= i %>"><%=categoryDetails[i].categoryName%></a>
+                            <% } %>
+                              
                             </div>
-
-
                           </li>
-
-                          <li>
-                            <div class="" role="tab" id="heading2">
-                              <a href="javascript:void(0)" data-bs-toggle="collapse" aria-expanded="false"
-                                data-bs-target="#men" aria-controls="men">Men</a>
-                            </div>
-
-
-                          </li>
-
-                          <li>
-                            <div class="" role="tab" id="heading3">
-                              <a href="javascript:void(0)" data-bs-toggle="collapse" aria-expanded="false"
-                                data-bs-target="#kids" aria-controls="kids">Kids</a>
-                            </div>
-
-                          </li>
-
-
+                  
                         </ul>
                       </div>
                     </div>
@@ -83,40 +67,36 @@
                       <div class="price-range" id="price-range">
                         <div class="mb-4" id="slider-non-linear-step"></div>
                         <div class="price-range-content">
-                          <input class="btn-default bg-primary me-auto" type="submit" value="Filter">
-                          <span class="price-text">Price:</span>
-                          <span class="price-value" id="lower-value"></span>
-                          <strong class="price-icon">-</strong>
-                          <span class="price-value" id="upper-value"></span>
+                          <!-- <input class="btn-default bg-primary me-auto" type="submit" value="Filter"> -->
+                          <form action="/shop/filter/price">
+                            <label>
+                                <input type="radio" name="priceRange" value="0" />
+                                Less than ₹500</label>
+                            <br />  
+                            <label>
+                                <input type="radio" name="priceRange" value="1" />
+                                ₹500 - ₹1000</label>
+                            <br />
+                            <label>
+                                <input type="radio" name="priceRange" value="2" />
+                                ₹1000 - ₹1500</label>
+                            <br />
+                            <label>
+                                <input type="radio" name="priceRange" value="3" />
+                                ₹1500 above</label>
+                            <br />
+                            <button type="submit"  class="btn btn-primary" data-mdb-ripple-init>
+                            check  <i class="fas fa-search"></i>
+                            </button>
+                        </form>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div class="panel panel-default filterNormal">
-                    <div class="panel-heading">filter by Color</div>
-                    <div class="panel-body">
-                      <ul class="list-unstyled">
-                        <li><a href="javascript:void(0)">Black<span>(15)</span></a></li>
-                        <li><a href="javascript:void(0)">White<span>(10)</span></a></li>
-                        <li><a href="javascript:void(0)">Red<span>(7)</span></a></li>
-                        <li><a href="javascript:void(0)">Blue<span>(12)</span></a></li>
-                        <li><a href="javascript:void(0)">Orange<span>(12)</span></a></li>
-                      </ul>
-                    </div>
-                  </div>
+                  
 
-                  <div class="panel panel-default filterNormal">
-                    <div class="panel-heading">filter by Size</div>
-                    <div class="panel-body">
-                      <ul class="list-unstyled clearfix">
-                        <li><a href="javascript:void(0)">Small<span>(15)</span></a></li>
-                        <li><a href="javascript:void(0)">Medium<span>(10)</span></a></li>
-                        <li><a href="javascript:void(0)">Large<span>(7)</span></a></li>
-                        <li><a href="javascript:void(0)">Extra Large<span>(12)</span></a></li>
-                      </ul>
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
             </div>
@@ -128,10 +108,9 @@
             <div class="col-6">
               <select name="guiest_id1" id="guiest_id1" class="select-drop">
                 <option value="0">Default sorting</option>
-                <option value="1">Sort by popularity</option>
-                <option value="2">Sort by rating</option>
-                <option value="3">Sort by newness</option>
-                <option value="3">Sort by price</option>
+                <option value="1">Sort by Name</option>
+                <option value="2">Sort by Price</option>
+                <option value="3">Sort by Date</option>
               </select>
             </div>
 
@@ -176,7 +155,6 @@
 
 
           <div class="row">
-
             <% for(let i=0; i<productDet.length; i++){ %>
               <div class="col-md-6 col-lg-4">
                 <div class="productBox">
@@ -187,11 +165,11 @@
 
                   </div>
                   <div class="productCaption clearfix">
-                    <a href='single-product.html'>
+                  
                       <h5>
                         <%=productDet[i].productName%>
                       </h5>
-                    </a>
+                   
                     <h3>&#8377 <%=productDet[i].productPrice%>
                     </h3>
                   </div>
