@@ -1,0 +1,592 @@
+<%- include('../userPartials/header') %>
+  <!-- ====================================
+          â€”â€”â€” LEFT SIDEBAR WITH OUT FOOTER
+        ===================================== -->
+
+  <!-- BANNER SLIDER -->
+  <section class="banner_slider_wrapper clearfix">
+    <div class="banner_slider_inner">
+      <div class="container">
+        <div class="banner_slider mb-0">
+          <div class="item">
+            <div class="row align-items-center">
+              <div class="col-6">
+                <div class="content">
+                  <h6>Limited time offer!</h6>
+
+                  <h1>NIKE AIR</h1>
+
+                  <p class="text-truncate">"Enjoy our limited time offer with huge discounts on Nike shoes! Don't miss
+                    out on this opportunity to grab your favorite styles at unbeatable prices."
+                  </p>
+                  <a href="/shop" class="btn btn-primary-outlined btn-sm">
+                    Buy Now <span><i class="fa fa-chevron-right"></i></span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <picture class="image">
+                  <img src="assets/img/home/banner-slider/sl1-sm.png" style="width: 500px;" alt="slider-image">
+                </picture>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="row align-items-center">
+              <div class="col-6">
+                <picture class="image">
+                  <img class="img-fluid" src="assets/img/home/banner-slider/sl2-sm.png" style="width: 500px;"
+                    alt="slider-image">
+                </picture>
+              </div>
+
+              <div class="col-6">
+                <div class="content">
+                  <h6>Limited time offer!</h6>
+                  <h1>Running Shoes</h1>
+                  <p class="text-truncate">Nike running shoes are designed to provide a snug and comfortable fit, with
+                    options available in various widths to accommodate different foot shapes. </p>
+
+                  <a href="/shop" class="btn btn-primary-outlined btn-sm">
+                    Buy Now <span><i class="fa fa-chevron-right"></i></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="row align-items-center">
+              <div class="col-6">
+                <div class="content">
+                  <h6>Limited time offer!</h6>
+                  <h1>Sneakers</h1>
+                  <p class="text-truncate">Hey sneakerheads! It's time to lace up and sprint towards savings! For a
+                    limited time only, we're offering jaw-dropping discounts on your favorite Nike sneakers
+                  </p>
+
+                  <a href="/shop" class="btn btn-primary-outlined btn-sm">
+                    Buy Now <span><i class="fa fa-chevron-right"></i></span>
+                  </a>
+                </div>
+              </div>
+              <div class="col-6">
+                <picture class="image">
+                  <img class="img-fluid" src="assets/img/home/banner-slider/shoe1-sm.png" style="width: 800px;"
+                    alt="slider-image">
+                </picture>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Category SECTION -->
+  <section class="mainContent clearfix featured_collection_slider_area">
+    <div class="container">
+      <div class="page-header">
+        <h4>Categories</h4>
+      </div>
+    </div>
+
+    <div class="container container-inner">
+      <div class="featuredCollection  featured_collection_slider slider">
+       
+
+          <% for(let i=0;i<productDetails.length;i++){ %>       
+            <div class="thumbnail" onclick="location.href='/shop?id=<%= productDetails[i].parentCategory %>';">
+            <div class="imageWrapper" style="border: solid; color: black; border-radius: 10%;">
+              <img src="assets/img/uploads/<%= productDetails[i].productImage[0] %>" alt="feature-collection-image">
+              <div class="caption">
+                <h3><%= productDetails[i].categoryName %></h3>
+                <small><span class="d-none d-md-inline-block">Starts from</span>&#8377 <%= productDetails[i].minPrice %></small>
+              </div>
+              <div class="masking">
+                <a class='btn viewBtn' href='/shop?id=<%= productDetails[i].parentCategory %>'>View Products</a>
+              </div>
+            </div>
+          </div>
+         <% } %>  
+        </div>
+      </div>
+        <!-- <div class="thumbnail" onclick="location.href='single-product-2.html';">
+          <div class="imageWrapper">
+            <img src="assets/img/home/featured-collection/featured-collection-03.jpg" alt="feature-collection-image">
+            <div class="caption">
+              <h3>Women</h3>
+              <small><span class="d-none d-md-inline-block">Start</span> From $25.00</small>
+            </div>
+            <div class="masking">
+              <a class='btn viewBtn' href='/shop'>View Products</a>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- <div class="thumbnail" onclick="location.href='single-product-2.html';">
+          <div class="imageWrapper">
+            <img src="assets/img/home/featured-collection/featured-collection-01.jpg" alt="feature-collection-image">
+            <div class="caption">
+              <h3>Kids</h3>
+              <small><span class="d-none d-md-inline-block">Start</span> From $59.00</small>
+            </div>
+            <div class="masking">
+              <a class='btn viewBtn' href='/shop'>View Products</a>
+            </div>
+          </div>
+
+        </div> -->
+     
+  </section>
+  <section class="mainContent clearfix featured_collection_slider_area">
+    <div class="container">
+      <div class="page-header">
+        <h4>Featured Collections</h4>
+      </div>
+    </div>
+
+    <div class="container container-inner">
+      <div class="featuredCollection  featured_collection_slider slider">
+        <div class="thumbnail" onclick="location.href='single-product-2.html';">
+          <div class="imageWrapper">
+            <img src="assets/img/home/featured-collection/featured-collection-02.jpg" alt="feature-collection-image">
+            <div class="caption">
+              <h3>Sneakers</h3>
+              <small><span class="d-none d-md-inline-block">Start</span> From $150.00</small>
+            </div>
+            <div class="masking">
+              <a class='btn viewBtn' href='product-grid-left-sidebar.html'>View Products</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="thumbnail" onclick="location.href='single-product-2.html';">
+          <div class="imageWrapper">
+            <img src="assets/img/home/featured-collection/featured-collection-03.jpg" alt="feature-collection-image">
+            <div class="caption">
+              <h3>Running Shoes</h3>
+              <small><span class="d-none d-md-inline-block">Start</span> From $25.00</small>
+            </div>
+            <div class="masking">
+              <a class='btn viewBtn' href='product-grid-left-sidebar.html'>View Products</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="thumbnail" onclick="location.href='single-product-2.html';">
+          <div class="imageWrapper">
+            <img src="assets/img/home/featured-collection/featured-collection-01.jpg" alt="feature-collection-image">
+            <div class="caption">
+              <h3>Casuals</h3>
+              <small><span class="d-none d-md-inline-block">Start</span> From $59.00</small>
+            </div>
+            <div class="masking">
+              <a class='btn viewBtn' href='product-grid-left-sidebar.html'>View Products</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Best Sellers -->
+  <section class="mainContent clearfix featured_products_slider_area pt-4">
+    <div class="container">
+      <div class="page-header">
+        <h4>Best Sellers</h4>
+      </div>
+    </div>
+
+    <div class="container container-inner">
+      <div class=" featuredProducts featuredProductsSlider featured_products_slider mb-0" dir="ltr">
+        <div class="slide">
+          <div class="productImage clearfix">
+            <img src="assets/img/home/featured-product/product-05.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!"><i class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="productCaption clearfix">
+            <a href='single-product.html'>
+              <h4>Nike Sportswear</h4>
+            </a>
+            <h3>$79.00</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-03.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$79.00</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-06.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$199</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-02.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$149</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-09.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$79</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-04.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$109</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-07.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$79</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-01.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$199</h3>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <section class="mainContent clearfix featured_products_slider_area pt-4">
+    <div class="container">
+      <div class="page-header">
+        <h4>Featured Products</h4>
+      </div>
+    </div>
+
+    <div class="container container-inner">
+      <div class=" featuredProducts featuredProductsSlider featured_products_slider mb-0" dir="ltr">
+        <div class="slide">
+          <div class="productImage clearfix">
+            <img src="assets/img/home/featured-product/product-05.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!"><i class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="productCaption clearfix">
+            <a href='single-product.html'>
+              <h4>Nike Sportswear</h4>
+            </a>
+            <h3>$79.00</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-03.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$79.00</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-06.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$199</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-02.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$149</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-09.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$79</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-04.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$109</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-07.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$79</h3>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="productImage">
+            <img src="assets/img/home/featured-product/product-01.jpg" alt="featured-product-img">
+            <div class="productMasking">
+              <ul class="list-inline btn-group" role="group">
+                <li><a class="btn btn-default btn-wishlist"><i class="far fa-heart"></i></a></li>
+                <li><a href="javascript:void(0)" class="btn btn-default" data-toast data-toast-type="success"
+                    data-toast-position="topRight" data-toast-icon="icon-circle-check" data-toast-title="Product"
+                    data-toast-message="successfuly added to cart!" class="btn btn-default"><i
+                      class="fa fa-shopping-basket"></i></a></li>
+                <li><a data-bs-toggle="modal" href="-2.html" class="btn btn-default"><i class="fa fa-eye"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="productCaption">
+            <a href='single-product.html'>
+              <h4>Nike AIR</h4>
+            </a>
+            <h3>$199</h3>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <%- include('../userPartials/footer') %>

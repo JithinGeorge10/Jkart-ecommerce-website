@@ -1,0 +1,171 @@
+<%- include('../userPartials/header') %>
+  <!-- LIGHT SECTION -->
+  <section class="lightSection clearfix pageHeader">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="page-title">
+            <h2>Products</h2>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <ol class="breadcrumb float-end">
+            <li>
+              <a href='/'>Home</a>
+            </li>
+            <li>
+              <a href="/shop">shop</a>
+            </li>
+            <li class="active">Products</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT SECTION -->
+  <section class="mainContent clearfix productsContent">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-4 sideBar">
+          <div class="accordion filter-accordion" id="accordionExample">
+            <div class="accordion-item panel">
+              <h2 class="accordion-header panel-heading d-md-none" id="headingTwo">
+                <div class="collapsed filter-button position-relative" role='button' data-bs-toggle="collapse"
+                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  All filters <span class="position-absolute end-0"><i class="fa fa-angle-down"></i></span>
+                </div>
+              </h2>
+
+              <div id="collapseTwo" class="accordion-collapse collapse d-md-block" aria-labelledby="headingTwo"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body px-0 pb-0 pt-md-0">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">Product categories</div>
+                    <div class="panel-body">
+                      <div class="collapse navbar-collapse navbar-ex1-collapse navbar-side-collapse">
+                        <ul class="nav navbar-nav side-nav" id="accordion2" role="tablist" aria-multiselectable="true">
+                          <li>
+                            <div class="" role="tab" id="heading1">
+                              <a href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#women"
+                                aria-controls="women">Women</a>
+                            </div>
+
+
+                          </li>
+
+                          <li>
+                            <div class="" role="tab" id="heading2">
+                              <a href="javascript:void(0)" data-bs-toggle="collapse" aria-expanded="false"
+                                data-bs-target="#men" aria-controls="men">Men</a>
+                            </div>
+
+
+                          </li>
+
+                          <li>
+                            <div class="" role="tab" id="heading3">
+                              <a href="javascript:void(0)" data-bs-toggle="collapse" aria-expanded="false"
+                                data-bs-target="#kids" aria-controls="kids">Kids</a>
+                            </div>
+
+                          </li>
+
+
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="panel panel-default priceRange">
+                    <div class="panel-heading">Filter by Price</div>
+                    <div class="panel-body clearfix">
+                      <div class="price-range" id="price-range">
+                        <div class="mb-4" id="slider-non-linear-step"></div>
+                        <div class="price-range-content">
+                          <input class="btn-default bg-primary me-auto" type="submit" value="Filter">
+                          <span class="price-text">Price:</span>
+                          <span class="price-value" id="lower-value"></span>
+                          <strong class="price-icon">-</strong>
+                          <span class="price-value" id="upper-value"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="panel panel-default filterNormal">
+                    <div class="panel-heading">filter by Color</div>
+                    <div class="panel-body">
+                      <ul class="list-unstyled">
+                        <li><a href="javascript:void(0)">Black<span>(15)</span></a></li>
+                        <li><a href="javascript:void(0)">White<span>(10)</span></a></li>
+                        <li><a href="javascript:void(0)">Red<span>(7)</span></a></li>
+                        <li><a href="javascript:void(0)">Blue<span>(12)</span></a></li>
+                        <li><a href="javascript:void(0)">Orange<span>(12)</span></a></li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="panel panel-default filterNormal">
+                    <div class="panel-heading">filter by Size</div>
+                    <div class="panel-body">
+                      <ul class="list-unstyled clearfix">
+                        <li><a href="javascript:void(0)">Small<span>(15)</span></a></li>
+                        <li><a href="javascript:void(0)">Medium<span>(10)</span></a></li>
+                        <li><a href="javascript:void(0)">Large<span>(7)</span></a></li>
+                        <li><a href="javascript:void(0)">Extra Large<span>(12)</span></a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-9 col-md-8">
+          <div class="row filterArea">
+            <div class="col-6">
+              <select name="guiest_id1" id="guiest_id1" class="select-drop">
+                <option value="0">Default sorting</option>
+                <option value="1">Sort by popularity</option>
+                <option value="2">Sort by rating</option>
+                <option value="3">Sort by newness</option>
+                <option value="3">Sort by price</option>
+              </select>
+            </div>
+
+
+          </div>
+
+          <div class="row">
+
+            <% for(let i=0; i<productDet.length; i++){ %>
+              <div class="col-md-6 col-lg-4">
+                <div class="productBox">
+                  <div class="productImage clearfix">
+                    <a href="/singleProduct?id=<%= productDet[i]._id %>">
+                      <img src="assets/img/uploads/<%=productDet[i].productImage[0]%>" alt="products-img">
+                    </a>
+
+                  </div>
+                  <div class="productCaption clearfix">
+                    <a href='single-product.html'>
+                      <h5>
+                        <%=productDet[i].productName%>
+                      </h5>
+                    </a>
+                    <h3>&#8377 <%=productDet[i].productPrice%>
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <% } %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../userPartials/footer') %>

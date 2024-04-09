@@ -1,0 +1,263 @@
+<%- include('../adminPartials/header') %>
+
+<head>
+    <title>Admin-Category</title>
+</head>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            Add Category
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addCat">
+                            <div class="form-outline mb-4">
+                                <input type="text" placeholder="Category" name="category" id="category"
+                                    class="form-control" />
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <input type="text" placeholder="Category Description" name="categorydes"
+                                    id="categorydes" class="form-control pb-5" />
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save
+                                    changes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <script>
+            $('#addCat').validate({
+                rules: {
+                    category: {
+                        required: {
+                            depends: function () {
+                                $(this).val($.trim($(this).val()));
+                                return true;
+                            }
+                        }
+                    },
+                    categorydes: {
+                        required: true
+                    }
+                },
+                submitHandler: async (form, event) => {
+                    event.preventDefault()
+
+                    let formData = {
+                        categoryName: form.category.value,
+                        categoryDes: form.categorydes.value
+                    }
+                    let response = await fetch('/addCategory', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    })
+                    let result = await response.json()
+                    if (result.success) {
+                        await Swal.fire({
+                            icon: "success",
+                            title: "Category Added"
+
+                        });
+                        window.location.reload();
+                    } else {
+                        await Swal.fire({
+                            icon: "error",
+                            title: "Category Already Exists"
+
+                        });
+                        window.location.reload();
+                    }
+                }
+            })
+        </script>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Category Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">List/Unlist</th>
+                    <th scope="col">Actions </th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i=0;i<categoryDet.length;i++){ %>
+                    <tr>
+                        <th scope="row">
+                            <%= categoryDet[i].categoryName %>
+                        </th>
+                        <td>
+                            <%= categoryDet[i].categoryDescription %>
+                        </td>
+                        <% if(categoryDet[i].isListed){ %>
+                            <td><button id="unList<%i%>" type="button"
+                                    onclick="toggleList('<%=categoryDet[i]._id %>','unlist')"
+                                    class="btn btn-danger">Unlist</button> </td>
+                            <% }else{ %>
+                                <td><button id="list<%i%>" type="button"
+                                        onclick="toggleList('<%=categoryDet[i]._id %>','list')"
+                                        class="btn btn-success">List</button> </td>
+                                <% } %>
+                                    <td>
+                                        <button id="unblock<%i%>" data-target="#categoryModal<%=i%>" data-toggle="modal"
+                                            type="button" class="btn btn-info">Edit</button>
+                                    </td>
+                    </tr>
+                    <!-- Modal -->
+                    <div class="modal fade" id="categoryModal<%=i%>" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Edit Category</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="categoryEdit<%=i%>">
+                                        <div class="form-outline mb-4">
+                                            <input type="text" placeholder="Category"
+                                                value="<%=categoryDet[i].categoryName %>" name="categoryNameEdit<%=i%>"
+                                                id="categoryNameEdit" class="form-control" />
+                                        </div>
+
+                                        <div class="form-outline mb-4">
+                                            <input type="text" placeholder="Category Description"
+                                                value="<%=categoryDet[i].categoryDescription %>"
+                                                name="categorydesEdit<%=i%>" id="categorydesEdit"
+                                                class="form-control pb-5" />
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+
+                                            <button type="submit" class="btn btn-primary">Save
+                                                changes</button>
+
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+
+                        $('#categoryEdit<%=i%>').validate({
+                            rules: {
+                                'categoryNameEdit<%=i%>': {
+                                    required: {
+                                        depends: function () {
+                                            $(this).val($.trim($(this).val()));
+                                            return true;
+                                        }
+                                    },
+                                },
+                                'categorydesEdit<%=i%>': {
+                                    required: true
+                                }
+                            },
+                            submitHandler: async (form, event) => {
+                                event.preventDefault()
+
+                                let formData = {
+                                    categoryName: form.categoryNameEdit.value,
+                                    categoryDes: form.categorydesEdit.value,
+                                    categoryId: '<%=categoryDet[i]._id%>'
+                                }
+                                let response = await fetch('/editCategory', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(formData)
+                                })
+                                let result = await response.json()
+                                if (result.success) {
+                                    await Swal.fire({
+                                        icon: "success",
+                                        title: "Category Edited"
+
+                                    });
+                                    window.location.reload();
+                                } if (result.exists) {
+                                    await Swal.fire({
+                                        icon: "error",
+                                        title: "Category Already Exists"
+
+                                    });
+                                    window.location.reload();
+                                } if (result.noValue) {
+                                    await Swal.fire({
+                                        icon: "error",
+                                        title: "Give any value"
+
+                                    });
+                                    window.location.reload();
+                                }
+                            }
+                        })
+                    </script>
+                    <% } %>
+
+            </tbody>
+        </table>
+
+    </div>
+</body>
+<script>
+
+
+    async function toggleList(catId, action) {
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let response = await fetch(`/categoryList?id=${catId}&action=${action}`, {
+                    method: 'GET',
+                })
+                let result = await response.json()
+
+                if (result.list) {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "Category Listed",
+                        confirmButtonText: "OK",
+                    });
+                } else {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "Category Unlisted",
+                    });
+                }
+            }
+            window.location.reload()
+
+        });
+    }
+
+
+
+</script>
+
+</html>
