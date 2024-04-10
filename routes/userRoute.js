@@ -18,5 +18,5 @@ router.get('/shop',userController.shopPage)
 router.get('/singleProduct',userController.singleProduct)
 router.post('/searchProducts',userController.searchProducts)
 router.get('/shop/filter/price',userController.filterByPrice)
-
+router.get('/shop/sort/name',userController.shopSortName)
 module.exports = router
