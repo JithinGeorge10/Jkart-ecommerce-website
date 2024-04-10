@@ -24,56 +24,56 @@
     <!-- MAIN CONTENT SECTION -->
     <section class="mainContent clearfix userProfile">
         <div class="container">
-           
+
             <%- include('../userPartials/userProfileDetails') %>
 
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="innerWrapper profile">
-                        <div class="row">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="innerWrapper profile">
+                            <div class="row">
 
-                            <div class="col-md-8 col-lg-9 col-xl-10 col-12">
-                                <form id="profileForm">
-                                    <div class="form-group row">
-                                        <label for="" style="height: 50px;" class="col-md-3 control-label">
-                                            <h6>First Name:</h6>
-                                        </label>
-                                        <div class="col-md-7">
+                                <div class="col-md-8 col-lg-9 col-xl-10 col-12">
+                                    <form id="profileForm">
+                                        <div class="form-group row">
+                                            <label for="" style="height: 50px;" class="col-md-3 control-label">
+                                                <h6>First Name:</h6>
+                                            </label>
+                                            <div class="col-md-7">
 
-                                            <input type="text" name="name" class="form-control"
-                                                value="<%= userDetails.name %>" required>
+                                                <input type="text" name="name" class="form-control"
+                                                    value="<%= userDetails.name %>" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="" class="col-md-3 control-label">
-                                            <h6>Phone:</h6>
-                                        </label>
-                                        <div class="col-md-9">
+                                        <div class="form-group row">
+                                            <label for="" class="col-md-3 control-label">
+                                                <h6>Phone:</h6>
+                                            </label>
+                                            <div class="col-md-9">
 
-                                            <input type="tel" name="phone" class="form-control"
-                                                value="<%= userDetails.phone %>">
+                                                <input type="tel" name="phone" class="form-control"
+                                                    value="<%= userDetails.phone %>">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <!-- <label for="" class="col-md-3 control-label" style="height: 50px;"><h6>Email:</h6></label> -->
-                                        <div class="col-md-9">
-                                            <h6>Email: <%= userDetails.email %>
-                                            </h6>
-                                            <!-- <input type="email" class="form-control" value="<%= userDetails.email %>"> -->
+                                        <div class="form-group row">
+                                            <!-- <label for="" class="col-md-3 control-label" style="height: 50px;"><h6>Email:</h6></label> -->
+                                            <div class="col-md-9">
+                                                <h6>Email: <%= userDetails.email %>
+                                                </h6>
+                                                <!-- <input type="email" class="form-control" value="<%= userDetails.email %>"> -->
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class=" col-md-12 ">
-                                            <button type="submit" class="btn btn-primary">SAVE INFO</button>
+                                        <div class="form-group row">
+                                            <div class=" col-md-12 ">
+                                                <button type="submit" class="btn btn-primary">SAVE INFO</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </section>
 
@@ -97,12 +97,7 @@
                     phone: form.phone.value
                 }
 
-                let response = await fetch('/editProfile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                })
-                let result = await response.json()
+
 
                 Swal.fire({
                     title: "Are you sure?",
@@ -112,21 +107,29 @@
                     cancelButtonColor: "#d33",
                     confirmButtonText: "Yes!"
                 }).then(async (result) => {
-                    if (result.profileEdited) {
-                        await Swal.fire({
-                            icon: "success",
-                            title: "Profile Edited Successfully",
-                            timer: 3500
-                        });
-                         window.location.reload()
+                    if (result.isConfirmed) {
+                        let response = await fetch('/editProfile', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        })
+                        let result = await response.json()
+                        if (result.profileEdited) {
+                            await Swal.fire({
+                                icon: "success",
+                                title: "Profile Edited Successfully",
+                                timer: 1500
+                            });
+                            window.location.reload()
+                        }
+                        if (result.exists) {
+                            await Swal.fire({
+                                icon: "error",
+                                title: "Phone already Exists"
+                            })
+                        }
                     }
                 });
-                if (result.exists) {
-                    await Swal.fire({
-                        icon: "error",
-                        title: "Phone already Exists"
-                    })
-                }
             }
         })
     </script>
