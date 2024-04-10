@@ -1,6 +1,7 @@
 const express = require('express')
 const userController = require('../controller/userController')
 const shopController = require('../controller/shopController')
+const accountController = require('../controller/accountController')
 const userAuth = require('../middleware/userAuth.js')
 const router = express.Router()
 
@@ -22,6 +23,11 @@ router.get('/singleProduct',shopController.singleProduct)
 router.post('/searchProducts',shopController.searchProducts)
 router.get('/shop/filter/price',shopController.filterByPrice)
 router.get('/shop/sort/name',shopController.shopSortName)
+
+
+router.get('/account',userAuth,accountController.account)
+router.post('/editProfile',userAuth,accountController.editProfile)
+
 
 
 module.exports = router
