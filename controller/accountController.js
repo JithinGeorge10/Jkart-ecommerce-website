@@ -66,7 +66,18 @@ const myAddressget= async (req, res) => {
         console.log(err);
     }
 }
+const addressDelete= async (req, res) => {
+    try {
+        await addressCollection.deleteOne({_id:req.query.id})
+        res.send({success:true})
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
 
 module.exports = {
-    account, editProfile, addAddress, addAddressPost,myAddressget
+    account, editProfile, addAddress, addAddressPost,myAddressget,addressDelete
 }

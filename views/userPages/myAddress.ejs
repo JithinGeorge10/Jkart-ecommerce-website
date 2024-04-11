@@ -1,4 +1,5 @@
 <%- include('../userPartials/header') %>
+
     <!-- LIGHT SECTION -->
     <section class="lightSection clearfix pageHeader">
         <div class="container">
@@ -11,7 +12,7 @@
                 <div class="col-md-6">
                     <ol class="breadcrumb float-right">
                         <li>
-                            <a href='index.html'>Home</a>
+                            <a href='/'>Home</a>
                         </li>
                         <li>
                             <a href='/account'>Profile</a>
@@ -21,15 +22,19 @@
                 </div>
             </div>
         </div>
+        
     </section>
 
     <!-- MAIN CONTENT SECTION -->
     <section class="mainContent clearfix userProfile">
-        <!-- <div class="container"> -->
-        <% include('../userPartials/userProfileDetails') %>
+        <div class="container">
+            <%- include('../userPartials/userProfileDetails') %>
+        </div>
+       
+        
             <div class="row">
                 <div class="col-12">
-                    <!-- <div class="innerWrapper"> -->
+                    <div class="innerWrapper">
                     <div class="orderBox myAddress mb-0 text-nowrap">
                         <div class="table-responsive">
                             <table class="table">
@@ -81,8 +86,11 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button id="" type="button" class="btn btn-danger">Delete</button>
-                                                    <button id="" type="button" class="btn btn-primary">Edit</button>
+                                                    <button id="delete<%i%>"
+                                                        onclick="addressDelete('<%=userAddress[i]._id %>')"
+                                                        type="button" class="btn btn-danger">Delete</button>
+                                                    <button id="edit<%i%>" type="button"
+                                                        class="btn btn-primary">Edit</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -92,12 +100,44 @@
                             </table>
                         </div>
                     </div>
-                    <!-- </div> -->
-                    <!-- </div> -->
+                    </div>
+                   
                 </div>
             </div>
     </section>
+    <script>
 
+        async function addressDelete(addressID) {
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let response = await fetch(`/addressDelete?id=${addressID}`, {
+                        method: 'GET'
+                    })
+                    let result = await response.json()
+                    if (result.success) {
+                        await Swal.fire({
+                            icon: "success",
+                            title: "Address deleted",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        window.location.reload()
+                    }
+                }
+            });
+
+        }
+
+    </script>
 
 
     <%- include('../userPartials/footer') %>
