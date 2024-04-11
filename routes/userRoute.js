@@ -29,6 +29,8 @@ router.get('/account',userAuth,accountController.account)
 router.post('/editProfile',userAuth,accountController.editProfile)
 router.get('/addAddress',userAuth,accountController.addAddress)
 router.post('/addAddressPost',userAuth,accountController.addAddressPost)
+router.get('/myAddressGet',userAuth,accountController.myAddressget)
+
 
 
 

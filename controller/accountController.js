@@ -50,19 +50,23 @@ const addAddressPost = async (req, res) => {
             state: req.body.state,
             pincode: req.body.pincode
         })
-
         await addAddress.save()
         res.send({ addressSaved: true })
-
-
         console.log(userDet)
     } catch (err) {
         console.log(err);
     }
 }
 
-
+const myAddressget= async (req, res) => {
+    try {
+        const userAddress=await addressCollection.find({userId:req.session.logged._id})
+        res.render('userPages/myAddress', { userLogged: req.session.logged,userAddress:userAddress })
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 module.exports = {
-    account, editProfile, addAddress, addAddressPost
+    account, editProfile, addAddress, addAddressPost,myAddressget
 }

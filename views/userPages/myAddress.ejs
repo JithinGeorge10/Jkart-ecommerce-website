@@ -1,0 +1,103 @@
+<%- include('../userPartials/header') %>
+    <!-- LIGHT SECTION -->
+    <section class="lightSection clearfix pageHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="page-title">
+                        <h2>MY ADDRESS </h2>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <ol class="breadcrumb float-right">
+                        <li>
+                            <a href='index.html'>Home</a>
+                        </li>
+                        <li>
+                            <a href='/account'>Profile</a>
+                        </li>
+                        <li class="active">MY ADDRESS </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT SECTION -->
+    <section class="mainContent clearfix userProfile">
+        <!-- <div class="container"> -->
+        <% include('../userPartials/userProfileDetails') %>
+            <div class="row">
+                <div class="col-12">
+                    <!-- <div class="innerWrapper"> -->
+                    <div class="orderBox myAddress mb-0 text-nowrap">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Name</th>
+                                        <th class="">Phone</th>
+                                        <th>House No.</th>
+                                        <th>Area</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Pincode</th>
+                                        <th>Title</th>
+                                        <th>Actions</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <% for(let i=0;i<userAddress.length;i++){ %>
+                                        <tr class="alert alert-dismissible fade show p-0 mb-0" role="alert">
+                                            <td>
+                                                <%= i+1 %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].username %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].phone %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].address1 %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].address2 %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].city %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].state %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].pincode %>
+                                            </td>
+                                            <td>
+                                                <%= userAddress[i].addressTitle %>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button id="" type="button" class="btn btn-danger">Delete</button>
+                                                    <button id="" type="button" class="btn btn-primary">Edit</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- </div> -->
+                    <!-- </div> -->
+                </div>
+            </div>
+    </section>
+
+
+
+    <%- include('../userPartials/footer') %>
