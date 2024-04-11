@@ -31,6 +31,9 @@ router.get('/addAddress',userAuth,accountController.addAddress)
 router.post('/addAddressPost',userAuth,accountController.addAddressPost)
 router.get('/myAddressGet',userAuth,accountController.myAddressget)
 router.get('/addressDelete',userAuth,accountController.addressDelete)
+router.get('/editAddressGet',userAuth,accountController.editAddressGet)
+router.post('/editAddressPost',userAuth,accountController.editAddressPost)
+
 
 
 

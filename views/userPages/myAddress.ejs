@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        
+
     </section>
 
     <!-- MAIN CONTENT SECTION -->
@@ -30,11 +30,11 @@
         <div class="container">
             <%- include('../userPartials/userProfileDetails') %>
         </div>
-       
-        
-            <div class="row">
-                <div class="col-12">
-                    <div class="innerWrapper">
+
+
+        <div class="row">
+            <div class="col-12">
+                <div class="innerWrapper">
                     <div class="orderBox myAddress mb-0 text-nowrap">
                         <div class="table-responsive">
                             <table class="table">
@@ -89,8 +89,12 @@
                                                     <button id="delete<%i%>"
                                                         onclick="addressDelete('<%=userAddress[i]._id %>')"
                                                         type="button" class="btn btn-danger">Delete</button>
-                                                    <button id="edit<%i%>" type="button"
-                                                        class="btn btn-primary">Edit</button>
+
+
+                                                        <button onclick="window.location.href='editAddressGet?id=<%= userAddress[i]._id %>'"
+                                                            id="edit<%= i %>" type="button" class="btn btn-primary">Edit</button>
+                                                    
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -100,10 +104,10 @@
                             </table>
                         </div>
                     </div>
-                    </div>
-                   
                 </div>
+
             </div>
+        </div>
     </section>
     <script>
 
@@ -136,6 +140,7 @@
             });
 
         }
+
 
     </script>
 

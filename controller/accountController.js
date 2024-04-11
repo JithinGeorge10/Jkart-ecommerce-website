@@ -79,9 +79,48 @@ const addressDelete = async (req, res) => {
     }
 }
 
+const editAddressGet = async (req, res) => {
+    try {
+        console.log(req.query.id);
+        const userAddress = await addressCollection.findOne({ _id: req.query.id })
+        res.render('userPages/editAddress', { userLogged: req.session.logged, userAddress })
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const editAddressPost = async (req, res) => {
+    try {
+      
+        if (/^\s*$/.test(req.body.address1) || /^\s*$/.test(req.body.address2) || /^\s*$/.test(req.body.city) || /^\s*$/.test(req.body.pincode)) {
+            res.send({ noValue: true })
+        } else {
+            await addressCollection.updateOne({ _id: req.query.id }, {
+                $set: {
+                    username: req.body.name,
+                    address1: req.body.address1,
+                    address2: req.body.address2,
+                    addressTitle: req.body.title,
+                    phone: req.body.phone,
+                    alternatePhone: req.body.altphone,
+                    pincode: req.body.pincode,
+                    city: req.body.city,
+                    state: req.body.state
+
+                }
+            })
+            res.send({ addressSaved: true })
+        }
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 
 
 
 module.exports = {
-    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete
+    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete, editAddressGet, editAddressPost
 }
