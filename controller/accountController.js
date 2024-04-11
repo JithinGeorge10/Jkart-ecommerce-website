@@ -36,40 +36,44 @@ const addAddress = async (req, res) => {
 
 const addAddressPost = async (req, res) => {
     try {
-        const userDet = await userCollection.findOne({ email: req.session.logged.email })
-        console.log(userDet._id)
-        const addAddress = new addressCollection({
-            userId: userDet._id,
-            username: req.body.name,
-            address1: req.body.address1,
-            address2: req.body.address2,
-            addressTitle: req.body.title,
-            phone: req.body.phone,
-            alternatePhone: req.body.altphone,
-            city: req.body.city,
-            state: req.body.state,
-            pincode: req.body.pincode
-        })
-        await addAddress.save()
-        res.send({ addressSaved: true })
-        console.log(userDet)
+        if (/^\s*$/.test(req.body.address1) || /^\s*$/.test(req.body.address2) || /^\s*$/.test(req.body.city) || /^\s*$/.test(req.body.pincode)) {
+            res.send({ noValue: true })
+        } else {
+            const userDet = await userCollection.findOne({ email: req.session.logged.email })
+            const addAddress = new addressCollection({
+                userId: userDet._id,
+                username: req.body.name,
+                address1: req.body.address1,
+                address2: req.body.address2,
+                addressTitle: req.body.title,
+                phone: req.body.phone,
+                alternatePhone: req.body.altphone,
+                city: req.body.city,
+                state: req.body.state,
+                pincode: req.body.pincode
+            })
+            await addAddress.save()
+            res.send({ addressSaved: true })
+            console.log(userDet)
+        }
+
     } catch (err) {
         console.log(err);
     }
 }
 
-const myAddressget= async (req, res) => {
+const myAddressget = async (req, res) => {
     try {
-        const userAddress=await addressCollection.find({userId:req.session.logged._id})
-        res.render('userPages/myAddress', { userLogged: req.session.logged,userAddress:userAddress })
+        const userAddress = await addressCollection.find({ userId: req.session.logged._id })
+        res.render('userPages/myAddress', { userLogged: req.session.logged, userAddress: userAddress })
     } catch (err) {
         console.log(err);
     }
 }
-const addressDelete= async (req, res) => {
+const addressDelete = async (req, res) => {
     try {
-        await addressCollection.deleteOne({_id:req.query.id})
-        res.send({success:true})
+        await addressCollection.deleteOne({ _id: req.query.id })
+        res.send({ success: true })
     } catch (err) {
         console.log(err);
     }
@@ -79,5 +83,5 @@ const addressDelete= async (req, res) => {
 
 
 module.exports = {
-    account, editProfile, addAddress, addAddressPost,myAddressget,addressDelete
+    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete
 }
