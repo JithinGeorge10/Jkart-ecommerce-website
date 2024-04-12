@@ -92,7 +92,7 @@ const editAddressGet = async (req, res) => {
 
 const editAddressPost = async (req, res) => {
     try {
-      
+
         if (/^\s*$/.test(req.body.address1) || /^\s*$/.test(req.body.address2) || /^\s*$/.test(req.body.city) || /^\s*$/.test(req.body.pincode)) {
             res.send({ noValue: true })
         } else {

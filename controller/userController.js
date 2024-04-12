@@ -233,13 +233,14 @@ const forgotPassword = (req, res) => {
 const forgotPasswordsendOtp = async (req, res) => {
     try {
         const userDet = await userCollection.findOne({ email: req.body.email })
-        if (userDet.length < 1) {
-            res.send({ emailExists: true })
-        } else {
+        console.log(userDet)
+        if (userDet) {
             req.session.forgotPasswordId = userDet._id
             console.log(req.session.forgotPasswordId)
             console.log('success')
             res.send({ success: true })
+        } else {
+            res.send({ emailExists: true })
         }
     } catch (err) {
         console.log(err);
@@ -248,7 +249,7 @@ const forgotPasswordsendOtp = async (req, res) => {
 
 const forgotPasswordVerifyOtp = async (req, res) => {
     try {
-        console.log('forgotPasswordVerifyOtp'+req.session.forgotPasswordId)
+        console.log('forgotPasswordVerifyOtp' + req.session.forgotPasswordId)
         const user = await userCollection.findOne({ _id: req.session.forgotPasswordId })
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
         await sendotp(user, generatedOtp)
@@ -259,7 +260,6 @@ const forgotPasswordVerifyOtp = async (req, res) => {
     } catch (err) {
         console.log(err);
     }
-
 }
 const forgotPasswordVerifyOtpPost = async (req, res) => {
     try {
@@ -272,7 +272,7 @@ const forgotPasswordVerifyOtpPost = async (req, res) => {
         if (otpmatch && notExpired) {
             req.session.logged = userDet
             res.status(200).send({ otpverified: true })
-        }else{
+        } else {
             res.status(200).send({ otpinvalid: true })
         }
 
@@ -281,7 +281,23 @@ const forgotPasswordVerifyOtpPost = async (req, res) => {
     }
 }
 
+const forgotPasswordresendOtp = async (req, res) => {
+    try {
+        console.log('resend')
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+        const user = await userCollection.findOne({ _id: req.session.forgotPasswordId })
+        await sendotp(user, generatedOtp)
+        const bycryptotp = bcrypt.hashSync(generatedOtp, 10)
+        await otpCollection.updateOne({ userId: req.session.forgotPasswordId }, { $set: { otp: bycryptotp, generatedDate: new Date().toISOString(), expiryDate: new Date(Date.now() + 60000).toISOString() } })
+
+        res.status(200).send({ otpsend: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 module.exports = {
     landingPage, signUp, login, register, saveUser, logout, otpPage, verifyOtp, resendOtp, userLogin, forgotPassword,
-    forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost
+    forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost, forgotPasswordresendOtp
 }

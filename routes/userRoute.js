@@ -20,6 +20,8 @@ router.get('/forgotPassword', userController.forgotPassword)
 router.post('/forgotPassword/sendOtp', userController.forgotPasswordsendOtp)
 router.get('/forgotPassword/verifyOtp', userController.forgotPasswordVerifyOtp)
 router.post('/forgotPassword/verifyOtpPost', userController.forgotPasswordVerifyOtpPost)
+router.post('/forgotPassword/resendOtp', userController.forgotPasswordresendOtp)
+
 
 
 router.get('/shop',shopController.shopPage)
