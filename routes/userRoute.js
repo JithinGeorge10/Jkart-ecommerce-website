@@ -16,6 +16,10 @@ router.get('/sendotp', userController.otpPage)
 router.post('/verifyOtp',userController.verifyOtp)
 router.post('/resendOtp', userController.resendOtp)
 router.post('/login', userController.userLogin)
+router.get('/forgotPassword', userController.forgotPassword)
+router.post('/forgotPassword/sendOtp', userController.forgotPasswordsendOtp)
+router.get('/forgotPassword/verifyOtp', userController.forgotPasswordVerifyOtp)
+router.post('/forgotPassword/verifyOtpPost', userController.forgotPasswordVerifyOtpPost)
 
 
 router.get('/shop',shopController.shopPage)
