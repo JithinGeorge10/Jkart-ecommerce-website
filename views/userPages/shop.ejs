@@ -48,14 +48,15 @@
                           <li>
                             <div class="" role="tab" id="heading1">
 
-                            <% for(let i=0;i<categoryDetails.length;i++){ %>
-                              <a href="/shop?id=<%=categoryDetails[i]._id%>" 
-                                aria-controls="categoryName<%= i %>"><%=categoryDetails[i].categoryName%></a>
-                            <% } %>
-                              
+                              <% for(let i=0;i<categoryDetails.length;i++){ %>
+                                <a href="/shop?id=<%=categoryDetails[i]._id%>" aria-controls="categoryName<%= i %>">
+                                  <%=categoryDetails[i].categoryName%>
+                                </a>
+                                <% } %>
+
                             </div>
                           </li>
-                  
+
                         </ul>
                       </div>
                     </div>
@@ -70,30 +71,30 @@
                           <!-- <input class="btn-default bg-primary me-auto" type="submit" value="Filter"> -->
                           <form action="/shop/filter/price">
                             <label>
-                                <input type="radio" name="priceRange" value="0" />
-                                Less than ₹500</label>
-                            <br />  
-                            <label>
-                                <input type="radio" name="priceRange" value="1" />
-                                ₹500 - ₹1000</label>
+                              <input type="radio" name="priceRange" value="0" />
+                              Less than ₹500</label>
                             <br />
                             <label>
-                                <input type="radio" name="priceRange" value="2" />
-                                ₹1000 - ₹1500</label>
+                              <input type="radio" name="priceRange" value="1" />
+                              ₹500 - ₹1000</label>
                             <br />
                             <label>
-                                <input type="radio" name="priceRange" value="3" />
-                                ₹1500 above</label>
+                              <input type="radio" name="priceRange" value="2" />
+                              ₹1000 - ₹1500</label>
                             <br />
-                            <button type="submit"  class="btn btn-primary" data-mdb-ripple-init>
-                            check  <i class="fas fa-search"></i>
+                            <label>
+                              <input type="radio" name="priceRange" value="3" />
+                              ₹1500 above</label>
+                            <br />
+                            <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
+                              check <i class="fas fa-search"></i>
                             </button>
-                        </form>
+                          </form>
                         </div>
                       </div>
                     </div>
                   </div>
-                 </div>
+                </div>
               </div>
             </div>
           </div>
@@ -115,18 +116,18 @@
           </div>
 
           <script>
-           async function sortProducts(){
-              let response= await fetch(`/shop/sort/name?sortId=${sort.value}`,{
-                method:'GET'
+            async function sortProducts() {
+              let response = await fetch(`/shop/sort/name?sortId=${sort.value}`, {
+                method: 'GET'
               })
-              const result=await response.json()
-              if(result.nameSort){
+              const result = await response.json()
+              if (result.nameSort) {
                 window.location.reload()
-              }else if(result.priceAsc){
+              } else if (result.priceAsc) {
                 window.location.reload()
-              }else if(result.priceDes){
+              } else if (result.priceDes) {
                 window.location.reload()
-              }else if(result.prodNew){
+              } else if (result.prodNew) {
                 window.location.reload()
               }
             }
@@ -158,7 +159,7 @@
               console.log("Parsed result:", result);
 
               if (result.searchProduct) {
-                window.location.href = '/shop?searchId='+ encodeURIComponent(searchValue);
+                window.location.href = '/shop?searchId=' + encodeURIComponent(searchValue);
               } else {
                 await Swal.fire({
                   icon: "error",
@@ -177,14 +178,11 @@
                     <a href="/singleProduct?id=<%= productDet[i]._id %>">
                       <img src="assets/img/uploads/<%=productDet[i].productImage[0]%>" alt="products-img">
                     </a>
-
                   </div>
                   <div class="productCaption clearfix">
-                  
-                      <h5>
-                        <%=productDet[i].productName%>
-                      </h5>
-                   
+                    <h5>
+                      <%=productDet[i].productName%>
+                    </h5>
                     <h3>&#8377 <%=productDet[i].productPrice%>
                     </h3>
                   </div>
@@ -194,20 +192,28 @@
 
           </div>
           <nav aria-label="Page navigation example">
-            <ul class="pagination" >
-              <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            <ul class="pagination">
+              <li class="page-item"><a class="page-link">Pages</a></li>
+
+              <% for(let i=0;i<totalPages;i++){ %>
+                <li class="page-item"><a class="page-link" href="/shop?pageId=<%=i+1%>">
+                    <%=i+1%>
+                  </a></li>
+                <% } %> 
+
+                  <!-- <li class="page-item"><a class="page-link" href="/shop?pageId=2">2</a></li>
+              <li class="page-item"><a class="page-link" href="/shop?pageId=3">3</a></li> -->
+
+
+                  <!-- <li class="page-item"><a class="page-link">Next</a></li> -->
             </ul>
           </nav>
         </div>
-        
+
       </div>
-      
+
     </div>
-    
+
   </section>
 
   <%- include('../userPartials/footer') %>

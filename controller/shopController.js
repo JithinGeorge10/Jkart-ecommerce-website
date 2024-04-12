@@ -5,17 +5,28 @@ const categoryCollection = require('../model/categoryModel')
 
 const shopPage = async (req, res) => {
     try {
-        const categoryDetails = await categoryCollection.find({ isListed: true })
+        // pagination
         let query = { isListed: true };
+        let limit = 6
+        let pageNo = req.query.pageId
+        let skip = (pageNo - 1) * limit
+        let paginationProducts = await productCollection.find({ isListed: true }).skip(skip).limit(limit)
+        let productIds = paginationProducts.map(product => product._id)
+        query._id = { $in: productIds }
+        let totalPages = Math.ceil(await productCollection.countDocuments() / limit)
+        /////////////////////////////////
+        const categoryDetails = await categoryCollection.find({ isListed: true })
+       
         if (req.query.searchId) {
             query.productName = { $regex: req.query.searchId, $options: 'i' };
-        } else if (req.query.id) {
+        } else if (req.query.id) { 
             query.parentCategory = req.query.id;
         } else if (req.session.startPrice == 0) {
             query.productPrice = { $gte: 0, $lte: req.session.endPrice }
         } else if (req.session.startPrice && req.session.startPrice) {
             query.productPrice = { $gte: req.session.startPrice, $lte: req.session.endPrice }
-        }
+        } 
+        //////////////////////////////////
         const { nameSort } = req.session
         const { priceAsc } = req.session
         const { priceDes } = req.session
@@ -27,7 +38,7 @@ const shopPage = async (req, res) => {
         req.session.endPrice = null
         req.session.prodNew = null
         const productDetails = await productCollection.find(query);
-        res.render('userPages/shop', { userLogged: req.session.logged, productDet:prodNew|| priceDes || priceAsc || nameSort || productDetails, categoryDetails });
+        res.render('userPages/shop', { userLogged: req.session.logged, productDet: prodNew || priceDes || priceAsc || nameSort || productDetails, categoryDetails,totalPages });
     } catch (err) {
         console.log(err);
     }
@@ -98,7 +109,7 @@ const shopSortName = async (req, res) => {
             const sortedProductsDes = await productCollection.find().sort({ productPrice: -1 })
             req.session.priceDes = sortedProductsDes
             res.send({ priceDes: true })
-        }else if (req.query.sortId == 4) {
+        } else if (req.query.sortId == 4) {
             const sortedNewest = await productCollection.find().sort({ _id: -1 })
             req.session.prodNew = sortedNewest
             res.send({ prodNew: true })
