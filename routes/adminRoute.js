@@ -18,8 +18,8 @@ router.get('/productManagement',adminAuth,productController.productManagement)
 router.get('/productList',productController.productList)
 router.get('/addProduct',adminAuth,productController.addProductGet)
 router.post('/addProducts',adminAuth,upload.any(),productController.addProducts)
-router.get('/editProduct',adminAuth,productController.editProduct)
-router.post('/editProducts/:id',adminAuth,upload.any(),productController.editProducts)
+router.get('/editProductGet',adminAuth,productController.editProduct)
+router.post('/editProductsPost/:id',adminAuth,upload.any(),productController.editProducts)
 
 
 router.get('/categoryManagement',adminAuth,categoryController.categoryManagement)
