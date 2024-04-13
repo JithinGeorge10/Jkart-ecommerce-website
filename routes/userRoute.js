@@ -2,6 +2,7 @@ const express = require('express')
 const userController = require('../controller/userController')
 const shopController = require('../controller/shopController')
 const accountController = require('../controller/accountController')
+const cartController = require('../controller/cartController')
 const userAuth = require('../middleware/userAuth.js')
 const router = express.Router()
 
@@ -41,6 +42,7 @@ router.get('/editAddressGet',userAuth,accountController.editAddressGet)
 router.post('/editAddressPost',userAuth,accountController.editAddressPost)
 
 
-
+router.post('/addToCart',userAuth,cartController.addToCart)
+router.get('/cart',userAuth,cartController.cart)
 
 module.exports = router

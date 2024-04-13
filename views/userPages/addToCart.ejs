@@ -1,0 +1,96 @@
+
+<%- include('../userPartials/header') %>
+
+      <!-- LIGHT SECTION -->
+      <section class="lightSection clearfix pageHeaderImage">
+        <div class="container">
+          <div class="tableBlock">
+            <div class="row tableInner">
+              <div class="col-sm-12">
+                <div class="page-title">
+                  <h2>cart</h2>
+                  <ol class="breadcrumb">
+                    <li>
+                      <a href='/'>Home</a>
+                    </li>
+                  
+                    <li class="active">cart</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN CONTENT SECTION -->
+      <section class="mainContent clearfix cartListWrapper">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+              <div class="cartListInner text-nowrap">
+                <form action="#">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Product Name</th>
+                          <th>Price</th>
+                          <th>Quantity</th>
+                          <th>Sub Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      <%  for(let i=0;i<productDetails.length;i++){ %>
+                          <tr class="alert alert-dismissible fade show p-0 mb-0" role="alert">
+                            <td class="">
+                              <button type="button" class="close me-4 p-0 top-0" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <span class="cartImage"><img src="/assets/img/uploads/<%=productDetails[i].productImage[0]%> "style="height: 60px; width: 60px; border-radius: 0;" alt="image"></span>
+                            </td>
+                            <td class=""><%=productDetails[i].productName%></td>
+                            <td class="">₹  <%=productDetails[i].productPrice%></td>
+                            <td class="count-input">
+                              <a class="incr-btn" data-action="decrease" href="javascript:void(0)"><i class="fa fa-minus"></i></a>
+                              <input class="quantity" type="text" value="<%=productDet[i].productQuantity%>">
+                              <a class="incr-btn" data-action="increase" href="javascript:void(0)"><i class="fa fa-plus"></i></a>
+                            </td>
+                            <td class="">₹  <%=productDet[i].totalCostPerProduct%></td>
+                          </tr>
+                     <%   } %>
+
+                    
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="updateArea">
+                    <firm class="input-group">
+                      <input type="text" class="form-control" required placeholder="I have a discount coupon" aria-describedby="basic-addon2">
+                      <button type="submit" class="btn btn-primary-outlined" id="basic-addon2">apply coupon</button>
+                    </firm>
+                  
+                  </div>
+
+                  <div class="row totalAmountArea">
+                    <div class="col-sm-5 ms-sm-auto">
+                      <ul class="list-unstyled">
+                        <li>Sub Total <span>$ 99.00</span></li>
+                        <li>UK Vat <span>$ 18.00</span></li>
+                        <li>Grand Total <span class="grandTotal">$ 117.00</span></li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="checkBtnArea">
+                    <a class='btn btn-primary btn-default' href='checkout-step-2.html'>checkout<i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <%- include('../userPartials/footer') %>
