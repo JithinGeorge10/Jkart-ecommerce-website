@@ -50,6 +50,8 @@ integrity="sha512-TiQST7x/0aMjgVTcep29gi+q5Lk5gVTUPE9XgN0g96rwtjEjLpod4mlBRKWHeB
 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <style>
   .error{
     color: red;
@@ -102,6 +104,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                 <li class="account-login"><span>
                     <a style="color: wheat;">Hi, <%= userLogged.name %>
                     </a><small></small><a href='/logout'>logout</a>
+
                   </span></li>
                 <% }else{ %>
                   <li class="account-login"><span><a href='/login'>Login</a><small>or</small><a href='/signUp'>Create

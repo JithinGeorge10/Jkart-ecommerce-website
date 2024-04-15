@@ -1,5 +1,6 @@
 const productCollection = require('../model/productModel')
 const categoryCollection = require('../model/categoryModel')
+const cartCollection = require('../model/cartModel')
 
 
 
@@ -16,16 +17,16 @@ const shopPage = async (req, res) => {
         let totalPages = Math.ceil(await productCollection.countDocuments() / limit)
         /////////////////////////////////
         const categoryDetails = await categoryCollection.find({ isListed: true })
-       
+
         if (req.query.searchId) {
             query.productName = { $regex: req.query.searchId, $options: 'i' };
-        } else if (req.query.id) { 
+        } else if (req.query.id) {
             query.parentCategory = req.query.id;
         } else if (req.session.startPrice == 0) {
             query.productPrice = { $gte: 0, $lte: req.session.endPrice }
         } else if (req.session.startPrice && req.session.startPrice) {
             query.productPrice = { $gte: req.session.startPrice, $lte: req.session.endPrice }
-        } 
+        }
         //////////////////////////////////
         const { nameSort } = req.session
         const { priceAsc } = req.session
@@ -38,7 +39,7 @@ const shopPage = async (req, res) => {
         req.session.endPrice = null
         req.session.prodNew = null
         const productDetails = await productCollection.find(query);
-        res.render('userPages/shop', { userLogged: req.session.logged, productDet: prodNew || priceDes || priceAsc || nameSort || productDetails, categoryDetails,totalPages });
+        res.render('userPages/shop', { userLogged: req.session.logged, productDet: prodNew || priceDes || priceAsc || nameSort || productDetails, categoryDetails, totalPages });
     } catch (err) {
         console.log(err);
     }
@@ -46,9 +47,20 @@ const shopPage = async (req, res) => {
 
 const singleProduct = async (req, res) => {
     try {
+        let maxStock=0
+        let cartProduct = await cartCollection.findOne({ productId: req.query.id })
         const productDetails = await productCollection.findOne({ _id: req.query.id })
         const categoryDetails = await categoryCollection.findOne({ _id: req.query.id })
-        res.render('userPages/singleProduct', { userLogged: req.session.logged, productDet: productDetails, categoryDet: categoryDetails })
+        if (req.session.logged) {
+            if (cartProduct) {
+                 maxStock = productDetails.productStock - cartProduct.productQuantity
+            } else {
+                 maxStock = productDetails.productStock 
+            }
+        } else {
+             maxStock = productDetails.productStock 
+        }
+        res.render('userPages/singleProduct', { userLogged: req.session.logged, maxStock, productDet: productDetails, categoryDet: categoryDetails, cartDet: req.session.cartProduct })
     } catch (err) {
         console.log(err);
     }

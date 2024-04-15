@@ -44,5 +44,8 @@ router.post('/editAddressPost',userAuth,accountController.editAddressPost)
 
 router.post('/addToCart',userAuth,cartController.addToCart)
 router.get('/cart',userAuth,cartController.cart)
+router.put('/cart/qtyInc',userAuth,cartController.qtyInc)
+router.post('/removeCart',userAuth,cartController.removeCart)
+
 
 module.exports = router

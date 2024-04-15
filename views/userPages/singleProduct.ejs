@@ -11,7 +11,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Single Product - BIGBAG Store</title>
+    <title>Single Product -Jkart</title>
 
     <!-- PLUGINS CSS STYLE -->
     <link href="/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -886,18 +886,6 @@
                                 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                                 <div class="clearfix">
                                     <div id="thumbcarousel" class="carousel slide" data-interval="false">
                                         <div class="carousel-inner">
@@ -930,8 +918,7 @@
                                 </h2>
                                 <h1>&#8377 <%= productDet.productPrice %>
                                 </h1>
-                                <h1>stock:<%=productDet.productStock%>
-                                </h1>
+
                                 <div class="row">
                                     <!-- <div class="col-12">
                                         <span class="quick-drop resizeWidth quantityWidth single-quick-drop">
@@ -951,128 +938,128 @@
                                         </span>
                                     </div> -->
 
-                                    <div class="col-12">
-                                        <div class="d-flex align-items-center mb-5 pt-3">
-                                            <h5 class="me-4">Quantity:</h5>
+                                            <div class="col-12">
+                                                <div class="d-flex align-items-center mb-5 pt-3">
+                                                    <h3 class="me-4">Quantity:<h3 id="NoStock"
+                                                            style="color: red; display: none;">Out of stock</h3>
+                                                    </h3>
 
-                                            <div class="SingleCartListInner cartListInner ps-1">
-                                                <form action="#">
-                                                    <div class="table-responsive">
-                                                        <table class="table">
-                                                            <tbody>
-                                                                <tr class="border-0">
-                                                                    <td class="count-input border-0 p-0">
-
-                                                                        <button onclick="fnDecButton()"
-                                                                            class="btn btn-primary btn-sm"
-                                                                            type="button">-</button>
-
-                                                                        <input id="productQuantity" class="quantity"
-                                                                            type="text" value="1">
-
-                                                                        <button
-                                                                            onclick="fnIncButton('<%=productDet.productStock%>')"
-                                                                            class="btn btn-primary btn-sm"
-                                                                            type="button">+</button>
+                                                    <div class="SingleCartListInner cartListInner ps-1">
+                                                        <form action="#">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <tbody>
+                                                                        <tr class="border-0">
+                                                                            <td class="count-input border-0 p-0">
 
 
 
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
+                                                                                <button id="increment" onclick="fnDecButton()"
+                                                                                    class="btn btn-primary btn-sm"
+                                                                                    type="button">-</button>
+
+                                                                                <input id="productQuantity" class="quantity"
+                                                                                    type="text" value="1">
+
+                                                                                <button id="decrement"
+                                                                                    onclick="fnIncButton('<%=maxStock%>')"
+                                                                                    class="btn btn-primary btn-sm"
+                                                                                    type="button">+</button>
+
+                                                                                
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                </form>
+                                                </div>
                                             </div>
-                                        </div>
                                     </div>
-                                </div>
 
-                                <script>
-                                    async function fnIncButton(maxStock) {
-                                        try {
+                                    <script>
+                                        async function fnIncButton(maxStock) {
+                                            try {
+                                                var inputElement = document.getElementById('productQuantity');
+                                                var currentValue = parseInt(inputElement.value);
+                                                if (currentValue < maxStock) {
+                                                    inputElement.value = currentValue + 1;
+                                                } else {
+                                                    await Swal.fire({
+                                                        icon: "warning",
+                                                        title: "Oops...",
+                                                        text: "Maximum quantity reached",
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error("An error occurred:", error);
+                                            }
+                                        }
+
+
+                                        async function fnDecButton() {
                                             var inputElement = document.getElementById('productQuantity');
                                             var currentValue = parseInt(inputElement.value);
-                                            if (currentValue < maxStock) {
-                                                inputElement.value = currentValue + 1;
+                                            if (currentValue > 1) {
+                                                inputElement.value = currentValue - 1;
                                             } else {
                                                 await Swal.fire({
                                                     icon: "warning",
-                                                    title: "Oops...",
-                                                    text: "Maximum quantity reached",
+                                                    title: "Minimum one quantity",
+                                                    text: "Please select at least one quantity.",
                                                 });
                                             }
-                                        } catch (error) {
-                                            console.error("An error occurred:", error);
                                         }
-                                    }
+                                    </script>
 
 
-                                    async function fnDecButton() {
-                                        var inputElement = document.getElementById('productQuantity');
-                                        var currentValue = parseInt(inputElement.value);
-                                        if (currentValue > 1) {
-                                            inputElement.value = currentValue - 1;
-                                        } else {
-                                            await Swal.fire({
-                                                icon: "warning",
-                                                title: "Minimum one quantity",
-                                                text: "Please select at least one quantity.",
-                                            });
+                                    <div class="btn-area mb-0">
+                                        <button id="addToCart" class='btn btn-primary btn-default'
+                                            onclick="fnAddToCart('<%=productDet._id%>', productQuantity.value)">
+                                            Add to cart
+                                            <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+
+                                    <script>
+                                        if ('<%= maxStock %>' < 1) {
+                                            document.getElementById('increment').style.display = 'none'
+                                            document.getElementById('decrement').style.display = 'none'
+                                            document.getElementById('productQuantity').style.display = 'none'
+                                            document.getElementById('NoStock').style.display = 'block'
+                                            document.getElementById('addToCart').style.display = 'none'
                                         }
-                                    }
-                                </script>
+                                    </script>
 
-
-
-
-
-
-
-
-                                <div class="btn-area mb-0">
-                                    <a class='btn btn-primary btn-default'
-                                        onclick="fnAddToCart('<%=productDet._id%>',productQuantity.value)">Add to cart
-                                        <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-                                </div>
                                 <script>
 
-
-
-
-
-
                                     async function fnAddToCart(productId, quantity) {
-
-                                        Swal.fire({
-                                            title: "Added to cart!",
-                                            // text: "You won't be able to revert this!",
-                                            icon: "success",
-                                            showCancelButton: true,
-                                            confirmButtonColor: "#3085d6",
-                                            cancelButtonColor: "#31A94C",
-                                            cancelButtonText: "Continue shopping",
-                                            confirmButtonText: "Go to cart"
-                                        }).then(async (result) => {
-                                            if (result.isConfirmed) {
-                                                let response = await fetch(`/addToCart?pid=${productId}&qty=${quantity}`, {
-                                                    method: 'POST'
-                                                })
-                                                let result = await response.json()
-                                                if (result.success) {
+                                        let response = await fetch(`/addToCart?pid=${productId}&qty=${quantity}`, {
+                                            method: 'POST'
+                                        })
+                                        let result = await response.json()
+                                        if (result.userNotLogged) {
+                                            window.location.href = '/login'
+                                        } if (result.success) {
+                                            await Swal.fire({
+                                                title: "Added to cart!",
+                                                // text: "You won't be able to revert this!",
+                                                icon: "success",
+                                                showCancelButton: true,
+                                                confirmButtonColor: "#3085d6",
+                                                cancelButtonColor: "#31A94C",
+                                                cancelButtonText: "Continue shopping",
+                                                confirmButtonText: "Go to cart"
+                                            }).then(async (result) => {
+                                                if (result.isConfirmed) {
                                                     window.location.href = '/cart'
-                                                }
-                                            } else {
-                                                let response = await fetch(`/addToCart?pid=${productId}&qty=${quantity}`, {
-                                                    method: 'POST'
-                                                })
-                                                let result = await response.json()
-                                                if (result.success) {
+                                                } else {
                                                     window.location.href = '/shop'
                                                 }
+                                            });
+                                        }
 
-                                            }
-                                        });
                                     }   
                                 </script>
 
