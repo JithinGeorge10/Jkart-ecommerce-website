@@ -49,7 +49,8 @@
                             <div class="" role="tab" id="heading1">
 
                               <% for(let i=0;i<categoryDetails.length;i++){ %>
-                                <a href="/shop?id=<%=categoryDetails[i]._id%>" aria-controls="categoryName<%= i %>">
+                                <a href="/shop/filter/byCategory?id=<%=categoryDetails[i]._id%>"
+                                  aria-controls="categoryName<%= i %>">
                                   <%=categoryDetails[i].categoryName%>
                                 </a>
                                 <% } %>
@@ -69,7 +70,7 @@
                         <div class="mb-4" id="slider-non-linear-step"></div>
                         <div class="price-range-content">
                           <!-- <input class="btn-default bg-primary me-auto" type="submit" value="Filter"> -->
-                          <form action="/shop/filter/price">
+                          <form action="/shop/filter/byPrice">
                             <label>
                               <input type="radio" name="priceRange" value="0" />
                               Less than ₹500</label>
@@ -105,10 +106,11 @@
             <div class="col-6">
               <select name="sortBy" style="height: 50px;" id="sort" class="form control" onchange="sortProducts()">
                 <option value="0" disabled selected>Default sorting</option>
-                <option value="1">Sort by Name</option>
-                <option value="2">Sort by Price(Ascending)</option>
-                <option value="3">Sort by Price(Descending)</option>
-                <option value="4">Sort by Newest</option>
+                <option value="nameAsc">Sort by Name(Ascending)</option>
+                <option value="nameDes">Sort by Name(Descending)</option>
+                <option value="priceAsc">Sort by Price(Ascending)</option>
+                <option value="priceDes">Sort by Price(Descending)</option>
+                <option value="newProduct">Sort by Newest</option>
               </select>
             </div>
 
@@ -117,17 +119,11 @@
 
           <script>
             async function sortProducts() {
-              let response = await fetch(`/shop/sort/name?sortId=${sort.value}`, {
+              let response = await fetch(`/shop/sort/?sortBy=${sort.value}`, {
                 method: 'GET'
               })
               const result = await response.json()
-              if (result.nameSort) {
-                window.location.reload()
-              } else if (result.priceAsc) {
-                window.location.reload()
-              } else if (result.priceDes) {
-                window.location.reload()
-              } else if (result.prodNew) {
+              if (result.success) {
                 window.location.reload()
               }
             }
@@ -135,6 +131,11 @@
 
 
           <div class="input-group">
+            <div>
+              <button class="btn btn-secondary" onclick="clearFilter()">
+                clear filter
+              </button>
+            </div>
             <div class="form-outline" data-mdb-input-init>
               <input type="search" name="searchValue" style="height: 40px;" id="searchValue"
                 placeholder="Search Products" class="form-control" />
@@ -142,6 +143,8 @@
             <button type="button" onclick="fnSearch()" class="btn btn-primary" data-mdb-ripple-init>
               <i class="fas fa-search"></i>
             </button>
+
+
           </div>
 
 
@@ -153,18 +156,24 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ searchElement: searchValue })
               })
-              console.log("Response from server:", response);
-
               let result = await response.json()
-              console.log("Parsed result:", result);
-
               if (result.searchProduct) {
-                window.location.href = '/shop?searchId=' + encodeURIComponent(searchValue);
+                window.location.reload()
               } else {
                 await Swal.fire({
                   icon: "error",
                   title: "No results",
                 });
+              }
+            }
+
+            async function clearFilter() {
+              let response = await fetch('/clearFilter', {
+                method: 'POST'
+              })
+              let result = await response.json()
+              if (result.success) {
+                window.location.reload()
               }
             }
           </script>
@@ -196,10 +205,10 @@
               <li class="page-item"><a class="page-link">Pages</a></li>
 
               <% for(let i=0;i<totalPages;i++){ %>
-                <li class="page-item"><a class="page-link" href="/shop?pageId=<%=i+1%>">
+                <li class="page-item"><a class="page-link" href="/shop?pageNo=<%=i+1%>">
                     <%=i+1%>
                   </a></li>
-                <% } %> 
+                <% } %>
 
                   <!-- <li class="page-item"><a class="page-link" href="/shop?pageId=2">2</a></li>
               <li class="page-item"><a class="page-link" href="/shop?pageId=3">3</a></li> -->

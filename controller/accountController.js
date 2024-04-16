@@ -107,7 +107,6 @@ const editAddressPost = async (req, res) => {
                     pincode: req.body.pincode,
                     city: req.body.city,
                     state: req.body.state
-
                 }
             })
             res.send({ addressSaved: true })

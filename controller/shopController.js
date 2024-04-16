@@ -6,40 +6,20 @@ const cartCollection = require('../model/cartModel')
 
 const shopPage = async (req, res) => {
     try {
-        // pagination
-        let query = { isListed: true };
-        let limit = 6
-        let pageNo = req.query.pageId
-        let skip = (pageNo - 1) * limit
-        let paginationProducts = await productCollection.find({ isListed: true }).skip(skip).limit(limit)
-        let productIds = paginationProducts.map(product => product._id)
-        query._id = { $in: productIds }
-        let totalPages = Math.ceil(await productCollection.countDocuments() / limit)
-        /////////////////////////////////
+        console.log('productId' + req.query.id)
+        const catProducts=await productCollection({parentCategory:req.query.id,isListed:true})
+        console.log(catProducts)
+        let productDet = req.session.productDetail || await productCollection.find({ isListed: true }) ||catProducts
         const categoryDetails = await categoryCollection.find({ isListed: true })
+        const productsPerPage = 6
+        const totalPages = productDet.length / productsPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * productsPerPage
+        const end = start + productsPerPage
+        productDet = productDet.slice(start, end)
 
-        if (req.query.searchId) {
-            query.productName = { $regex: req.query.searchId, $options: 'i' };
-        } else if (req.query.id) {
-            query.parentCategory = req.query.id;
-        } else if (req.session.startPrice == 0) {
-            query.productPrice = { $gte: 0, $lte: req.session.endPrice }
-        } else if (req.session.startPrice && req.session.startPrice) {
-            query.productPrice = { $gte: req.session.startPrice, $lte: req.session.endPrice }
-        }
-        //////////////////////////////////
-        const { nameSort } = req.session
-        const { priceAsc } = req.session
-        const { priceDes } = req.session
-        const { prodNew } = req.session
-        req.session.nameSort = null
-        req.session.priceAsc = null
-        req.session.priceDes = null
-        req.session.startPrice = null
-        req.session.endPrice = null
-        req.session.prodNew = null
-        const productDetails = await productCollection.find(query);
-        res.render('userPages/shop', { userLogged: req.session.logged, productDet: prodNew || priceDes || priceAsc || nameSort || productDetails, categoryDetails, totalPages });
+
+        res.render('userPages/shop', { userLogged: req.session.logged, productDet, categoryDetails, totalPages })
     } catch (err) {
         console.log(err);
     }
@@ -47,18 +27,18 @@ const shopPage = async (req, res) => {
 
 const singleProduct = async (req, res) => {
     try {
-        let maxStock=0
+        let maxStock = 0
         let cartProduct = await cartCollection.findOne({ productId: req.query.id })
         const productDetails = await productCollection.findOne({ _id: req.query.id })
         const categoryDetails = await categoryCollection.findOne({ _id: req.query.id })
         if (req.session.logged) {
             if (cartProduct) {
-                 maxStock = productDetails.productStock - cartProduct.productQuantity
+                maxStock = productDetails.productStock - cartProduct.productQuantity
             } else {
-                 maxStock = productDetails.productStock 
+                maxStock = productDetails.productStock
             }
         } else {
-             maxStock = productDetails.productStock 
+            maxStock = productDetails.productStock
         }
         res.render('userPages/singleProduct', { userLogged: req.session.logged, maxStock, productDet: productDetails, categoryDet: categoryDetails, cartDet: req.session.cartProduct })
     } catch (err) {
@@ -72,34 +52,53 @@ const searchProducts = async (req, res) => {
             productName: { $regex: req.body.searchElement, $options: 'i' }
         })
         if (searchedProduct.length > 0) {
-
+            req.session.productDetail = searchedProduct
             res.send({ searchProduct: true })
         } else {
+            req.session.productDetail = null
             res.send({ searchProduct: false })
         }
+
     } catch (err) {
         console.log(err);
     }
 }
 
-const filterByPrice = async (req, res) => {
+const filter = async (req, res) => {
     try {
-        let startPrice, endPrice
-        if (req.query.priceRange == 0) {
-            startPrice = 0
-            endPrice = 499
-        } else if (req.query.priceRange == 1) {
-            startPrice = 500
-            endPrice = 1000
-        } else if (req.query.priceRange == 2) {
-            startPrice = 1000
-            endPrice = 1500
-        } else if (req.query.priceRange == 3) {
-            startPrice = 1500
-            endPrice = 100000
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true })
+        let start = 0, end = Infinity
+        if (req.params.by === 'byPrice') {
+
+            switch (req.query.priceRange) {
+                case '0': {
+                    start = 0; end = 500
+                    break
+                }
+                case '1': {
+                    start = 500; end = 1000
+                    break
+                }
+                case '2': {
+                    start = 1000; end = 1500
+                    break
+                }
+                case '3': {
+                    start = 1500; end = Infinity
+                    break
+                }
+            }
+        } else {
+            productDetail = await productCollection.find({ isListed: true, parentCategory: req.query.id })
         }
-        req.session.startPrice = startPrice
-        req.session.endPrice = endPrice
+
+        productDetail = productDetail.filter((val) => {
+            console.log(start, end)
+            return val.productPrice > start && val.productPrice < end
+        })
+
+        req.session.productDetail = productDetail
+
         res.redirect('/shop')
 
     } catch (err) {
@@ -107,25 +106,42 @@ const filterByPrice = async (req, res) => {
     }
 }
 
-const shopSortName = async (req, res) => {
+const shopSort = async (req, res) => {
     try {
-        if (req.query.sortId == 1) {
-            const sortedProducts = await productCollection.find().sort({ productName: 1 })
-            req.session.nameSort = sortedProducts
-            res.send({ nameSort: true })
-        } else if (req.query.sortId == 2) {
-            const sortedProductsAsc = await productCollection.find().sort({ productPrice: 1 })
-            req.session.priceAsc = sortedProductsAsc
-            res.send({ priceAsc: true })
-        } else if (req.query.sortId == 3) {
-            const sortedProductsDes = await productCollection.find().sort({ productPrice: -1 })
-            req.session.priceDes = sortedProductsDes
-            res.send({ priceDes: true })
-        } else if (req.query.sortId == 4) {
-            const sortedNewest = await productCollection.find().sort({ _id: -1 })
-            req.session.prodNew = sortedNewest
-            res.send({ prodNew: true })
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true })
+        switch (req.query.sortBy) {
+            case 'priceAsc': {
+                productDetail = productDetail.sort((a, b) => a.productPrice - b.productPrice)
+                break;
+            }
+            case 'priceDes': {
+                productDetail = productDetail.sort((a, b) => b.productPrice - a.productPrice)
+                break;
+            }
+            case 'nameAsc': {
+                productDetail = productDetail.sort((a, b) => a.productName.localeCompare(b.productName))
+                break;
+            }
+            case 'nameDes': {
+                productDetail = productDetail.sort((a, b) => b.productName.localeCompare(a.productName))
+                break;
+            }
+            case 'newProduct': {
+                productDetail = productDetail.sort((a, b) => b._id - a._id)
+                break;
+            }
         }
+        req.session.productDetail = productDetail
+        res.send({ success: true })
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const clearFilter = async (req, res) => {
+    try {
+        req.session.productDetail = null
+        res.send({ success: true })
     } catch (err) {
         console.log(err)
     }
@@ -133,5 +149,5 @@ const shopSortName = async (req, res) => {
 
 
 module.exports = {
-    shopPage, singleProduct, searchProducts, filterByPrice, shopSortName
+    shopPage, singleProduct, searchProducts, filter, shopSort, clearFilter
 }

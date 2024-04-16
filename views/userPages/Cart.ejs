@@ -43,40 +43,45 @@
                   </thead>
                   <tbody>
 
-                    <% for(let i=0;i<productDetails.length;i++){ %>
+                    <% for(let i=0;i<cartDetails.length;i++){ %>
                       <tr class="alert alert-dismissible fade show p-0 mb-0" role="alert">
                         <td class="">
 
-                          <span class="cartImage"><img src="/assets/img/uploads/<%=productDetails[i].productImage[0]%> "
+                          <span class="cartImage"><img
+                              src="/assets/img/uploads/<%=cartDetails[i].productId.productImage[0]%> "
                               style="height: 60px; width: 60px; border-radius: 0;" alt="image"></span>
                         </td>
                         <td class="">
-                          <%=productDetails[i].productName%>
+                          <%=cartDetails[i].productId.productName%>
                         </td>
-                        <td class="">₹ <%=productDetails[i].productPrice%>
+                        <td class="">₹ <%=cartDetails[i].productId.productPrice%>
                         </td>
                         <td class="count-input">
 
-                          <button id="decrement" onclick="fnDecButton(`<%= i %>`)" class="btn btn-primary btn-sm"
-                            type="button">-</button>
-
+                        
+                            <button id="decrement"
+                            onclick="fnDecButton(`<%= i %>`,'<%=cartDetails[i].productId._id%>')"
+                            class="btn btn-primary btn-sm" type="button">-</button>
 
                           <input class="quantity" type="text" id="productQuantity<%= i %>"
-                            value="<%=productDet[i].productQuantity%>">
+                            value="<%=cartDetails[i].productQuantity%>">
+
 
                           <button id="increment"
-                            onclick="fnIncButton('<%=productDetails[i].productStock%>',`<%= i %>`,'<%=productDet[i].productId%>')"
+                            onclick="fnIncButton('<%=cartDetails[i].productId.productStock%>',`<%= i %>`,'<%=cartDetails[i].productId._id%>')"
                             class="btn btn-primary btn-sm" type="button">+</button>
 
                         </td>
                         <td>
-                          <h4 id="totalCostPerProduct<%=i%>"> ₹<%=productDet[i].totalCostPerProduct%>
+                          <h4 id="totalCostPerProduct<%=i%>"> ₹<%=cartDetails[i].totalCostPerProduct%>
                           </h4>
 
                         </td>
                         <td>
-                          <button onclick="removeCart('<%=productDetails[i]._id%>')" type="button" class="btn btn-danger"
+
+                          <button onclick="removeCart('<%=cartDetails[i].productId._id%>')" type="button" class="btn btn-danger"
                             aria-label="Close">Remove</button>
+
                         </td>
                       </tr>
 
@@ -94,12 +99,11 @@
                               })
                               let result = await response.json()
                               if (result.success) {
-
                                 document.getElementById('productQuantity' + index).innerHTML = result.updatedPrice.productQuantity
-
                                 document.getElementById('totalCostPerProduct' + index).innerHTML = '₹' + result.updatedPrice.totalCostPerProduct
+                                document.getElementById('total-price').innerHTML = 'Grand Total : ₹'+result.grandTotal
+                               
                               }
-
                             } else {
                               await Swal.fire({
                                 icon: "warning",
@@ -113,11 +117,20 @@
                         }
 
 
-                        async function fnDecButton(index) {
+                        async function fnDecButton( index, pid) {
                           var inputElement = document.getElementById('productQuantity' + index);
                           var currentValue = parseInt(inputElement.value);
                           if (currentValue > 1) {
                             inputElement.value = currentValue - 1;
+                            let response = await fetch(`cart/qtyDec?id=${pid}`, {
+                                method: 'PUT'
+                              })
+                              let result = await response.json()
+                              if (result.success) {
+                                document.getElementById('productQuantity' + index).innerHTML = result.updatedPrice.productQuantity
+                                document.getElementById('totalCostPerProduct' + index).innerHTML = '₹' + result.updatedPrice.totalCostPerProduct
+                                document.getElementById('total-price').innerHTML ='Grand Total : ₹'+result.grandTotal
+                              }
                           } else {
                             await Swal.fire({
                               icon: "warning",
@@ -143,7 +156,7 @@
                                 method: 'POST'
                               })
                               let result = await response.json()
-                              if (success) {
+                              if (result.success) {
                                 await Swal.fire({
                                   icon: "success",
                                   title: "Item removed from cart"
@@ -151,9 +164,7 @@
                                 window.location.reload()
                               }
                             }
-                          });
-
-
+                          }); 
                         }
                       </script>
 
@@ -179,15 +190,13 @@
                 <div class="col-sm-5 ms-sm-auto">
                   <ul class="list-unstyled">
 
-                    <li id="total-price">Grand Total <span id="grandTotal" class="price">
-
-                      </span></li>
+                    <li id="total-price"> Grand Total   :   ₹<%=grandTotal%> </li>
                   </ul>
                 </div>
               </div>
 
               <div class="checkBtnArea">
-                <a class='btn btn-primary btn-default' href='checkout-step-2.html'>checkout<i
+                <a class='btn btn-primary btn-default' href='/cartCheckout'>checkout<i
                     class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
               </div>
             </form>

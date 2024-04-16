@@ -35,9 +35,11 @@ const addToCart = async (req, res) => {
 
 const cart = async (req, res) => {
     try {
-        const productIds = req.session.cartDetails.map(cartItem => cartItem.productId);
-        const productDetails = await productCollection.find({ _id: { $in: productIds } });
-        res.render('userPages/addToCart', { userLogged: req.session.logged, productDet: req.session.cartDetails, productDetails })
+        const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
+        console.log(cartDetails)
+        const cartTotal = await cartCollection.aggregate([{ $group: { _id: null, sum: { $sum: '$totalCostPerProduct' } } }])
+        req.session.grandTotal = cartTotal[0].sum
+        res.render('userPages/Cart', { userLogged: req.session.logged, cartDetails, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
     }
@@ -45,27 +47,54 @@ const cart = async (req, res) => {
 
 const qtyInc = async (req, res) => {
     try {
-        let cartProduct = await cartCollection.findOne({ productId: req.query.id })
+
         let productDet = await productCollection.findOne({ _id: req.query.id })
         await cartCollection.updateOne(
-            { productId: req.query.id }, 
-            { 
-                $inc: { productQuantity: 1,totalCostPerProduct: productDet.productPrice},
+            { productId: req.query.id },
+            {
+                $inc: { productQuantity: 1, totalCostPerProduct: productDet.productPrice },
             }
-          )
-          req.session.updatedPrice=await cartCollection.findOne({productId:req.query.id})
-          console.log(req.session.updatedPrice.totalCostPerProduct)
-          res.send({success:true,updatedPrice:req.session.updatedPrice})
-              } catch (err) {
+        )
+        req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
+        req.session.grandTotal = req.session.grandTotal + productDet.productPrice
+        res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
+    } catch (err) {
+        console.log(err);
+    }
+}
+const qtyDec = async (req, res) => {
+    try {
+
+        let productDet = await productCollection.findOne({ _id: req.query.id })
+        await cartCollection.updateOne(
+            { productId: req.query.id },
+            {
+                $inc: { productQuantity: -1, totalCostPerProduct: -productDet.productPrice },
+            }
+        )
+        req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
+        req.session.grandTotal = req.session.grandTotal - productDet.productPrice
+        console.log(req.session.updatedPrice.totalCostPerProduct)
+        res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
+    } catch (err) {
         console.log(err);
     }
 }
 
 const removeCart = async (req, res) => {
     try {
-       console.log(req.query.pid);
-       await cartCollection.deleteOne({productId:req.query.pid})
-       res.send({success:true})
+        console.log(req.query.pid);
+        await cartCollection.deleteOne({ productId: req.query.pid })
+        res.send({ success: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+const cartCheckout = async (req, res) => {
+    try {
+        res.render('userPages/cartCheckout',{userLogged:req.session.logged})
     } catch (err) {
         console.log(err);
     }
@@ -73,5 +102,5 @@ const removeCart = async (req, res) => {
 
 
 module.exports = {
-    addToCart, cart, qtyInc,removeCart
+    addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout
 }
