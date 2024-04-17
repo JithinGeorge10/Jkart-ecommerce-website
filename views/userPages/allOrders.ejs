@@ -1,0 +1,80 @@
+<%- include('../userPartials/header') %>
+    <!-- LIGHT SECTION -->
+    <section class="lightSection clearfix pageHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="page-title">
+                        <h2>ALL ORDERS</h2>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <ol class="breadcrumb float-right">
+                        <li>
+                            <a href='/'>Home</a>
+                        </li>
+                        <li class="active">ALL ORDERS</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT SECTION -->
+    <section class="mainContent clearfix userProfile">
+        <div class="container">
+
+            <%- include('../userPartials/userProfileDetails') %>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="innerWrapper">
+                            <div class="orderBox text-nowrap mb-0">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Total Price</th>
+                                                <th><a class='text-white' href='account-single-order.html'>Status</a>
+                                                </th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for(let i=0;i<orderDet.length;i++){ %>
+                                                <tr>
+                                                    <td><a class='text-primary'></a>
+                                                            <%=orderDet[i]._id%>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <%=orderDet[i].orderDate.toDateString() %>
+                                                    </td>
+                                                    <td>₹<%=orderDet[i].grandTotalCost%>
+                                                    </td>
+                                                    <td>
+                                                        <%=orderDet[i].orderStatus%>
+                                                    </td>
+                                                    <td><button class='btn btn-sm btn-secondary-outlined'>View</button>
+                                                    </td>
+                                                    <td><button
+                                                            class='btn btn-sm btn-danger-outlined'>Cancel</button>
+                                                    </td>
+                                                </tr>
+                                                <% } %>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </section>
+
+    <%- include('../userPartials/footer') %>

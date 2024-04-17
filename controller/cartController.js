@@ -2,6 +2,9 @@ const { createCollection } = require("../model/categoryModel")
 const cartCollection = require('../model/cartModel')
 const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel')
+const orderCollection = require('../model/ordersModel')
+
+
 const addToCart = async (req, res) => {
     try {
         const productDet = await productCollection.findOne({ _id: req.query.pid });
@@ -115,8 +118,8 @@ const cartCheckoutAddress = async (req, res) => {
 
 const cartCheckoutPayment = async (req, res) => {
     try {
-        const shippingAddress=await addressCollection.findOne({_id:req.session.selectedAddress })
-        res.render('userpages/cartCheckoutPayment', { userLogged: req.session.logged,shippingAddress})
+        const shippingAddress = await addressCollection.findOne({ _id: req.session.selectedAddress })
+        res.render('userpages/cartCheckoutPayment', { userLogged: req.session.logged, shippingAddress })
     } catch (err) {
         console.log(err);
     }
@@ -124,14 +127,14 @@ const cartCheckoutPayment = async (req, res) => {
 
 const cartCheckoutreview = async (req, res) => {
     try {
-            console.log(req.query.id)
-            if(req.query.id==='null'){
-                res.send({ noPaymentMethod: true })
-            }else{
-                req.session.paymentMethod = req.query.id
-                res.send({ success: true })
-            }
-            
+        console.log(req.query.id)
+        if (req.query.id === 'null') {
+            res.send({ noPaymentMethod: true })
+        } else {
+            req.session.paymentMethod = req.query.id
+            res.send({ success: true })
+        }
+
     } catch (err) {
         console.log(err);
     }
@@ -140,17 +143,43 @@ const cartCheckoutreview = async (req, res) => {
 
 const orderSummary = async (req, res) => {
     try {
-        const shippingAddress=await addressCollection.findOne({_id:req.session.selectedAddress })
-          const cartDetails=await cartCollection.find({userId:req.session.logged._id}).populate('productId')
-          console.log(cartDetails)
-          res.render('userPages/orderSummary',{userLogged:req.session.logged,cartDetails,shippingAddress,paymentMethod:req.session.paymentMethod,grandTotal: req.session.grandTotal})
+        const shippingAddress = await addressCollection.findOne({ _id: req.session.selectedAddress })
+        const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
+        console.log(cartDetails)
+        res.render('userPages/orderSummary', { userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: req.session.paymentMethod, grandTotal: req.session.grandTotal })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const orderPlace = async (req, res) => {
+    try {
+        const cartDet=await cartCollection.find({userId:req.session.logged._id})
+        await orderCollection.insertMany({
+            userId:req.session.logged._id,
+            paymentType:  req.session.paymentMethod ,
+            addressChosen:req.session.selectedAddress,
+            cartData:cartDet,
+            grandTotalCost: req.session.grandTotal
+        })
+
+        res.send({success:true})
     } catch (err) {
         console.log(err);
     }
 }
 
 
+const orderPlaceComleted = async (req, res) => {
+    try {
+     
+        res.render('userPages/orderPlaced', {userLogged: req.session.logged})
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 module.exports = {
-    addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress, cartCheckoutPayment,cartCheckoutreview,orderSummary
+    addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress,
+    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace,orderPlaceComleted
 }

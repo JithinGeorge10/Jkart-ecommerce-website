@@ -3,7 +3,7 @@ module.exports=function (req,res,next){
         if(req.session.logged){
             next()
         }else{
-           res.redirect('/login')
+           res.send({userNotLogged:true})
         }
     }catch(err){
         console.log(err);

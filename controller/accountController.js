@@ -2,6 +2,7 @@
 const { trusted } = require('mongoose');
 const userCollection = require('../model/userModel')
 const addressCollection = require('../model/addressModel')
+const orderCollection = require('../model/ordersModel')
 const account = async (req, res) => {
     try {
         const userDet = await userCollection.findOne({ email: req.session.logged.email })
@@ -119,7 +120,20 @@ const editAddressPost = async (req, res) => {
 
 
 
+const allOrders = async (req, res) => {
+    try {
+        const orderDet=await orderCollection.find({userId:req.session.logged._id})
+        res.render('userPages/allOrders', { userLogged: req.session.logged,orderDet})
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
+
+
 
 module.exports = {
-    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete, editAddressGet, editAddressPost
+    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete, editAddressGet, editAddressPost,allOrders
 }

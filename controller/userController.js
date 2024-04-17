@@ -263,8 +263,6 @@ const forgotPasswordVerifyOtp = async (req, res) => {
 }
 const forgotPasswordVerifyOtpPost = async (req, res) => {
     try {
-        console.log(req.body.otp)
-        console.log('forgotPasswordVerifyOtpPost')
         const otpDet = await otpCollection.findOne({ userId: req.session.forgotPasswordId })
         const userDet = await userCollection.findOne({ _id: req.session.forgotPasswordId })
         const otpmatch = await bcrypt.compare(req.body.otp, otpDet.otp)
@@ -297,7 +295,32 @@ const forgotPasswordresendOtp = async (req, res) => {
 }
 
 
+const forgotPasswordnewPassword = async (req, res) => {
+    try {
+       res.render('userPages/newPassword')
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+const updatePassword = async (req, res) => {
+    try {
+
+       const bycryptpassword = bcrypt.hashSync(req.body.password, 10)
+       console.log(req.session.forgotPasswordId)
+       await userCollection.updateOne({_id:req.session.forgotPasswordId},{$set:{password:bycryptpassword}})
+       res.send({success:true})
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
+
 module.exports = {
     landingPage, signUp, login, register, saveUser, logout, otpPage, verifyOtp, resendOtp, userLogin, forgotPassword,
-    forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost, forgotPasswordresendOtp
+    forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost, 
+    forgotPasswordresendOtp,forgotPasswordnewPassword,updatePassword
 }
