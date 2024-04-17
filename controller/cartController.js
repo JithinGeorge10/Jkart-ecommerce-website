@@ -1,6 +1,7 @@
 const { createCollection } = require("../model/categoryModel")
 const cartCollection = require('../model/cartModel')
 const productCollection = require('../model/productModel')
+const addressCollection = require('../model/addressModel')
 const addToCart = async (req, res) => {
     try {
         const productDet = await productCollection.findOne({ _id: req.query.pid });
@@ -94,13 +95,62 @@ const removeCart = async (req, res) => {
 
 const cartCheckout = async (req, res) => {
     try {
-        res.render('userPages/cartCheckout',{userLogged:req.session.logged})
+        const addressDet = await addressCollection.find({ userId: req.session.logged._id })
+        res.render('userPages/cartCheckout', { userLogged: req.session.logged, userAddress: addressDet })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const cartCheckoutAddress = async (req, res) => {
+    try {
+        req.session.selectedAddress = req.query.id
+        // const addressDet=await addressCollection.find({userId:req.session.logged._id})
+        res.send({ success: true })
     } catch (err) {
         console.log(err);
     }
 }
 
 
+const cartCheckoutPayment = async (req, res) => {
+    try {
+        const shippingAddress=await addressCollection.findOne({_id:req.session.selectedAddress })
+        res.render('userpages/cartCheckoutPayment', { userLogged: req.session.logged,shippingAddress})
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const cartCheckoutreview = async (req, res) => {
+    try {
+            console.log(req.query.id)
+            if(req.query.id==='null'){
+                res.send({ noPaymentMethod: true })
+            }else{
+                req.session.paymentMethod = req.query.id
+                res.send({ success: true })
+            }
+            
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+const orderSummary = async (req, res) => {
+    try {
+        const shippingAddress=await addressCollection.findOne({_id:req.session.selectedAddress })
+          const cartDetails=await cartCollection.find({userId:req.session.logged._id}).populate('productId')
+          console.log(cartDetails)
+          res.render('userPages/orderSummary',{userLogged:req.session.logged,cartDetails,shippingAddress,paymentMethod:req.session.paymentMethod,grandTotal: req.session.grandTotal})
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
 module.exports = {
-    addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout
+    addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress, cartCheckoutPayment,cartCheckoutreview,orderSummary
 }

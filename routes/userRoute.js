@@ -45,7 +45,10 @@ router.put('/cart/qtyInc',userAuth,cartController.qtyInc)
 router.put('/cart/qtyDec',userAuth,cartController.qtyDec)
 router.post('/removeCart',userAuth,cartController.removeCart)
 router.get('/cartCheckout',userAuth,cartController.cartCheckout)
-
+router.get('/cartCheckout/address',userAuth,cartController.cartCheckoutAddress)
+router.get('/cartCheckout/payment',userAuth,cartController.cartCheckoutPayment)
+router.get('/cartCheckout/review',userAuth,cartController.cartCheckoutreview)
+router.get('/orderSummary',userAuth,cartController.orderSummary)
 
 
 
