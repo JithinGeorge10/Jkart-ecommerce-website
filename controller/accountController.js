@@ -125,7 +125,7 @@ const editAddressPost = async (req, res) => {
 
 const allOrders = async (req, res) => {
     try {
-        const orderDet = await orderCollection.find({ userId: req.session.logged._id })
+        const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 })
         res.render('userPages/allOrders', { userLogged: req.session.logged, orderDet })
     } catch (err) {
         console.log(err);

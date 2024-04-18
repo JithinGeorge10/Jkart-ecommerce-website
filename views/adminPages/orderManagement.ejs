@@ -1,0 +1,60 @@
+<%- include('../adminPartials/header') %>
+
+    <head>
+        <title>Admin-order</title>
+    </head>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Order No.</th>
+                <th scope="col">Name</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Payment Method</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            <% for(let i=0;i<orderDet.length;i++){ %>
+                <tr>
+                    <th scope="row">
+                        <%=orderDet[i]._id%>
+                    </th>
+                    <td>
+                        <%=orderDet[i].userId.name%>
+                    </td>
+                    <td>
+                        <%=orderDet[i].grandTotalCost%>
+                    </td>
+                    <td>
+                        <%=orderDet[i].paymentType%>
+                    </td>
+                    <td>
+                        <%=orderDet[i].orderStatus%>
+                    </td>
+                    <td>
+                        <!-- Example single danger button -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Action
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Pending</a></li>
+                                <li><a class="dropdown-item" href="#">Shipped</a></li>
+                                <li><a class="dropdown-item" href="#">Delivered</a></li>
+                                <li><a class="dropdown-item" href="#">Return</a></li>
+                                <li><a class="dropdown-item" href="#">Cancelled</a></li>
+                            </ul>
+                        </div>
+                    </td>
+
+                </tr>
+                <% } %>
+
+
+        </tbody>
+    </table>

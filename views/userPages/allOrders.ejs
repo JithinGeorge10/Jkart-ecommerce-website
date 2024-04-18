@@ -37,8 +37,7 @@
                                                 <th>Order ID</th>
                                                 <th>Date</th>
                                                 <th>Total Price</th>
-                                                <th><a class='text-white' href='account-single-order.html'>Status</a>
-                                                </th>
+                                                <th>Status</th>
                                                 <th>View Orders</th>
                                                 <th>Cancel Order</th>
                                             </tr>
@@ -61,10 +60,16 @@
                                                     <td><button onclick="viewOrder('<%=orderDet[i]._id%>')"
                                                             class='btn btn-sm btn-secondary-outlined'>View</button>
                                                     </td>
-                                                    <td><button id="cancel<%=i%>"
-                                                            onclick="cancelOrder('<%=orderDet[i]._id%>')"
-                                                            class='btn btn-sm btn-danger-outlined'>Cancel</button>
-                                                    </td>
+
+                                                    <% if(orderDet[i].orderStatus==='Cancelled' ){ %>
+                                                        <td></td>
+                                                        <% }else{ %>
+                                                            <td><button id="cancel<%=i%>"
+                                                                    onclick="cancelOrder('<%=orderDet[i]._id%>')"
+                                                                    class='btn btn-sm btn-danger-outlined'>Cancel</button>
+                                                            </td>
+                                                            <% } %>
+
                                                 </tr>
                                                 <script>
                                                     async function cancelOrder(orderId) {

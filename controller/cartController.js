@@ -42,7 +42,8 @@ const cart = async (req, res) => {
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
         console.log(cartDetails)
         const cartTotal = await cartCollection.aggregate([{ $group: { _id: null, sum: { $sum: '$totalCostPerProduct' } } }])
-        req.session.grandTotal = cartTotal[0].sum
+        console.log(cartTotal)
+        req.session.grandTotal = cartTotal[0]?.sum
         res.render('userPages/Cart', { userLogged: req.session.logged, cartDetails, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
@@ -154,16 +155,26 @@ const orderSummary = async (req, res) => {
 
 const orderPlace = async (req, res) => {
     try {
-        const cartDet=await cartCollection.find({userId:req.session.logged._id})
+        const cartDet = await cartCollection.find({ userId: req.session.logged._id })
         await orderCollection.insertMany({
-            userId:req.session.logged._id,
-            paymentType:  req.session.paymentMethod ,
-            addressChosen:req.session.selectedAddress,
-            cartData:cartDet,
+            userId: req.session.logged._id,
+            paymentType: req.session.paymentMethod,
+            addressChosen: req.session.selectedAddress,
+            cartData: cartDet,
             grandTotalCost: req.session.grandTotal
         })
+        console.log(cartDet)
+       
+        for (let cart of cartDet) {
+            await productCollection.updateOne(
+                { _id: cart.productId }, 
+                { $inc: { productStock: -cart.productQuantity } }
+            );
+        }
+        
+        await cartCollection.deleteMany({ userId: req.session.logged._id })
 
-        res.send({success:true})
+        res.send({ success: true })
     } catch (err) {
         console.log(err);
     }
@@ -172,8 +183,8 @@ const orderPlace = async (req, res) => {
 
 const orderPlaceComleted = async (req, res) => {
     try {
-     
-        res.render('userPages/orderPlaced', {userLogged: req.session.logged})
+
+        res.render('userPages/orderPlaced', { userLogged: req.session.logged })
     } catch (err) {
         console.log(err);
     }
@@ -181,5 +192,5 @@ const orderPlaceComleted = async (req, res) => {
 
 module.exports = {
     addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress,
-    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace,orderPlaceComleted
+    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted
 }
