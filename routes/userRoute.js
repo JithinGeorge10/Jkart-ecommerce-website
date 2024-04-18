@@ -27,7 +27,6 @@ router.get('/newPassword', userController.forgotPasswordnewPassword)
 router.post('/forgotPassword/updatePassword', userController.updatePassword)
 
 
-
 router.get('/shop',shopController.shopPage)
 router.get('/singleProduct',shopController.singleProduct)
 router.post('/searchProducts',shopController.searchProducts)
@@ -44,7 +43,9 @@ router.get('/addressDelete',userAuth,accountController.addressDelete)
 router.get('/editAddressGet',userAuth,accountController.editAddressGet)
 router.post('/editAddressPost',userAuth,accountController.editAddressPost)
 router.get('/allOrders',userAuth,accountController.allOrders)
-
+router.post('/user/cancelOrder',userAuth,accountController.cancelOrder)
+router.post('/viewOrder',userAuth,accountController.viewOrder)
+router.get('/allOrder/viewOrder',userAuth,accountController.accountViewOrder)
 
 
 router.post('/addToCart',userAuthFetch,cartController.addToCart)

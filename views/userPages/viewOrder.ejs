@@ -1,0 +1,227 @@
+<%- include('../userPartials/header') %>
+
+    <!-- LIGHT SECTION -->
+    <section class="lightSection clearfix pageHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="page-title">
+                        <h2>SINGLE ORDER</h2>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <ol class="breadcrumb float-right">
+                        <li>
+                            <a href='/'>Home</a>
+                        </li>
+                        <li class="active">SINGLE ORDER</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT SECTION -->
+    <section class="mainContent clearfix userProfile">
+        <div class="container">
+            <%- include('../userPartials/userProfileDetails') %>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="innerWrapper singleOrder">
+                            <div class="orderBox d-flex align-items-center mb-4">
+                                <h2 class="orderBoxContent mb-0">Order ID:<%=orderDet._id%>
+                                </h2>
+                                <div class="ms-3">
+                                    <a class='btn btn-sm btn-primary'>Order Details</a>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="panel panel-default mb-5">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Order Details</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <address class="mb-4">
+                                                        <a>E-mail: <%=orderDet.userId.email%></a> <br>
+                                                        <span>Phone: <%=orderDet.userId.phone%></span>
+                                                    </address>
+
+
+                                                </div>
+
+                                                <div class="col-lg-8 orderTracking">
+                                                    <div class="innerWrapper border-0 p-0 mb-0">
+                                                        <div class="orderBox text-nowrap mb-4">
+                                                            <h4>Updates:</h4>
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Date</th>
+                                                                            <th>Location</th>
+                                                                            <th>Status</th>
+                                                                        </tr>
+                                                                    </thead>
+
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <%=orderDet.orderDate.toDateString()%>
+                                                                            </td>
+                                                                            <td>
+                                                                                <%=addressDet.username%>,<br>
+                                                                                    <%=addressDet.address1%>,<br>
+                                                                                        <%=addressDet.address2%>,<br>
+                                                                                        <%=addressDet.city%>,<br>
+                                                                                        <%=addressDet.pincode%>
+                                                                            </td>
+                                                                            <td>
+                                                                               
+                                                                                <h5><%=orderDet.orderStatus%></h5>
+                                                                               
+                                                                            </td>
+                                                                        </tr>
+
+
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+
+                                                       
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mb-5">
+                                    <div class="cartListInner text-nowrap">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Product Name</th>
+                                                        <th>Price</th>
+                                                        <th>Quantity</th>
+                                                        <th>Sub Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+
+                                                  <%  for(let i=0;i<productDet.length;i++){  %>
+                                                    <tr class="alert alert-dismissible fade show p-0 mb-0" role="alert">
+                                                        <td class="">
+                                                        
+                                                            <span class="cartImage"><img
+                                                                    src="/assets/img/uploads/<%=productDet[i].productImage[0]%>"style="height: 60px; width: 60px; border-radius: 0;"
+                                                                    alt="image"></span>
+                                                        </td>
+                                                        <td class=""><%=productDet[i].productName%></td>
+                                                        <td class=""><%=productDet[i].productPrice%></td>
+                                                        <td class=""><%=orderDet.cartData[i].productQuantity%></td>
+                                                        <td class="">₹<%=orderDet.cartData[i].totalCostPerProduct%></td>
+                                                    </tr>
+                                                  <%  }  %>
+
+                                                    
+
+                                                    
+
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="row totalAmountArea">
+                                            <div class="col-sm-5 ms-sm-auto">
+                                                <ul class="list-unstyled">
+                                                  
+                                                    <li>Grand Total <span class="grandTotal">₹<%=orderDet.grandTotalCost%></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Billing Address</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <address>
+                                                <strong><%=addressDet.username%>,</strong><br>
+                                                <%=addressDet.address1%>, <br>
+                                                <%=addressDet.address2%>,<br>
+                                                <%=addressDet.city%>,<br>
+                                               Pincode: <%=addressDet.pincode%>
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Shipping Address</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <address>
+                                                <strong>Jkart</strong><br>
+                                               Beta Space, <br>
+                                               35/4,4th floor,Ram Nagar, <br>
+                                               Gandhipuram,<br>
+                                               Coimbatore-641009
+
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Payment Method</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <address>
+                                                <span><%=orderDet.paymentType%></span>
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Shipping Method</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <address>
+                                                <span>Post Parcel</span>
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-12">
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-default">Print</button>
+                                        <button type="button" class="btn btn-default">Save to pdf</button>
+                                        <button type="button" class="btn btn-danger">cancel order</button>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </section>
+    <%- include('../userPartials/footer') %>

@@ -2,7 +2,10 @@
 const { trusted } = require('mongoose');
 const userCollection = require('../model/userModel')
 const addressCollection = require('../model/addressModel')
-const orderCollection = require('../model/ordersModel')
+const orderCollection = require('../model/ordersModel');
+const productCollection = require('../model/productModel');
+
+const { productList } = require('./productController');
 const account = async (req, res) => {
     try {
         const userDet = await userCollection.findOne({ email: req.session.logged.email })
@@ -122,8 +125,47 @@ const editAddressPost = async (req, res) => {
 
 const allOrders = async (req, res) => {
     try {
-        const orderDet=await orderCollection.find({userId:req.session.logged._id})
-        res.render('userPages/allOrders', { userLogged: req.session.logged,orderDet})
+        const orderDet = await orderCollection.find({ userId: req.session.logged._id })
+        res.render('userPages/allOrders', { userLogged: req.session.logged, orderDet })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const cancelOrder = async (req, res) => {
+    try {
+        console.log('cancelOrder' + req.query.id)
+        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled' } })
+        res.send({ success: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const viewOrder = async (req, res) => {
+    try {
+        console.log('viewOrder' + req.query.id)
+        let orderId = req.query.id
+        res.send({ success: true, orderId })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+const accountViewOrder = async (req, res) => {
+    try {
+        const orderDet = await orderCollection.findOne({ _id: req.query.id }).populate('userId')
+        const addressDet = await addressCollection.findOne({ _id: orderDet.addressChosen })
+        console.log(orderDet)
+        let cartProducts = []
+        for (let i = 0; i < orderDet.cartData.length; i++) {
+            cartProducts[i] = orderDet.cartData[i].productId
+        }
+        console.log(cartProducts)
+        const productDet = await productCollection.find({ _id: cartProducts })
+        console.log("DB" + productDet)
+        res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet,productDet })
     } catch (err) {
         console.log(err);
     }
@@ -132,8 +174,7 @@ const allOrders = async (req, res) => {
 
 
 
-
-
 module.exports = {
-    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete, editAddressGet, editAddressPost,allOrders
+    account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
+    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder
 }
