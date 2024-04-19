@@ -141,6 +141,15 @@ const cancelOrder = async (req, res) => {
         console.log(err);
     }
 }
+const returnOrder = async (req, res) => {
+    try {
+        console.log('returnOrder' + req.query.id)
+        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Return' } })
+        res.send({ success: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 const viewOrder = async (req, res) => {
     try {
@@ -176,5 +185,5 @@ const accountViewOrder = async (req, res) => {
 
 module.exports = {
     account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
-    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder
+    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder,returnOrder
 }
