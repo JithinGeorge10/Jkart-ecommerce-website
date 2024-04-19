@@ -113,8 +113,13 @@
                             icon: "error",
                             title: "No Value in search bar"
                         })
-                    }else if(result.userExists){
+                    } if (result.userExists) {
                         window.location.reload()
+                    } if (result.noUser) {
+                        await Swal.fire({
+                            icon: "error",
+                            title: "No results"
+                        })
                     }
                 }
             });

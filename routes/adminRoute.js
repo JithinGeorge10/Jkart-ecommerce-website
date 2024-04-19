@@ -17,6 +17,7 @@ router.post('/searchUser',adminController.searchUser)
 
 
 
+
 router.get('/productManagement',adminAuth,productController.productManagement)
 router.get('/productList',productController.productList)
 router.get('/addProduct',adminAuth,productController.addProductGet)
@@ -29,7 +30,7 @@ router.get('/categoryManagement',adminAuth,categoryController.categoryManagement
 router.post('/addCategory',categoryController.addCategory)
 router.get('/categoryList',categoryController.categoryList)
 router.post('/editCategory',categoryController.editCategory)
-
+router.post('/searchCategory',categoryController.searchCategory)
 
 router.get('/orderManagement',adminAuth,orderController.orderManagement)
 router.post('/orderStatusChange',adminAuth,orderController.orderStatusChange)

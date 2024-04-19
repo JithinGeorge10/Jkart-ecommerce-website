@@ -5,7 +5,8 @@ const productCollection = require('../model/productModel')
 
 const categoryManagement = async (req, res) => {
     try {
-        let catcollection = await categoryCollection.find().sort({ _id: -1 })
+        let catcollection = req.session.searchCategory||await categoryCollection.find().sort({ _id: -1 })
+        req.session.searchCategory=null
         const categoryPerPage = 10
         const totalPages = catcollection.length / categoryPerPage
         const pageNo = req.query.pageNo || 1
@@ -76,6 +77,25 @@ const editCategory = async (req, res) => {
     }
 }
 
+const searchCategory = async (req, res) => {
+    try {
+        const categoryDet = await categoryCollection.find({ categoryName: { $regex: new RegExp(req.body.search, 'i') } });
+
+        console.log(categoryDet)
+        if (/^\s*$/.test(req.body.search)) {
+            res.send({ noValue: true })
+        }else if(categoryDet.length>0){
+            req.session.searchCategory=categoryDet
+            res.send({categoryExists:true})
+        }else{
+            res.send({noCat:true })
+        }
+        // res.send({ userStat: userBlock })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 module.exports = {
-    categoryManagement, addCategory, categoryList,editCategory
+    categoryManagement, addCategory, categoryList,editCategory,searchCategory
 }

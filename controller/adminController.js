@@ -1,5 +1,5 @@
 const userCollection = require('../model/userModel')
-
+const categoryCollection = require('../model/categoryModel')
 
 const loginpage = async (req, res) => {
     try {
@@ -81,12 +81,15 @@ const searchUser = async (req, res) => {
         }else if(userDet.length>0){
             req.session.searchUser=userDet
             res.send({userExists:true})
+        }else{
+            res.send({noUser:true })
         }
         // res.send({ userStat: userBlock })
     } catch (err) {
         console.log(err);
     }
 }
+
 
 
 module.exports = {
