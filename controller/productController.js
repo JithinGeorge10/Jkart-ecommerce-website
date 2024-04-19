@@ -6,8 +6,8 @@ const productCollection = require('../model/productModel')
 
 const productManagement = async (req, res) => {
     try {
-        let productDetails = req.session.searchProducts|| await productCollection.find().populate('parentCategory').sort({ _id: -1 })
-        req.session.searchProducts=null
+        let productDetails = req.session.searchProducts || await productCollection.find({ isDeleted: false }).populate('parentCategory').sort({ _id: -1 })
+        req.session.searchProducts = null
         const productsPerPage = 10
         const totalPages = productDetails.length / productsPerPage
         const pageNo = req.query.pageNo || 1
@@ -15,7 +15,7 @@ const productManagement = async (req, res) => {
         const end = start + productsPerPage
         productDetails = productDetails.slice(start, end)
 
-        res.render('adminPages/productManagement', { productDet: productDetails,totalPages })
+        res.render('adminPages/productManagement', { productDet: productDetails, totalPages })
     } catch (err) {
         console.log(err);
     }
@@ -50,7 +50,7 @@ const addProducts = async (req, res) => {
         let imgFiles = []
         if (req.files.length < 3) {
             res.send({ minImage: true })
-        }else{
+        } else {
             for (let i = 0; i < req.files.length; i++) {
                 imgFiles[i] = req.files[i].filename
             }
@@ -62,7 +62,7 @@ const addProducts = async (req, res) => {
             productPrice: req.body.productPrice,
             productStock: req.body.productStock
         })
-        const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') } })
+        const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') },isDeleted:false })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
             res.send({ noValue: true })
         }
@@ -96,15 +96,15 @@ const editProducts = async (req, res) => {
             // No new images uploaded, retain existing images
             const existingProduct = await productCollection.findOne({ _id: req.params.id });
             var imgFiles = existingProduct.productImage;
-        }else if (req.files.length < 3) {
+        } else if (req.files.length < 3) {
             res.send({ noImage: true })
-        } else{
+        } else {
             var imgFiles = []
             for (let i = 0; i < req.files.length; i++) {
                 imgFiles[i] = req.files[i].filename
             }
         }
-         
+
         const productDetails = await productCollection.find({ _id: { $ne: req.params.id }, productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') } })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
             res.send({ noValue: true })
@@ -140,17 +140,29 @@ const searchProducts = async (req, res) => {
         console.log(productDet)
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
-        }else if(productDet.length>0){
-            req.session.searchProducts=productDet
-            res.send({productExists:true})
-        }else{
-            res.send({noProduct:true })
+        } else if (productDet.length > 0) {
+            req.session.searchProducts = productDet
+            res.send({ productExists: true })
+        } else {
+            res.send({ noProduct: true })
         }
     } catch (err) {
         console.log(err);
     }
 }
+
+const deleteProduct = async (req, res) => {
+    try {
+        console.log(req.query.id)
+        await productCollection.updateOne({ _id: req.query.id }, { $set: { isDeleted: true } })
+        res.send({ deleted: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 module.exports = {
     productManagement, productList, addProductGet, addProducts,
-    editProduct, editProducts,searchProducts
+    editProduct, editProducts, searchProducts, deleteProduct
 }

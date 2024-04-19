@@ -10,6 +10,7 @@ const productSchema = new mongoose.Schema({
   productOfferPercentage: { type: Number, default: null },
   priceBeforeOffer : { type: Number, default: null },
   isListed: { type: Boolean, default: true },
+  isDeleted: { type: Boolean, default: false },
 });
 
 module.exports =  mongoose.model("products", productSchema)

@@ -7,7 +7,7 @@ const cartCollection = require('../model/cartModel')
 const shopPage = async (req, res) => {
     try {
         console.log('productId' + req.query.id)
-        const catProducts=await productCollection({parentCategory:req.query.id,isListed:true})
+        const catProducts=await productCollection({parentCategory:req.query.id,isListed:true,isDeleted:false})
         console.log(catProducts)
         let productDet = req.session.productDetail || await productCollection.find({ isListed: true }) ||catProducts
         const categoryDetails = await categoryCollection.find({ isListed: true })
