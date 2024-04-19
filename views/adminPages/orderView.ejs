@@ -1,43 +1,111 @@
 <%- include('../adminPartials/header') %>
 <head>
     <title>Admin viewOrder</title>
+    <style>
+        .order-details {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .product-details-table th {
+            vertical-align: middle;
+        }
+
+        .payment-card {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #6c757d;
+            border-radius: 10px;
+        }
+
+        .payment-card .card-title {
+            font-size: 24px;
+        }
+
+        .payment-card .card-text {
+            font-size: 18px;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 20px 0; /* Adjust padding as needed */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+    </style>
 </head>
-<h1>ORDER STATUS</h1>
+<h1 class="mt-5 mb-4 text-center">ORDER STATUS</h1>
 
-<h4>Order Number:<%=orderDet._id%></h4>
-
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <h1>Status: <%= orderDet.orderStatus %></h1>
-                <h3>Order Date: <%= new Date(orderDet.orderDate).toDateString() %></h3>
-            </div>
-            <div class="col-md-6">
-                <div class="card border-info mb-3" style="max-width: 18rem;">
-                    <div class="card-header">Address</div>
-                    <div class="card-body">
-                        <h5 class="card-title"><%= addressDet.addressTitle %></h5>
-                        <p class="card-text">
-                            <%= addressDet.username %><br>
-                           Phone: <%= addressDet.phone %><br>
-                            <%= addressDet.address1 %><br>
-                            <%= addressDet.address2 %><br>
-                            <%= addressDet.city %><br>
-                            <%= addressDet.state %>,Pincode: <%= addressDet.pincode %>
-                        </p>
-                    </div>
+<div class="container order-details">
+    <h4>Order Number: <%= orderDet._id %></h4>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Status: <%= orderDet.orderStatus %></h2>
+            <h4>Order Date: <%= new Date(orderDet.orderDate).toDateString() %></h4>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-info mb-3">
+                <div class="card-header">Address</div>
+                <div class="card-body">
+                    <h5 class="card-title"><%= addressDet.addressTitle %></h5>
+                    <p class="card-text">
+                        <%= addressDet.username %><br>
+                        Phone: <%= addressDet.phone %><br>
+                        <%= addressDet.address1 %><br>
+                        <%= addressDet.address2 %><br>
+                        <%= addressDet.city %>, <%= addressDet.state %>, Pincode: <%= addressDet.pincode %>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-    <div class="card-header">Payment</div>
-    <div class="card-body">
-      <h5 class="card-title">₹ <%= orderDet.grandTotalCost %></h5>
-      <p class="card-text">Payment Method: <%= orderDet.paymentType %></p>
-    </div>
-  </div>
 
-  <h1>Product details:</h1>
+<hr>
+
+<div class="container">
+    <h1 class="mb-4">Product Details:</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped product-details-table">
+            <thead>
+                <tr>
+                    <th scope="col">Product Image</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i=0; i<productdet.length; i++) { %>
+                    <tr>
+                        <td><img src="assets/img/uploads/<%= productdet[i].productImage[0] %>" alt="Product Image"
+                                style="height: 100px; width: 100px; border-radius: 0;"></td>
+                        <td><%= productdet[i].productName %></td>
+                        <td>₹ <%= productdet[i].productPrice %></td>
+                        <td><%= orderDet.cartData[i].productQuantity %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr>
+
+<div class="container payment-card">
+    <div class="card text-white">
+        <div class="card-header">Payment</div>
+        <div class="card-body">
+            <h5 style="color: black;" class="card-title">Grand Total: ₹ <%= orderDet.grandTotalCost %></h5>
+            <p style="color: black;" class="card-text">Payment Method: <%= orderDet.paymentType %></p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>jkart &copy; 2024</p>
+</footer>
