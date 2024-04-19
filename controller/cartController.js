@@ -183,8 +183,9 @@ const orderPlace = async (req, res) => {
 
 const orderPlaceComleted = async (req, res) => {
     try {
-
-        res.render('userPages/orderPlaced', { userLogged: req.session.logged })
+        const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 }).limit(1)
+        console.log('orderDet'+orderDet);
+        res.render('userPages/orderPlaced', { userLogged: req.session.logged, orderDet})
     } catch (err) {
         console.log(err);
     }

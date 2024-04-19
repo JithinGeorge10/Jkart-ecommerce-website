@@ -63,7 +63,6 @@ const searchOrder = async (req, res) => {
     try {
        console.log(req.body.search);
         const orderDet = await orderCollection.findOne({ _id: req.body.search });
-
         console.log(orderDet)
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
