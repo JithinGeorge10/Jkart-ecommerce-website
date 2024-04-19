@@ -13,6 +13,8 @@ router.post('/adminlogin',adminController.adminlogin)
 router.get('/adminLogout',adminController.adminLogout)
 router.get('/userManagement',adminAuth,adminController.userManagement)
 router.get('/userBlock',adminController.userBlock)
+router.post('/searchUser',adminController.searchUser)
+
 
 
 router.get('/productManagement',adminAuth,productController.productManagement)

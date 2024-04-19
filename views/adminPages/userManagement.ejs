@@ -1,150 +1,212 @@
 <%- include('../adminPartials/header') %>
 
-<head>
-    <title>Admin-User Management</title>
-    <style>
-        /* Custom styles for the table */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background-color: #f8f9fa;
-        }
+    <head>
+        <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"
+            integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/additional-methods.min.js"
+            integrity="sha512-TiQST7x/0aMjgVTcep29gi+q5Lk5gVTUPE9XgN0g96rwtjEjLpod4mlBRKWHeBcvGBAEvJBmfDqh2hfMMmg+5A=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        .table th,
-        .table td {
-            padding: 8px;
-            border: 1px solid #dee2e6;
-            text-align: left;
-        }
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <title>Admin-User Management</title>
+        <style>
+            /* Custom styles for the table */
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+                background-color: #f8f9fa;
+            }
 
-        .table th {
-            background-color: #343a40;
-            color: #fff;
-        }
+            .table th,
+            .table td {
+                padding: 8px;
+                border: 1px solid #dee2e6;
+                text-align: left;
+            }
 
-        .table tbody tr:nth-child(even) {
-            background-color: #e2e3e5;
-        }
+            .table th {
+                background-color: #343a40;
+                color: #fff;
+            }
 
-        .table tbody tr:hover {
-            background-color: #d1d2d4;
-        }
+            .table tbody tr:nth-child(even) {
+                background-color: #e2e3e5;
+            }
 
-        /* Pagination styles */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
+            .table tbody tr:hover {
+                background-color: #d1d2d4;
+            }
 
-        .pagination .page-item .page-link {
-            color: #007bff;
-        }
+            /* Pagination styles */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
 
-        .pagination .page-item.active .page-link {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
+            .pagination .page-item .page-link {
+                color: #007bff;
+            }
 
-        .pagination .page-link {
-            padding: 6px 12px;
-        }
+            .pagination .page-item.active .page-link {
+                background-color: #007bff;
+                border-color: #007bff;
+            }
 
-        /* Button styles */
-        .btn {
-            cursor: pointer;
-        }
+            .pagination .page-link {
+                padding: 6px 12px;
+            }
 
-        /* Footer styles */
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px 0;
-            background-color: #f8f9fa;
-            width: 100%;
-        }
-    </style>
-</head>
+            /* Button styles */
+            .btn {
+                cursor: pointer;
+            }
 
-<body>
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Username</th>
-                <th scope="col">Email</th>
-                <th scope="col">Phone Number</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i=0;i<userDet.length;i++){ %>
-            <tr>
-                <td><%= userDet[i].name %></td>
-                <td><%= userDet[i].email %></td>
-                <td><%= userDet[i].phone %></td>
-                <td>
-                    <% if(userDet[i].isBlocked){ %>
-                    <button id="unblock<%=i%>" onclick="toggleBlock('<%=userDet[i]._id %>','unblock')" type="button"
-                        class="btn btn-success">Unblock</button>
-                    <% }else{ %>
-                    <button id="block<%=i%>" onclick="toggleBlock('<%=userDet[i]._id %>','block')" type="button"
-                        class="btn btn-danger">Block</button>
-                    <% } %>
-                </td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
+            /* Footer styles */
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+                padding: 10px 0;
+                background-color: #f8f9fa;
+                width: 100%;
+            }
+        </style>
+    </head>
 
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item"><a class="page-link">Pages</a></li>
-            <% for(let i=0;i<totalPages;i++){ %>
-            <li class="page-item"><a class="page-link" href="/userManagement?pageNo=<%=i+1%>"><%=i+1%></a></li>
-            <% } %>
-        </ul>
-    </nav>
-
-    <div class="footer">
-        <p>jkart &copy; 2024</p>
-    </div>
-
-    <script>
-        async function toggleBlock(userId, action) {
-            Swal.fire({
-                title: "Are you sure?",
-                // text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes!"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    let response = await fetch(`/userBlock?id=${userId}&action=${action}`, {
-                        method: 'GET',
+    <body>
+        <form id="searchUser" class="form-inline my-2 my-lg-0">
+            <div class="row">
+                <div class="col-auto">
+                    <input name="search" class="form-control mr-sm-1" type="search" placeholder="Search User"
+                        aria-label="Search" style="width: 150px;">
+                </div>
+                <div class="col-auto">
+                    <button onclick="searchUser()" class="btn btn-outline-success my-2 my-sm-0"
+                        type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+        <script>
+            $('#searchUser').validate({
+                rules: {
+                    search: {
+                        required: true
+                    }
+                },
+                submitHandler: async (form, event) => {
+                    event.preventDefault()
+                    let formData = {
+                        search: form.search.value
+                    }
+                    let response = await fetch('/searchUser', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
                     })
                     let result = await response.json()
-                    if (result.userStat) {
+                    if (result.noValue) {
                         await Swal.fire({
-                            icon: "success",
-                            title: "User Blocked",
-                        });
-                    } else {
-                        await Swal.fire({
-                            icon: "success",
-                            title: "User Unblocked",
-                            confirmButtonText: "OK",
-                        });
+                            icon: "error",
+                            title: "No Value in search bar"
+                        })
+                    }else if(result.userExists){
+                        window.location.reload()
                     }
                 }
-                window.location.reload()
             });
-        }
 
-    </script>
+        </script>
 
-</body>
 
-</html>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone Number</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i=0;i<userDet.length;i++){ %>
+                    <tr>
+                        <td>
+                            <%= userDet[i].name %>
+                        </td>
+                        <td>
+                            <%= userDet[i].email %>
+                        </td>
+                        <td>
+                            <%= userDet[i].phone %>
+                        </td>
+                        <td>
+                            <% if(userDet[i].isBlocked){ %>
+                                <button id="unblock<%=i%>" onclick="toggleBlock('<%=userDet[i]._id %>','unblock')"
+                                    type="button" class="btn btn-success">Unblock</button>
+                                <% }else{ %>
+                                    <button id="block<%=i%>" onclick="toggleBlock('<%=userDet[i]._id %>','block')"
+                                        type="button" class="btn btn-danger">Block</button>
+                                    <% } %>
+                        </td>
+                    </tr>
+                    <% } %>
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link">Pages</a></li>
+                <% for(let i=0;i<totalPages;i++){ %>
+                    <li class="page-item"><a class="page-link" href="/userManagement?pageNo=<%=i+1%>">
+                            <%=i+1%>
+                        </a></li>
+                    <% } %>
+            </ul>
+        </nav>
+
+        <div class="footer">
+            <p>jkart &copy; 2024</p>
+        </div>
+
+        <script>
+            async function toggleBlock(userId, action) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    // text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes!"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        let response = await fetch(`/userBlock?id=${userId}&action=${action}`, {
+                            method: 'GET',
+                        })
+                        let result = await response.json()
+                        if (result.userStat) {
+                            await Swal.fire({
+                                icon: "success",
+                                title: "User Blocked",
+                            });
+                        } else {
+                            await Swal.fire({
+                                icon: "success",
+                                title: "User Unblocked",
+                                confirmButtonText: "OK",
+                            });
+                        }
+                    }
+                    window.location.reload()
+                });
+            }
+
+        </script>
+
+    </body>
+
+    </html>

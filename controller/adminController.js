@@ -41,7 +41,8 @@ const adminLogout = async (req, res) => {
 
 const userManagement = async (req, res) => {
     try {
-        let userDetail = await userCollection.find().sort({ _id: -1 })
+        let userDetail =  req.session.searchUser||await userCollection.find().sort({ _id: -1 })
+        req.session.searchUser=null
         const usersPerPage = 10
         const totalPages = userDetail.length / usersPerPage
         const pageNo = req.query.pageNo || 1
@@ -49,7 +50,7 @@ const userManagement = async (req, res) => {
         const end = start + usersPerPage
         userDetail = userDetail.slice(start, end)
 
-        res.render('adminPages/userManagement', { userDet: userDetail,totalPages})
+        res.render('adminPages/userManagement', { userDet: userDetail, totalPages })
     } catch (err) {
         console.log(err);
     }
@@ -70,9 +71,25 @@ const userBlock = async (req, res) => {
     }
 }
 
+const searchUser = async (req, res) => {
+    try {
+        const userDet = await userCollection.find({ name: { $regex: new RegExp(req.body.search, 'i') } });
+
+        console.log(req.body.search)
+        if (/^\s*$/.test(req.body.search)) {
+            res.send({ noValue: true })
+        }else if(userDet.length>0){
+            req.session.searchUser=userDet
+            res.send({userExists:true})
+        }
+        // res.send({ userStat: userBlock })
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 
 module.exports = {
     loginpage, adminlogin, adminLogout, userManagement,
-    userBlock
+    userBlock, searchUser
 }
