@@ -41,8 +41,15 @@ const adminLogout = async (req, res) => {
 
 const userManagement = async (req, res) => {
     try {
-        const userDetail = await userCollection.find().sort({ _id: -1 })
-        res.render('adminPages/userManagement', { userDet: userDetail })
+        let userDetail = await userCollection.find().sort({ _id: -1 })
+        const usersPerPage = 10
+        const totalPages = userDetail.length / usersPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * usersPerPage
+        const end = start + usersPerPage
+        userDetail = userDetail.slice(start, end)
+
+        res.render('adminPages/userManagement', { userDet: userDetail,totalPages})
     } catch (err) {
         console.log(err);
     }
