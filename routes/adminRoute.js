@@ -30,5 +30,10 @@ router.post('/editCategory',categoryController.editCategory)
 
 
 router.get('/orderManagement',adminAuth,orderController.orderManagement)
+router.post('/orderStatusChange',adminAuth,orderController.orderStatusChange)
+router.post('/admin/viewOrder',adminAuth,orderController.adminViewOrder)
+router.get('/orderView',adminAuth,orderController.orderView)
+
+
 
 module.exports=router

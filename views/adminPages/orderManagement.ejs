@@ -13,48 +13,91 @@
                 <th scope="col">Payment Method</th>
                 <th scope="col">Status</th>
                 <th scope="col">Action</th>
+                <th scope="col">View</th>
             </tr>
         </thead>
         <tbody>
 
 
-            <% for(let i=0;i<orderDet.length;i++){ %>
+            <% for(let i=0; i < orderDet.length; i++) { %>
                 <tr>
                     <th scope="row">
-                        <%=orderDet[i]._id%>
+                        <%= orderDet[i]._id %>
                     </th>
                     <td>
-                        <%=orderDet[i].userId.name%>
+                        <%= orderDet[i].userId.name %>
                     </td>
                     <td>
-                        <%=orderDet[i].grandTotalCost%>
+                        ₹<%= orderDet[i].grandTotalCost %>
                     </td>
                     <td>
-                        <%=orderDet[i].paymentType%>
+                        <%= orderDet[i].paymentType %>
                     </td>
                     <td>
-                        <%=orderDet[i].orderStatus%>
+                        <%= orderDet[i].orderStatus %>
                     </td>
                     <td>
-                        <!-- Example single danger button -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Action
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Pending</a></li>
-                                <li><a class="dropdown-item" href="#">Shipped</a></li>
-                                <li><a class="dropdown-item" href="#">Delivered</a></li>
-                                <li><a class="dropdown-item" href="#">Return</a></li>
-                                <li><a class="dropdown-item" href="#">Cancelled</a></li>
-                            </ul>
-                        </div>
+                        <% if (orderDet[i].orderStatus !=='Cancelled' ) { %>
+                            <!-- Example single danger button -->
+                            <div class="btn-group">
+                                <select id="changeStatus<%= i %>" name="changeStatus" style="height: 50px;"
+                                    class="form control"
+                                    onchange="orderStatusChange('<%= i %>','<%= orderDet[i]._id %>')">
+                                    <option value="0" disabled selected>Change Status</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Return">Return</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <% } %>
                     </td>
+                    <td>
+                        <button onclick="viewOrder('<%= orderDet[i]._id %>')" type="button"
+                            class="btn btn-info">View</button>
 
+                    </td>
                 </tr>
                 <% } %>
 
+
+                    <script>
+                        async function orderStatusChange(index, orderId) {
+                            Swal.fire({
+                                title: "Are you sure?",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Yes"
+                            }).then(async (result) => {
+                                if (result.isConfirmed) {
+                                    let status = document.getElementById('changeStatus' + index).value
+
+                                    let response = await fetch(`/orderStatusChange?status=${status}&orderId=${orderId}`, {
+                                        method: 'POST'
+                                    })
+                                    let result = await response.json()
+
+                                    if (result.success) {
+                                        window.location.reload()
+                                    }
+                                }
+                            });
+
+                        }
+
+                        async function viewOrder(orderId){
+                            let response = await fetch(`/admin/viewOrder?orderId=${orderId}`, {
+                                        method: 'POST'
+                                    })
+                                    let result=await response.json()
+                                    if(result.success){
+                                        window.location.href=`/orderView?order=${result.orderDet}&address=${result.addressDet}`
+                                    }
+                        }
+                    </script>
 
         </tbody>
     </table>
