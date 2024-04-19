@@ -6,8 +6,15 @@ const productCollection = require('../model/productModel')
 
 const productManagement = async (req, res) => {
     try {
-        const productDetails = await productCollection.find().populate('parentCategory').sort({ _id: -1 })
-        res.render('adminPages/productManagement', { productDet: productDetails })
+        let productDetails = await productCollection.find().populate('parentCategory').sort({ _id: -1 })
+        const productsPerPage = 10
+        const totalPages = productDetails.length / productsPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * productsPerPage
+        const end = start + productsPerPage
+        productDetails = productDetails.slice(start, end)
+
+        res.render('adminPages/productManagement', { productDet: productDetails,totalPages })
     } catch (err) {
         console.log(err);
     }

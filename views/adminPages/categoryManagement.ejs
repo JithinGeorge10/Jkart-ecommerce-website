@@ -215,8 +215,18 @@
 
             </tbody>
         </table>
-
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link">Pages</a></li>
+                <% for(let i=0;i<totalPages;i++){ %>
+                    <li class="page-item"><a class="page-link" href="/categoryManagement?pageNo=<%=i+1%>">
+                            <%=i+1%>
+                        </a></li>
+                    <% } %>
+            </ul>
+        </nav>
     </div>
+    
 </body>
 <script>
 

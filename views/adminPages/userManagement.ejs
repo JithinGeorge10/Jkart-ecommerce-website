@@ -1,9 +1,73 @@
 <%- include('../adminPartials/header') %>
 
-    <head>
-        <title>Admin-User Management</title>
-    </head>
+<head>
+    <title>Admin-User Management</title>
+    <style>
+        /* Custom styles for the table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
 
+        .table th,
+        .table td {
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #e2e3e5;
+        }
+
+        .table tbody tr:hover {
+            background-color: #d1d2d4;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-item .page-link {
+            color: #007bff;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .pagination .page-link {
+            padding: 6px 12px;
+        }
+
+        /* Button styles */
+        .btn {
+            cursor: pointer;
+        }
+
+        /* Footer styles */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #f8f9fa;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
     <table class="table">
         <thead class="thead-dark">
             <tr>
@@ -15,39 +79,36 @@
         </thead>
         <tbody>
             <% for(let i=0;i<userDet.length;i++){ %>
-                <tr>
-                    <th scope="row">
-                        <%= userDet[i].name %>
-                    </th>
-                    <td>
-                        <%= userDet[i].email %>
-                    </td>
-                    <td>
-                        <%= userDet[i].phone %>
-                    </td>
+            <tr>
+                <td><%= userDet[i].name %></td>
+                <td><%= userDet[i].email %></td>
+                <td><%= userDet[i].phone %></td>
+                <td>
                     <% if(userDet[i].isBlocked){ %>
-                        <td><button id="unblock<%i%>" onclick="toggleBlock('<%=userDet[i]._id %>','unblock')"
-                                type="button" class="btn btn-success">Unblock</button> </td>
-                        <% }else{ %>
-                            <td><button id="block<%i%>" onclick="toggleBlock('<%=userDet[i]._id %>','block')"
-                                    type="button" class="btn btn-danger">Block</button> </td>
-                            <% } %>
-
-                </tr>
-                <% } %>
+                    <button id="unblock<%=i%>" onclick="toggleBlock('<%=userDet[i]._id %>','unblock')" type="button"
+                        class="btn btn-success">Unblock</button>
+                    <% }else{ %>
+                    <button id="block<%=i%>" onclick="toggleBlock('<%=userDet[i]._id %>','block')" type="button"
+                        class="btn btn-danger">Block</button>
+                    <% } %>
+                </td>
+            </tr>
+            <% } %>
         </tbody>
     </table>
+
     <nav aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item"><a class="page-link">Pages</a></li>
             <% for(let i=0;i<totalPages;i++){ %>
-                <li class="page-item"><a class="page-link" href="/userManagement?pageNo=<%=i+1%>">
-                        <%=i+1%>
-                    </a></li>
-                <% } %>
+            <li class="page-item"><a class="page-link" href="/userManagement?pageNo=<%=i+1%>"><%=i+1%></a></li>
+            <% } %>
         </ul>
     </nav>
-    </body>
+
+    <div class="footer">
+        <p>jkart &copy; 2024</p>
+    </div>
 
     <script>
         async function toggleBlock(userId, action) {
@@ -84,4 +145,6 @@
 
     </script>
 
-    </html>
+</body>
+
+</html>

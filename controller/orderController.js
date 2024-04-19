@@ -6,8 +6,15 @@ const { productList } = require('./productController');
 
 const orderManagement = async (req, res) => {
     try {
-        const orderDet = await orderCollection.find().populate('userId').sort({ _id: -1 })
-        res.render('adminPages/orderManagement', { orderDet })
+        let orderDet = await orderCollection.find().populate('userId').sort({ _id: -1 })
+        const ordersPerPage = 10
+        const totalPages = orderDet.length / ordersPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * ordersPerPage
+        const end = start + ordersPerPage
+        orderDet = orderDet.slice(start, end)
+
+        res.render('adminPages/orderManagement', { orderDet,totalPages })
     } catch (err) {
         console.log(err);
     }

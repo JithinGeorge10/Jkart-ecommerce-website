@@ -5,8 +5,15 @@ const productCollection = require('../model/productModel')
 
 const categoryManagement = async (req, res) => {
     try {
-        const catcollection = await categoryCollection.find().sort({ _id: -1 })
-        res.render('adminPages/categoryManagement', { categoryDet: catcollection })
+        let catcollection = await categoryCollection.find().sort({ _id: -1 })
+        const categoryPerPage = 10
+        const totalPages = catcollection.length / categoryPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * categoryPerPage
+        const end = start + categoryPerPage
+        catcollection = catcollection.slice(start, end)
+
+        res.render('adminPages/categoryManagement', { categoryDet: catcollection ,totalPages})
     } catch (err) {
         console.log(err);
     }
