@@ -80,10 +80,52 @@
             Add Product
         </button>
     </a>
-    <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-1" type="search" placeholder="Search" aria-label="Search" style="width: 150px;">
-        <button onclick="searchProduct" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Product</button>
+    <form id="searchProduct" class="form-inline my-2 my-lg-0">
+        <div class="row">
+            <div class="col-auto">
+                <input name="search" class="form-control mr-sm-1" type="search" placeholder="Search"
+                    aria-label="Search" style="width: 150px;">
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Product</button>
+            </div>
+        </div>
     </form>
+    <script>
+        $('#searchProduct').validate({
+            rules: {
+                search: {
+                    required: true
+                }
+            },
+            submitHandler: async (form, event) => {
+                event.preventDefault()
+                let formData = {
+                    search: form.search.value
+                }
+                let response = await fetch('/searchProduct', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                })
+                let result = await response.json()
+                if (result.noValue) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "No Value in search bar"
+                    })
+                } if (result.productExists) {
+                    window.location.reload()
+                } if (result.noProduct) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "No results"
+                    })
+                }
+            }
+        });
+
+    </script>
     <!-- Product Management Table -->
     <table class="table">
         <thead class="thead-dark">

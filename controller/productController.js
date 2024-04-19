@@ -6,7 +6,8 @@ const productCollection = require('../model/productModel')
 
 const productManagement = async (req, res) => {
     try {
-        let productDetails = await productCollection.find().populate('parentCategory').sort({ _id: -1 })
+        let productDetails = req.session.searchProducts|| await productCollection.find().populate('parentCategory').sort({ _id: -1 })
+        req.session.searchProducts=null
         const productsPerPage = 10
         const totalPages = productDetails.length / productsPerPage
         const pageNo = req.query.pageNo || 1
@@ -130,7 +131,26 @@ const editProducts = async (req, res) => {
     }
 }
 
+
+const searchProducts = async (req, res) => {
+    try {
+
+        const productDet = await productCollection.find({ productName: { $regex: new RegExp(req.body.search, 'i') } });
+
+        console.log(productDet)
+        if (/^\s*$/.test(req.body.search)) {
+            res.send({ noValue: true })
+        }else if(productDet.length>0){
+            req.session.searchProducts=productDet
+            res.send({productExists:true})
+        }else{
+            res.send({noProduct:true })
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 module.exports = {
     productManagement, productList, addProductGet, addProducts,
-    editProduct, editProducts
+    editProduct, editProducts,searchProducts
 }

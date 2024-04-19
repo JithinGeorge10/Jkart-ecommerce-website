@@ -6,7 +6,7 @@ const { productList } = require('./productController');
 
 const orderManagement = async (req, res) => {
     try {
-        let orderDet = await orderCollection.find().populate('userId').sort({ _id: -1 })
+        let orderDet =  req.session.searchOrder||await orderCollection.find().populate('userId').sort({ _id: -1 })
         const ordersPerPage = 10
         const totalPages = orderDet.length / ordersPerPage
         const pageNo = req.query.pageNo || 1
@@ -59,8 +59,25 @@ const orderView = async (req, res) => {
     }
 }
 
+const searchOrder = async (req, res) => {
+    try {
+       console.log(req.body.search);
+        const orderDet = await orderCollection.findOne({ _id: req.body.search });
 
+        console.log(orderDet)
+        if (/^\s*$/.test(req.body.search)) {
+            res.send({ noValue: true })
+        }else if(orderDet.length>0){
+            req.session.searchOrder=orderDet
+            res.send({orderExists:true})
+        }else{
+            res.send({noOrder:true })
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 module.exports = {
-    orderManagement, orderStatusChange, adminViewOrder, orderView
+    orderManagement, orderStatusChange, adminViewOrder, orderView,searchOrder
 }

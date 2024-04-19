@@ -65,10 +65,52 @@
 </head>
 
 <body>
-    <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-1" type="search" placeholder="Search" aria-label="Search" style="width: 150px;">
-        <button onclick="searchOrder" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Order</button>
+    <form id="searchOrder" class="form-inline my-2 my-lg-0">
+        <div class="row">
+            <div class="col-auto">
+                <input name="search" class="form-control mr-sm-1" type="search" placeholder="Search"
+                    aria-label="Search" style="width: 150px;">
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Order</button>
+            </div>
+        </div>
     </form>
+    <script>
+        $('#searchOrder').validate({
+            rules: {
+                search: {
+                    required: true
+                }
+            },
+            submitHandler: async (form, event) => {
+                event.preventDefault()
+                let formData = {
+                    search: form.search.value
+                }
+                let response = await fetch('/searchOrder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                })
+                let result = await response.json()
+                if (result.noValue) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "No Value in search bar"
+                    })
+                } if (result.orderExists) {
+                    window.location.reload()
+                } if (result.noOrder) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "No results"
+                    })
+                }
+            }
+        });
+
+    </script>
     <table class="table">
         <thead>
             <tr>
