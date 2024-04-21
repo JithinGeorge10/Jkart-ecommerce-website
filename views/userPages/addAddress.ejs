@@ -181,7 +181,7 @@
                         let response = await fetch('/addAddressPost', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(formData)
+                            
                         })
                         let result = await response.json()
                         if (result.addressSaved) {

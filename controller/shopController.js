@@ -9,7 +9,7 @@ const shopPage = async (req, res) => {
         console.log('productId' + req.query.id)
         const catProducts=await productCollection({parentCategory:req.query.id,isListed:true,isDeleted:false})
         console.log(catProducts)
-        let productDet = req.session.productDetail || await productCollection.find({ isListed: true }) ||catProducts
+        let productDet = req.session.productDetail || await productCollection.find({ isListed: true ,isDeleted:false}) ||catProducts
         const categoryDetails = await categoryCollection.find({ isListed: true })
         const productsPerPage = 6
         const totalPages = productDet.length / productsPerPage
@@ -29,7 +29,7 @@ const singleProduct = async (req, res) => {
     try {
         let maxStock = 0
         let cartProduct = await cartCollection.findOne({ productId: req.query.id })
-        const productDetails = await productCollection.findOne({ _id: req.query.id })
+        const productDetails = await productCollection.findOne({ _id: req.query.id,isDeleted:false })
         const categoryDetails = await categoryCollection.findOne({ _id: req.query.id })
         if (req.session.logged) {
             if (cartProduct) {
@@ -49,7 +49,7 @@ const singleProduct = async (req, res) => {
 const searchProducts = async (req, res) => {
     try {
         const searchedProduct = await productCollection.find({
-            productName: { $regex: req.body.searchElement, $options: 'i' }
+            productName: { $regex: req.body.searchElement, $options: 'i' },isDeleted:false
         })
         if (searchedProduct.length > 0) {
             req.session.productDetail = searchedProduct
@@ -66,7 +66,7 @@ const searchProducts = async (req, res) => {
 
 const filter = async (req, res) => {
     try {
-        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true })
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true ,isDeleted:false})
         let start = 0, end = Infinity
         if (req.params.by === 'byPrice') {
 
@@ -89,7 +89,7 @@ const filter = async (req, res) => {
                 }
             }
         } else {
-            productDetail = await productCollection.find({ isListed: true, parentCategory: req.query.id })
+            productDetail = await productCollection.find({ isListed: true, parentCategory: req.query.id,isDeleted:false })
         }
 
         productDetail = productDetail.filter((val) => {
@@ -108,7 +108,7 @@ const filter = async (req, res) => {
 
 const shopSort = async (req, res) => {
     try {
-        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true })
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true ,isDeleted:false})
         switch (req.query.sortBy) {
             case 'priceAsc': {
                 productDetail = productDetail.sort((a, b) => a.productPrice - b.productPrice)

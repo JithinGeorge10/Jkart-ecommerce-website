@@ -240,22 +240,29 @@
               <h4>Billing Information</h4>
             </div>
             <form>
-              <div class=" checkboxArea card-check">
-                <div class="col-sm-12 mb-2">
-                  <input id="paymentMethod" type="radio" name="checkbox" value="Cash On Delivery">
-                  <label><span></span>Cash on delivery</label>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="checkboxArea card-check">
+                    <div class="col-sm-12 mb-2">
+                      <input id="paymentMethod" type="radio" name="paymentMethod" value="Cash On Delivery">
+                      <label for="paymentMethod"><span></span>Cash on delivery</label>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-sm-12">
-                <div class="well well-lg clearfix">
-                  <ul class="pager">
-                    <li class="next"><a class='btn btn-primary btn-default float-end'
-                        onclick="checkoutReview()">Continue <i class="fa fa-angle-right"></i></a>
-                    </li>
-                  </ul>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="well well-lg clearfix">
+                    <ul class="pager">
+                      <li class="next">
+                        <a class='btn btn-primary btn-default float-end' onclick="checkoutReview()">Continue <i class="fa fa-angle-right"></i></a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </form>
+            
 
           </div>
         </div>

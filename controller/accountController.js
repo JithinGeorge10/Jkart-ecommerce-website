@@ -136,6 +136,7 @@ const cancelOrder = async (req, res) => {
     try {
         console.log('cancelOrder' + req.query.id)
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled' } })
+        
         res.send({ success: true })
     } catch (err) {
         console.log(err);

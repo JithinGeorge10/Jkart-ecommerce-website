@@ -194,6 +194,13 @@
                     </h5>
                     <h3>&#8377 <%=productDet[i].productPrice%>
                     </h3>
+                    <% if(productDet[i].productStock===0){%>
+                      <h6 style="color: red;">Out of stock</h6>
+                      <% }%>
+                        <% if(productDet[i].productStock<10 && productDet[i].productStock>0){%>
+                          <h6 style="color: red;">Limited stock only <%=productDet[i].productStock%> left</h6>
+                          <% }%>
+                            <!-- <h3><%=productDet[i].productStock%></h3> -->
                   </div>
                 </div>
               </div>
