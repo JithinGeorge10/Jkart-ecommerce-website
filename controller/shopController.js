@@ -30,7 +30,10 @@ const singleProduct = async (req, res) => {
         let maxStock = 0
         let cartProduct = await cartCollection.findOne({ productId: req.query.id })
         const productDetails = await productCollection.findOne({ _id: req.query.id,isDeleted:false })
-        const categoryDetails = await categoryCollection.findOne({ _id: req.query.id })
+
+        const categoryDet=await categoryCollection.findOne({_id:productDetails.parentCategory})
+        const relatedProducts = await productCollection.find({parentCategory:categoryDet._id ,isDeleted:false }) 
+       
         if (req.session.logged) {
             if (cartProduct) {
                 maxStock = productDetails.productStock - cartProduct.productQuantity
@@ -40,7 +43,7 @@ const singleProduct = async (req, res) => {
         } else {
             maxStock = productDetails.productStock
         }
-        res.render('userPages/singleProduct', { userLogged: req.session.logged, maxStock, productDet: productDetails, categoryDet: categoryDetails, cartDet: req.session.cartProduct })
+        res.render('userPages/singleProduct', { userLogged: req.session.logged, maxStock,relatedProducts, productDet: productDetails, cartDet: req.session.cartProduct })
     } catch (err) {
         console.log(err);
     }

@@ -267,9 +267,9 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a href="/cart" class="nav-link">
-                                  <i class="fa fa-shopping-cart" style="font-size:24px"></i>
+                                    <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                                 </a>
-                              </li>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -942,99 +942,99 @@
                                         </span>
                                     </div> -->
 
-                                            <div class="col-12">
-                                                <div class="d-flex align-items-center mb-5 pt-3">
-                                                    <h3 class="me-4">Quantity:<h3 id="NoStock"
-                                                            style="color: red; display: none;">Out of stock</h3>
-                                                    </h3>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center mb-5 pt-3">
+                                            <h3 class="me-4">Quantity:<h3 id="NoStock"
+                                                    style="color: red; display: none;">Out of stock</h3>
+                                            </h3>
 
-                                                    <div class="SingleCartListInner cartListInner ps-1">
-                                                        <form action="#">
-                                                            <div class="table-responsive">
-                                                                <table class="table">
-                                                                    <tbody>
-                                                                        <tr class="border-0">
-                                                                            <td class="count-input border-0 p-0">
+                                            <div class="SingleCartListInner cartListInner ps-1">
+                                                <form action="#">
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <tbody>
+                                                                <tr class="border-0">
+                                                                    <td class="count-input border-0 p-0">
 
 
 
-                                                                                <button id="increment" onclick="fnDecButton()"
-                                                                                    class="btn btn-primary btn-sm"
-                                                                                    type="button">-</button>
+                                                                        <button id="increment" onclick="fnDecButton()"
+                                                                            class="btn btn-primary btn-sm"
+                                                                            type="button">-</button>
 
-                                                                                <input id="productQuantity" class="quantity"
-                                                                                    type="text" value="1">
+                                                                        <input id="productQuantity" class="quantity"
+                                                                            type="text" value="1">
 
-                                                                                <button id="decrement"
-                                                                                    onclick="fnIncButton('<%=maxStock%>')"
-                                                                                    class="btn btn-primary btn-sm"
-                                                                                    type="button">+</button>
+                                                                        <button id="decrement"
+                                                                            onclick="fnIncButton('<%=maxStock%>')"
+                                                                            class="btn btn-primary btn-sm"
+                                                                            type="button">+</button>
 
-                                                                                
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </form>
+
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </div>
-                                                </div>
+                                                </form>
                                             </div>
+                                        </div>
                                     </div>
+                                </div>
 
-                                    <script>
-                                        async function fnIncButton(maxStock) {
-                                            try {
-                                                var inputElement = document.getElementById('productQuantity');
-                                                var currentValue = parseInt(inputElement.value);
-                                                if (currentValue < maxStock) {
-                                                    inputElement.value = currentValue + 1;
-                                                } else {
-                                                    await Swal.fire({
-                                                        icon: "warning",
-                                                        title: "Oops...",
-                                                        text: "Maximum quantity reached",
-                                                    });
-                                                }
-                                            } catch (error) {
-                                                console.error("An error occurred:", error);
-                                            }
-                                        }
-
-
-                                        async function fnDecButton() {
+                                <script>
+                                    async function fnIncButton(maxStock) {
+                                        try {
                                             var inputElement = document.getElementById('productQuantity');
                                             var currentValue = parseInt(inputElement.value);
-                                            if (currentValue > 1) {
-                                                inputElement.value = currentValue - 1;
+                                            if (currentValue < maxStock) {
+                                                inputElement.value = currentValue + 1;
                                             } else {
                                                 await Swal.fire({
                                                     icon: "warning",
-                                                    title: "Minimum one quantity",
-                                                    text: "Please select at least one quantity.",
+                                                    title: "Oops...",
+                                                    text: "Maximum quantity reached",
                                                 });
                                             }
+                                        } catch (error) {
+                                            console.error("An error occurred:", error);
                                         }
-                                    </script>
+                                    }
 
 
-                                    <div class="btn-area mb-0">
-                                        <button id="addToCart" class='btn btn-primary btn-default'
-                                            onclick="fnAddToCart('<%=productDet._id%>', productQuantity.value)">
-                                            Add to cart
-                                            <i class="fa fa-angle-right" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-
-                                    <script>
-                                        if ('<%= maxStock %>' < 1) {
-                                            document.getElementById('increment').style.display = 'none'
-                                            document.getElementById('decrement').style.display = 'none'
-                                            document.getElementById('productQuantity').style.display = 'none'
-                                            document.getElementById('NoStock').style.display = 'block'
-                                            document.getElementById('addToCart').style.display = 'none'
+                                    async function fnDecButton() {
+                                        var inputElement = document.getElementById('productQuantity');
+                                        var currentValue = parseInt(inputElement.value);
+                                        if (currentValue > 1) {
+                                            inputElement.value = currentValue - 1;
+                                        } else {
+                                            await Swal.fire({
+                                                icon: "warning",
+                                                title: "Minimum one quantity",
+                                                text: "Please select at least one quantity.",
+                                            });
                                         }
-                                    </script>
+                                    }
+                                </script>
+
+
+                                <div class="btn-area mb-0">
+                                    <button id="addToCart" class='btn btn-primary btn-default'
+                                        onclick="fnAddToCart('<%=productDet._id%>', productQuantity.value)">
+                                        Add to cart
+                                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+
+                                <script>
+                                    if ('<%= maxStock %>' < 1) {
+                                        document.getElementById('increment').style.display = 'none'
+                                        document.getElementById('decrement').style.display = 'none'
+                                        document.getElementById('productQuantity').style.display = 'none'
+                                        document.getElementById('NoStock').style.display = 'block'
+                                        document.getElementById('addToCart').style.display = 'none'
+                                    }
+                                </script>
 
                                 <script>
 
@@ -1461,71 +1461,46 @@
 
                 <div class="page-header content">
                     <h4>Related Products</h4>
+                    <h4></h4>
+
                 </div>
                 <div class="row productsContent">
+                    <% for(let i=0; i<relatedProducts.length; i++){ %>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="productBox">
+                                <div class="productImage clearfix">
+                                    <a href="/singleProduct?id=<%= relatedProducts[i]._id %>">
+                                        <img src="assets/img/uploads/<%=relatedProducts[i].productImage[0]%>"
+                                            style="height: 300px; width: 250px; border-radius: 0;" alt="products-img">
+                                    </a>
+                                </div>
+                                <div class="productCaption clearfix">
+                                    <h5>
+                                        <%=relatedProducts[i].productName%>
+                                    </h5>
+                                    <h3>&#8377 <%=relatedProducts[i].productPrice%>
+                                    </h3>
+                                    <% if(relatedProducts[i].productStock===0){%>
+                                        <h6 style="color: red;">Out of stock</h6>
+                                        <% }%>
+                                            <% if(relatedProducts[i].productStock<10 && relatedProducts[i].productStock>
+                                                0){%>
+                                                <h6 style="color: red;">Limited stock only
+                                                    <%=relatedProducts[i].productStock%> left</h6>
+                                                <% }%>
 
-
-
-
-                    <div class="col-md-3 col-12 ">
-                        <div class="productBox">
-                            <div class="productImage clearfix">
-                                <img src="/assets/img/uploads/<%=productDet.productImage[0]%>" alt="products-img">
-                                <div class="productMasking">
-                                    <ul class="list-inline btn-group" role="group">
-                                        <li><a data-bs-toggle="modal" href=".html" class="btn btn-default"><i
-                                                    class="far fa-heart"></i></a></li>
-                                        <li><a class='btn btn-default' href='cart-page-2.html'><i
-                                                    class="fa fa-shopping-basket"></i></a></li>
-                                        <li><a class="btn btn-default" data-bs-toggle="modal" href="-2.html"><i
-                                                    class="fa fa-eye"></i></a></li>
-                                    </ul>
                                 </div>
                             </div>
-
-
                         </div>
-                    </div>
-                    <div class="col-md-3 col-12 ">
-                        <div class="productBox">
-                            <div class="productImage clearfix">
-                                <img src="/assets/img/uploads/<%=productDet.productImage[1]%>" alt="products-img">
-                                <div class="productMasking">
-                                    <ul class="list-inline btn-group" role="group">
-                                        <li><a data-bs-toggle="modal" href=".html" class="btn btn-default"><i
-                                                    class="far fa-heart"></i></a></li>
-                                        <li><a class='btn btn-default' href='cart-page-2.html'><i
-                                                    class="fa fa-shopping-basket"></i></a></li>
-                                        <li><a class="btn btn-default" data-bs-toggle="modal" href="-2.html"><i
-                                                    class="fa fa-eye"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
+                        <% } %>
 
 
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-12 ">
-                        <div class="productBox">
-                            <div class="productImage clearfix">
-                                <img src="/assets/img/uploads/<%=productDet.productImage[2]%>" alt="products-img">
-                                <div class="productMasking">
-                                    <ul class="list-inline btn-group" role="group">
-                                        <li><a data-bs-toggle="modal" href=".html" class="btn btn-default"><i
-                                                    class="far fa-heart"></i></a></li>
-                                        <li><a class='btn btn-default' href='cart-page-2.html'><i
-                                                    class="fa fa-shopping-basket"></i></a></li>
-                                        <li><a class="btn btn-default" data-bs-toggle="modal" href="-2.html"><i
-                                                    class="fa fa-eye"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
 
 
-                        </div>
-                    </div>
 
-                    <!-- <div class="col-md-3 col-12 ">
+
+
+                            <!-- <div class="col-md-3 col-12 ">
                         <div class="productBox">
                             <div class="productImage clearfix">
                                 <img src="assets/img/products/products-02.jpg" alt="products-img">

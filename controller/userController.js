@@ -54,7 +54,7 @@ const landingPage = async (req, res) => {
                 }
             }
         ])
-
+      
         if (req.session.logged) {
             res.render('userPages/landingPage', { userLogged: req.session.logged, productDetails })
         } else {
@@ -116,8 +116,9 @@ const otpPage = (req, res) => {
 const register = async (req, res) => {
     try {
 
-        const checkSignin = await userCollection.findOne({ $or: [{ email: req.body.email }, { phone: req.body.phone }] })
-
+        const { email, phone } = req.body;
+        const checkSignin = await userCollection.findOne({ $or: [{ email }, { phone }] });
+        
         if (checkSignin) {
             res.status(208).send({ userExists: true })
         } else {
@@ -318,9 +319,8 @@ const updatePassword = async (req, res) => {
 
 
 
-
 module.exports = {
     landingPage, signUp, login, register, saveUser, logout, otpPage, verifyOtp, resendOtp, userLogin, forgotPassword,
-    forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost, 
+    forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost,
     forgotPasswordresendOtp,forgotPasswordnewPassword,updatePassword
 }

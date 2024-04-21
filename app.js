@@ -1,8 +1,10 @@
 const express = require('express')
 const session = require('express-session')
+require('dotenv').config()
+require('./middleware/googleAuth.js')
 const path = require('path')
 const app = express()
-require('dotenv').config()
+
 require('./config/dbConnect.js')
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,7 +29,6 @@ const adminRouter=require('./routes/adminRoute.js')
 
 app.use(userRouter)
 app.use(adminRouter)
-
 
 
 app.listen(process.env.PORT, () => {

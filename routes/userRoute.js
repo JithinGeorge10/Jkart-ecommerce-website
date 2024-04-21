@@ -1,4 +1,5 @@
 const express = require('express')
+
 const userController = require('../controller/userController')
 const shopController = require('../controller/shopController')
 const accountController = require('../controller/accountController')
@@ -6,7 +7,7 @@ const cartController = require('../controller/cartController')
 const userAuth = require('../middleware/userAuth.js')
 const userAuthFetch = require('../middleware/userAuthFetch.js')
 const router = express.Router()
-
+const passport=require('passport')
 
 router.get('/', userController.landingPage)
 router.get('/signUp', userController.signUp)
@@ -25,6 +26,12 @@ router.post('/forgotPassword/verifyOtpPost', userController.forgotPasswordVerify
 router.post('/forgotPassword/resendOtp', userController.forgotPasswordresendOtp)
 router.get('/newPassword', userController.forgotPasswordnewPassword)
 router.post('/forgotPassword/updatePassword', userController.updatePassword)
+router.get('/auth/google', passport.authenticate('google',{scope:['email','profile']}))
+router.get('/google/callback', passport.authenticate('google',{
+    successRedirect:'/',
+    failureRedirect:'/login'
+}))    
+
 
 
 router.get('/shop',shopController.shopPage)

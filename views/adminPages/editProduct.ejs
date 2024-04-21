@@ -7,15 +7,118 @@
   <title>Edit Product</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
 
+    .container {
+      margin: 20px auto;
+      max-width: 600px;
+    }
+
+    .navbar {
+      background-color: #f8f9fa;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    #imageCount {
+      margin-top: 5px;
+    }
+
+    img.product-image {
+      height: 60px;
+      width: 60px;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .image-preview img {
+      margin: 5px;
+      max-width: 100px;
+      max-height: 100px;
+    }
+
+    .image-box {
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      padding: 5px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <nav class="navbar navbar-light bg-light justify-content-between">
+      <a href="/admin"><img src="./assets/img/logo.png" alt="gg"></a>
+      <a href="/admin" style="text-decoration: none; color: black;"><h1>Jkart</h1></a>
+    </nav>
+  </div>
+  <div class="container">
+    <h1>EDIT PRODUCT</h1>
+    <form id="editProduct" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="productName">Product Name</label>
+        <input type="text" value="<%=productDet.productName%>" name="productName" class="form-control"
+          id="productName" maxlength="50" style="max-width: 200px;">
+      </div>
+      <div class="form-group">
+        <label for="parentCategory">Parent Category</label>
+        <select name="parentCategory" class="form-control" style="max-width: 200px;">
+          <option disabled selected><%= categoryDet.categoryName %></option>
+          <% for(let i=0;i<categoryDetail.length;i++){ %>
+            <option value="<%=categoryDetail[i]._id%>"><%=categoryDetail[i].categoryName%></option>
+          <% } %>
+        </select>
+      </div>
+      <div class="form-group">
+        <span id="imageCount">
+          <% if (productDet.productImage.length> 0) { %>
+            <%=productDet.productImage.length%> images exist
+          <% } else { %>
+            No image exists
+          <% } %>
+        </span>
+      </div>
+      <div class="image-preview">
+        <% for(let i=0;i<productDet.productImage.length;i++){ %>
+          <div class="image-box">
+            <img src="assets/img/uploads/<%=productDet.productImage[i]%>" class="product-image">
+          </div>
+        <% } %>
+      </div>
+      <div class="form-group">
+        <label for="images">Add image</label>
+        <input accept="image/*" type="file" name="images" class="form-control-file" id="images" multiple>
+      </div>
+      <div id="preview-container" class="image-preview"></div>
+      <div class="form-group">
+        <label for="productPrice">Product Price</label>
+        <input class="form-control" value="<%=productDet.productPrice%>" name="productPrice" type="text"
+          id="productPrice" maxlength="50" style="max-width: 200px;">
+      </div>
+      <div class="form-group">
+        <label for="productStock">Product Stock</label>
+        <input class="form-control" value="<%=productDet.productStock%>" name="productStock" type="text"
+          id="productStock" maxlength="50" style="max-width: 200px;">
+      </div>
+      <button type="submit" class="btn btn-success">Save</button>
+    </form>
+  </div>
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"
@@ -25,102 +128,6 @@
     integrity="sha512-TiQST7x/0aMjgVTcep29gi+q5Lk5gVTUPE9XgN0g96rwtjEjLpod4mlBRKWHeBcvGBAEvJBmfDqh2hfMMmg+5A=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-  <style>
-    .container {
-      margin: 0 auto;
-      /* Centers the container horizontally */
-      max-width: 600px;
-      /* Optional: Set maximum width of the container */
-    }
-
-    .error {
-      color: red;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <nav class="navbar navbar-light bg-light justify-content-between">
-      <a href="/admin"> <img src="./assets/img/logo.png" alt="gg"></a>
-      <a href="/admin" style="text-decoration: none; color: black;">
-        <h1>Jkart</h1>
-      </a>
-
-    </nav>
-  </div>
-  <div class="container">
-    <h1>EDIT PRODUCT</h1>
-
-
-
-    <form id="editProduct" enctype="multipart/form-data">
-
-      <div class="form-group">
-        <label for="exampleFormControlInput1">Product Name</label>
-        <input type="text" value="<%=productDet.productName%>" name="productName" class="form-control"
-          id="exampleFormControlInput1" placeholder="" maxlength="50" style="max-width: 200px;">
-      </div>
-      <br>
-      <select name="parentCategory" class="form-control form-control md" style="max-width: 200px;">
-        <option disabled selected>
-          <%= categoryDet.categoryName %>
-        </option>
-        <% for(let i=0;i<categoryDetail.length;i++){ %>
-          <option value="<%=categoryDetail[i]._id%>">
-            <%=categoryDetail[i].categoryName%>
-          </option>
-          <% } %>
-      </select>
-
-      <br>
-      <div class="form-group">
-        <span id="imageCount" style="margin-top: 5px;">
-          <% if (productDet.productImage.length> 0) { %>
-            <%=productDet.productImage.length%> images exists
-              <% } else { %>
-                No image exists
-                <% } %>
-        </span>
-      </div>
-
-      <br>
-
-
-
-      <% for(let i=0;i<productDet.productImage.length;i++){ %>
-        <img src="assets/img/uploads/<%=productDet.productImage[i]%>"
-          style="height: 60px; width: 60px; border-radius: 0;">
-        <% } %>
-
-
-
-        <div class="form-group">
-          <label for="images">Add image</label>    
-            <input accept="image/*" type="file" name="images" value="productDet.productImages[i]" class="form-control-file" id="images"
-              multiple>
-        </div>
-
-          <br>
-          <div class="form-group">
-            <label for="exampleFormControlInput1">Product Price</label>
-            <input class="form-control" value="<%=productDet.productPrice%>" name="productPrice" type="text"
-              placeholder="" maxlength="50" style="max-width: 200px;">
-          </div>
-          <br>
-          <div class="form-group">
-            <label for="exampleFormControlInput1">Product Stock</label>
-            <input class="form-control" value="<%=productDet.productStock%>" name="productStock" type="text"
-              placeholder="" maxlength="50" style="max-width: 200px;">
-          </div>
-          <br>
-          <button type="submit" class="btn btn-success">Save</button>
-    </form>
-
-
-  </div>
   <script>
     $('#editProduct').validate({
       rules: {
@@ -137,53 +144,57 @@
         }
       },
       submitHandler: async (form, event) => {
-
-        event.preventDefault()
-        // Create a new FormData object
+        event.preventDefault();
         const formData = new FormData(form);
-
-        // const fileInputs = form.querySelectorAll('input[type="file"][name="images"]');
-        // fileInputs.forEach(input => {
-        //   const files = input.files;
-        //   for (let i = 0; i < files.length; i++) {
-        //     formData.append('images', files[i]);
-        //   }
-        // });
-
-
         let response = await fetch('/editProductsPost/<%=productDet._id%>', {
           method: 'POST',
           body: formData
-        })
-
-        let result = await response.json()
+        });
+        let result = await response.json();
         if (result.exists) {
           await Swal.fire({
             icon: "error",
             title: "Product Already exists"
-          })
+          });
         }
         if (result.success) {
           await Swal.fire({
             icon: "success",
             title: "Product Edited"
-          })
-          window.location.href = '/productManagement'
+          });
+          window.location.href = '/productManagement';
         }
         if (result.noValue) {
           await Swal.fire({
             icon: "error",
             title: "No Value in Product Name"
-          })
+          });
         }
         if (result.noImage) {
           await Swal.fire({
             icon: "error",
-            title: "Select atleast 3 images"
-          })
+            title: "Select at least 3 images"
+          });
         }
       }
-    })
+    });
+
+    // Image preview
+    $('#images').on('change', function() {
+      $('#preview-container').empty();
+      const files = Array.from(this.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          $('#preview-container').append(`
+            <div class="image-box">
+              <img src="${e.target.result}" class="product-image">
+            </div>
+          `);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
   </script>
 </body>
 
