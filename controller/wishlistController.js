@@ -13,13 +13,13 @@ const wishlist = async (req, res) => {
 
 const addToWishlist = async (req, res) => {
     try {
-            const wishlist = new wishlistCollection({
-              userId:req.session.logged._id,
-              productId:req.query.id
-            })
-            await wishlist.save()
-            res.send({ success: true })
-        
+        const wishlist = new wishlistCollection({
+            userId: req.session.logged._id,
+            productId: req.query.id
+        })
+        await wishlist.save()
+        res.send({ success: true })
+
     } catch (err) {
         console.log(err);
     }
@@ -28,7 +28,7 @@ const addToWishlist = async (req, res) => {
 const removeWishlist = async (req, res) => {
     try {
         const wishList = req.query.id;
-    
+
         await wishlistCollection.deleteOne({ productId: wishList });
         res.send({ success: true })
 
@@ -38,28 +38,36 @@ const removeWishlist = async (req, res) => {
 }
 const AddToCart = async (req, res) => {
     try {
-         
-            const productDet=await productCollection.find({_id:req.query.id})
-            const cartDet=await cartCollection.find({productId:req.query.id,userId:req.session.logged._id})
-            if(cartDet){
-                await cartCollection.updateOne({productId:req.query.id},{$set:{
-                    $inc: { productQuantity: 1, totalCostPerProduct: productDet.productPrice }
-                }})
-            }else{
-                let cartDetails=new cartCollection({
-                    userId:req.session.logged._id,
-                    productId:req.query.id,
-                    productQuantity:1
-                   
-                })
-                await cartDetails.save()
-            }
-            res.send({success:true})
+       
+        const productDet = await productCollection.findOne({ _id: req.query.id })
+       
+        const cartDet = await cartCollection.findOne({ productId: req.query.id, userId: req.session.logged._id })
+        
+        if (cartDet) {
+            await cartCollection.updateOne(
+                { productId: req.query.id },
+                {
+                    $inc: { productQuantity: 1 },
+                    $set: { totalCostPerProduct: productDet.productPrice * (cartDet.productQuantity + 1) }
+                }
+            );
+
+        } else {
+            let cartDetails = new cartCollection({
+                userId: req.session.logged._id,
+                productId: req.query.id,
+                productQuantity: 1, 
+                totalCostPerProduct:productDet.productPrice
+            })
+            await cartDetails.save()
+        }
+        await wishlistCollection.deleteOne({productId:req.query.id})
+        res.send({ success: true })
     } catch (err) {
         console.log(err);
     }
 }
 
 module.exports = {
-    wishlist, addToWishlist, removeWishlist,AddToCart
+    wishlist, addToWishlist, removeWishlist, AddToCart
 }
