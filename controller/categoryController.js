@@ -81,7 +81,7 @@ const searchCategory = async (req, res) => {
     try {
         const categoryDet = await categoryCollection.find({ categoryName: { $regex: new RegExp(req.body.search, 'i') } });
 
-        console.log(categoryDet)
+
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
         }else if(categoryDet.length>0){

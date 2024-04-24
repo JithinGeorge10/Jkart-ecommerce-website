@@ -1,5 +1,6 @@
 const { createCollection } = require('../model/productModel');
 const wishlistCollection = require('../model/wishlistModel')
+const productCollection = require('../model/productModel')
 const cartCollection = require('../model/cartModel')
 const wishlist = async (req, res) => {
     try {
@@ -27,7 +28,7 @@ const addToWishlist = async (req, res) => {
 const removeWishlist = async (req, res) => {
     try {
         const wishList = req.query.id;
-        console.log('wishList' + req.query.id)
+    
         await wishlistCollection.deleteOne({ productId: wishList });
         res.send({ success: true })
 
@@ -37,14 +38,23 @@ const removeWishlist = async (req, res) => {
 }
 const AddToCart = async (req, res) => {
     try {
-            console.log('wishlistproductadd'+req.query.id);
+         
+            const productDet=await productCollection.find({_id:req.query.id})
             const cartDet=await cartCollection.find({productId:req.query.id,userId:req.session.logged._id})
             if(cartDet){
                 await cartCollection.updateOne({productId:req.query.id},{$set:{
-                    
+                    $inc: { productQuantity: 1, totalCostPerProduct: productDet.productPrice }
                 }})
+            }else{
+                let cartDetails=new cartCollection({
+                    userId:req.session.logged._id,
+                    productId:req.query.id,
+                    productQuantity:1
+                   
+                })
+                await cartDetails.save()
             }
-            
+            res.send({success:true})
     } catch (err) {
         console.log(err);
     }

@@ -80,7 +80,7 @@ const searchUser = async (req, res) => {
     try {
         const userDet = await userCollection.find({ name: { $regex: new RegExp(req.body.search, 'i') } });
 
-        console.log(req.body.search)
+  
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
         }else if(userDet.length>0){

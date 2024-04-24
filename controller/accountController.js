@@ -58,7 +58,7 @@ const addAddressPost = async (req, res) => {
             })
             await addAddress.save()
             res.send({ addressSaved: true })
-            console.log(userDet)
+
         }
 
     } catch (err) {
@@ -85,7 +85,7 @@ const addressDelete = async (req, res) => {
 
 const editAddressGet = async (req, res) => {
     try {
-        console.log(req.query.id);
+    
         const userAddress = await addressCollection.findOne({ _id: req.query.id })
         res.render('userPages/editAddress', { userLogged: req.session.logged, userAddress })
 
@@ -134,7 +134,7 @@ const allOrders = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
     try {
-        console.log('cancelOrder' + req.query.id)
+      
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled' } })
 
         res.send({ success: true })
@@ -144,7 +144,7 @@ const cancelOrder = async (req, res) => {
 }
 const returnOrder = async (req, res) => {
     try {
-        console.log('returnOrder' + req.query.id)
+
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Return' } })
         res.send({ success: true })
     } catch (err) {
@@ -154,7 +154,7 @@ const returnOrder = async (req, res) => {
 
 const viewOrder = async (req, res) => {
     try {
-        console.log('viewOrder' + req.query.id)
+  
         let orderId = req.query.id
         res.send({ success: true, orderId })
     } catch (err) {
@@ -167,14 +167,14 @@ const accountViewOrder = async (req, res) => {
     try {
         const orderDet = await orderCollection.findOne({ _id: req.query.id }).populate('userId')
         const addressDet = await addressCollection.findOne({ _id: orderDet.addressChosen })
-        console.log(orderDet)
+    
         let cartProducts = []
         for (let i = 0; i < orderDet.cartData.length; i++) {
             cartProducts[i] = orderDet.cartData[i].productId
         }
-        console.log(cartProducts)
+     
         const productDet = await productCollection.find({ _id: cartProducts })
-        console.log("DB" + productDet)
+      
         res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet, productDet })
     } catch (err) {
         console.log(err);

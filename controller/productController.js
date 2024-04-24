@@ -83,7 +83,7 @@ const editProduct = async (req, res) => {
         const categoryDetail = await categoryCollection.find()
         const categoryDet = await categoryCollection.findOne({ _id: req.query.cid })
         const productDet = await productCollection.findOne({ _id: req.query.pid })
-        console.log(productDet)
+        
         res.render('adminPages/editProduct', { categoryDet, productDet, categoryDetail })
     } catch (err) {
         console.log(err);
@@ -137,7 +137,7 @@ const searchProducts = async (req, res) => {
 
         const productDet = await productCollection.find({ productName: { $regex: new RegExp(req.body.search, 'i') } });
 
-        console.log(productDet)
+   
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
         } else if (productDet.length > 0) {
@@ -153,7 +153,7 @@ const searchProducts = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        console.log(req.query.id)
+   
         await productCollection.updateOne({ _id: req.query.id }, { $set: { isDeleted: true } })
         res.send({ deleted: true })
     } catch (err) {

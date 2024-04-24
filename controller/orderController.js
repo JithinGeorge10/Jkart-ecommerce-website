@@ -36,8 +36,8 @@ const adminViewOrder = async (req, res) => {
         req.session.viewOrderAddress = await addressCollection.findOne({ _id: req.session.viewOrder.addressChosen })
 
         //   req.session.viewOrderProduct=await productCollection.find({_id:req.session.viewOrder.cartData.productId})
-        console.log('viewOrder' + req.session.viewOrder)
-        console.log('address' + req.session.viewOrderAddress)
+    
+     
         //   console.log('product'+req.session.viewOrderProduct)
         res.send({ success: true, orderDet: req.session.viewOrder, addressDet: req.session.viewOrderAddress })
     } catch (err) {
@@ -51,7 +51,7 @@ const orderView = async (req, res) => {
             cartProducts[i] = req.session.viewOrder.cartData[i].productId
         }
        const productdet=await productCollection.find({_id:cartProducts})
-       console.log(productdet)
+
 
         res.render('adminPages/orderView', { orderDet: req.session.viewOrder, addressDet: req.session.viewOrderAddress,productdet })
     } catch (err) {
@@ -61,9 +61,9 @@ const orderView = async (req, res) => {
 
 const searchOrder = async (req, res) => {
     try {
-       console.log(req.body.search);
+ 
         const orderDet = await orderCollection.findOne({ _id: req.body.search });
-        console.log(orderDet)
+
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
         }else if(orderDet.length>0){

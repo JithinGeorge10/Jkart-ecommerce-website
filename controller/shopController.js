@@ -10,7 +10,7 @@ const shopPage = async (req, res) => {
 
 
         const catProducts = await productCollection({ parentCategory: req.query.id, isListed: true, isDeleted: false })
-        console.log(catProducts)
+
         let productDet = req.session.productDetail || await productCollection.find({ isListed: true, isDeleted: false }) || catProducts
 
         const categoryDetails = await categoryCollection.find({ isListed: true })
@@ -38,7 +38,7 @@ const shopPage = async (req, res) => {
         }
 
 
-        console.log(productDet)
+   
         res.render('userPages/shop', { userLogged: req.session.logged, productDet, categoryDetails, totalPages })
     } catch (err) {
         console.log(err);
