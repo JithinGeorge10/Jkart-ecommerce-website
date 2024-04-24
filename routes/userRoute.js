@@ -6,6 +6,7 @@ const accountController = require('../controller/accountController')
 const cartController = require('../controller/cartController')
 const userAuth = require('../middleware/userAuth.js')
 const userAuthFetch = require('../middleware/userAuthFetch.js')
+const wishlistController=require('../controller/wishlistController')
 const router = express.Router()
 const passport=require('passport')
 
@@ -69,6 +70,12 @@ router.get('/cartCheckout/review',userAuth,cartController.cartCheckoutreview)
 router.get('/orderSummary',userAuth,cartController.orderSummary)
 router.get('/orderPlace',userAuth,cartController.orderPlace)
 router.get('/orderPlaceComleted',userAuth,cartController.orderPlaceComleted)
+
+router.get('/wishlist',userAuth,wishlistController.wishlist)
+router.post('/addToWishlist',userAuthFetch,wishlistController.addToWishlist)
+router.delete('/removeWishlist',userAuthFetch,wishlistController.removeWishlist)
+router.post('/wishlist/AddToCart',userAuthFetch,wishlistController.AddToCart)
+
 
 
 

@@ -1,0 +1,139 @@
+<%- include('../userPartials/header') %>
+    <!-- LIGHT SECTION -->
+    <section class="lightSection clearfix pageHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="page-title">
+                        <h2>WISHLIST</h2>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <ol class="breadcrumb pull-right">
+                        <li>
+                            <a href='/'>Home</a>
+                        </li>
+                        <li class="active">WISHLIST</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT SECTION -->
+    <section class="mainContent clearfix userProfile">
+        <div class="container">
+            <%- include('../userPartials/userProfileDetails') %>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="innerWrapper">
+                            <div class="orderBox myAddress wishList text-nowrap mb-0">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Product Name</th>
+                                                <th>Unit Price</th>
+                                                <th>Stock Status</th>
+                                                <th>Add to Cart</th>
+                                                <th>Remove</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for(let i=0; i < wishlistDet.length; i++) { %>
+                                                <tr class="alert alert-dismissible fade show p-0 mb-0" role="alert">
+                                                    <td>
+                                                        <span class="cartImage d-inline-block"><img
+                                                                src="assets/img/uploads/<%=wishlistDet[i].productId.productImage[0]%>"
+                                                                style="height: 60px; width: 60px; border-radius: 0;"
+                                                                alt="image"></span>
+                                                    </td>
+                                                    <td>
+                                                        <%=wishlistDet[i].productId.productName%>
+                                                    </td>
+                                                    <td>
+                                                        <%=wishlistDet[i].productId.productPrice%>
+                                                    </td>
+                                                    <td>
+                                                        <% if (wishlistDet[i].productId.productStock < 1) { %>
+                                                            <span style="color: red;">Out of Stock</span>
+                                                            <% } else { %>
+                                                                In Stock
+                                                                <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (wishlistDet[i].productId.productStock> 0) { %>
+                                                            <button
+                                                                onclick="addToCart('<%=wishlistDet[i].productId._id%>')"
+                                                                class='btn btn-sm btn-secondary-outlined'>Add to
+                                                                Cart</button>
+
+                                                            <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <button class='btn btn-sm btn-secondary-outlined'
+                                                            id="removeWishlist<%=i%>"
+                                                            onclick="removeWishlist('<%=wishlistDet[i].productId._id%>')">Remove</button>
+                                                    </td>
+
+                                                </tr>
+                                                <script>
+                                                    async function removeWishlist(wishlistId) {
+                                                        Swal.fire({
+                                                            title: "Are you sure?",
+                                                            text: "You won't be able to revert this!",
+                                                            icon: "warning",
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: "#3085d6",
+                                                            cancelButtonColor: "#d33",
+                                                            confirmButtonText: "Yes, remove it!"
+                                                        }).then(async (result) => {
+                                                            if (result.isConfirmed) {
+                                                                let response = await fetch(`/removeWishlist?id=${wishlistId}`, {
+                                                                    method: 'DELETE'
+                                                                })
+                                                                let result = await response.json()
+                                                                if (result.success) {
+                                                                    await Swal.fire({
+                                                                        icon: "success",
+                                                                        title: "Product removed from Wishlist",
+                                                                        showConfirmButton: false,
+                                                                        timer: 1500
+                                                                    });
+                                                                    window.location.reload()
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+
+
+                                                    async function addToCart(productId) {
+                                                        Swal.fire({
+                                                            title: "Are you sure?",
+                                                            icon: "warning",
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: "#3085d6",
+                                                            cancelButtonColor: "#d33",
+                                                            confirmButtonText: "Yes!"
+                                                        }).then(async(result) => {
+                                                            if (result.isConfirmed) {
+                                                                let response=await fetch(`/wishlist/AddToCart?id=${productId}`,{
+                                                                    method:'POST'
+                                                                })
+                                                            }
+                                                        });
+                                                    }
+                                                </script>
+                                                <% } %>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </section>
+    <%- include('../userPartials/footer') %>

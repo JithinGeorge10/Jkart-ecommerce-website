@@ -1,4 +1,5 @@
 <%- include('../userPartials/header') %>
+
   <!-- LIGHT SECTION -->
   <section class="lightSection clearfix pageHeader">
     <div class="container">
@@ -6,6 +7,7 @@
         <div class="col-md-6">
           <div class="page-title">
             <h2>Products</h2>
+
           </div>
         </div>
         <div class="col-md-6">
@@ -188,20 +190,68 @@
                       <img src="assets/img/uploads/<%=productDet[i].productImage[0]%>" alt="products-img">
                     </a>
                   </div>
-                  <div class="productCaption clearfix">
-                    <h5>
-                      <%=productDet[i].productName%>
-                    </h5>
-                    <h3>&#8377 <%=productDet[i].productPrice%>
-                    </h3>
-                    <% if(productDet[i].productStock===0){%>
-                      <h6 style="color: red;">Out of stock</h6>
-                      <% }%>
-                        <% if(productDet[i].productStock<10 && productDet[i].productStock>0){%>
-                          <h6 style="color: red;">Limited stock only <%=productDet[i].productStock%> left</h6>
-                          <% }%>
-                            <!-- <h3><%=productDet[i].productStock%></h3> -->
-                  </div>
+                  <% if(productDet[i].isWishlisted==true){ %>
+                    <button id="removeWishlist<%=i%>" onclick="removeWishlist('<%=productDet[i]._id%>')" class='fa fa-heart'
+                      style='font-size: 24px; color: red; background: none; border: none;'>
+                    </button>
+                    <% }else{ %>
+                      <button id="wishlist<%=i%>" onclick="addToWishlist('<%=productDet[i]._id%>')" class='fa fa-heart'
+                        style='font-size: 24px; color: white; background: none; border: none; text-shadow: 0 0 5px black;'>
+                      </button>
+                      <% } %>
+
+                        <script>
+                          async function addToWishlist(productId) {
+                            let response = await fetch(`/addToWishlist?id=${productId}`, {
+                              method: 'POST'
+                            })
+                            let result = await response.json()
+                            if (result.success) {
+                              await Swal.fire({
+                                icon: "success",
+                                title: "Product added to Wishlist",
+                                showConfirmButton: false,
+                                timer: 1500
+                              });
+                              window.location.reload()
+                            } if (result.userNotLogged) {
+                              window.location.href = 'login'
+                            }
+                          }
+                          async function removeWishlist(productId) {
+                            let response = await fetch(`/removeWishlist?id=${productId}`, {
+                              method: 'DELETE'
+                            })
+                            let result = await response.json()
+                            if (result.success) {
+                              await Swal.fire({
+                                icon: "success",
+                                title: "Product removed from Wishlist",
+                                showConfirmButton: false,
+                                timer: 1500
+                              });
+                              window.location.reload()
+                            } if (result.userNotLogged) {
+                              window.location.href = 'login'
+                            }
+                          }
+                        </script>
+
+                        <div class="productCaption clearfix">
+                          <h5>
+                            <%=productDet[i].productName%>
+                          </h5>
+                          <h3>&#8377 <%=productDet[i].productPrice%>
+                          </h3>
+
+                          <% if(productDet[i].productStock===0){%>
+                            <h6 style="color: red;">Out of stock</h6>
+                            <% }%>
+                              <% if(productDet[i].productStock<10 && productDet[i].productStock>0){%>
+                                <h6 style="color: red;">Limited stock only <%=productDet[i].productStock%> left</h6>
+                                <% }%>
+                                  <!-- <h3><%=productDet[i].productStock%></h3> -->
+                        </div>
                 </div>
               </div>
               <% } %>

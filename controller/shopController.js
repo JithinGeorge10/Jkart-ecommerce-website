@@ -1,15 +1,18 @@
 const productCollection = require('../model/productModel')
 const categoryCollection = require('../model/categoryModel')
 const cartCollection = require('../model/cartModel')
-
+const wishlistCollection = require('../model/wishlistModel')
 
 
 const shopPage = async (req, res) => {
     try {
-        console.log('productId' + req.query.id)
-        const catProducts=await productCollection({parentCategory:req.query.id,isListed:true,isDeleted:false})
+
+
+
+        const catProducts = await productCollection({ parentCategory: req.query.id, isListed: true, isDeleted: false })
         console.log(catProducts)
-        let productDet = req.session.productDetail || await productCollection.find({ isListed: true ,isDeleted:false}) ||catProducts
+        let productDet = req.session.productDetail || await productCollection.find({ isListed: true, isDeleted: false }) || catProducts
+
         const categoryDetails = await categoryCollection.find({ isListed: true })
         const productsPerPage = 6
         const totalPages = productDet.length / productsPerPage
@@ -19,6 +22,23 @@ const shopPage = async (req, res) => {
         productDet = productDet.slice(start, end)
 
 
+        //wishlist if any users logged in
+        if (req.session.logged) {
+            const { _id } = req.session?.logged;
+            let wishlistDet = await wishlistCollection.find({ userId: _id })
+            let wishlistArr = []
+            
+            for (let i = 0; i < wishlistDet.length; i++) {
+                wishlistArr.push(wishlistDet[i].productId.toString())
+            }
+
+            for (let i = 0; i < productDet.length; i++) {
+                productDet[i].isWishlisted = wishlistArr.includes(productDet[i]._id.toString());
+            }
+        }
+
+
+        console.log(productDet)
         res.render('userPages/shop', { userLogged: req.session.logged, productDet, categoryDetails, totalPages })
     } catch (err) {
         console.log(err);
@@ -29,11 +49,11 @@ const singleProduct = async (req, res) => {
     try {
         let maxStock = 0
         let cartProduct = await cartCollection.findOne({ productId: req.query.id })
-        const productDetails = await productCollection.findOne({ _id: req.query.id,isDeleted:false })
+        const productDetails = await productCollection.findOne({ _id: req.query.id, isDeleted: false })
 
-        const categoryDet=await categoryCollection.findOne({_id:productDetails.parentCategory})
-        const relatedProducts = await productCollection.find({parentCategory:categoryDet._id ,isDeleted:false }) 
-       
+        const categoryDet = await categoryCollection.findOne({ _id: productDetails.parentCategory })
+        const relatedProducts = await productCollection.find({ parentCategory: categoryDet._id, isDeleted: false })
+
         if (req.session.logged) {
             if (cartProduct) {
                 maxStock = productDetails.productStock - cartProduct.productQuantity
@@ -43,7 +63,7 @@ const singleProduct = async (req, res) => {
         } else {
             maxStock = productDetails.productStock
         }
-        res.render('userPages/singleProduct', { userLogged: req.session.logged, maxStock,relatedProducts, productDet: productDetails, cartDet: req.session.cartProduct })
+        res.render('userPages/singleProduct', { userLogged: req.session.logged, maxStock, relatedProducts, productDet: productDetails, cartDet: req.session.cartProduct })
     } catch (err) {
         console.log(err);
     }
@@ -52,7 +72,7 @@ const singleProduct = async (req, res) => {
 const searchProducts = async (req, res) => {
     try {
         const searchedProduct = await productCollection.find({
-            productName: { $regex: req.body.searchElement, $options: 'i' },isDeleted:false
+            productName: { $regex: req.body.searchElement, $options: 'i' }, isDeleted: false
         })
         if (searchedProduct.length > 0) {
             req.session.productDetail = searchedProduct
@@ -69,7 +89,7 @@ const searchProducts = async (req, res) => {
 
 const filter = async (req, res) => {
     try {
-        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true ,isDeleted:false})
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true, isDeleted: false })
         let start = 0, end = Infinity
         if (req.params.by === 'byPrice') {
 
@@ -92,7 +112,7 @@ const filter = async (req, res) => {
                 }
             }
         } else {
-            productDetail = await productCollection.find({ isListed: true, parentCategory: req.query.id,isDeleted:false })
+            productDetail = await productCollection.find({ isListed: true, parentCategory: req.query.id, isDeleted: false })
         }
 
         productDetail = productDetail.filter((val) => {
@@ -111,7 +131,7 @@ const filter = async (req, res) => {
 
 const shopSort = async (req, res) => {
     try {
-        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true ,isDeleted:false})
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true, isDeleted: false })
         switch (req.query.sortBy) {
             case 'priceAsc': {
                 productDetail = productDetail.sort((a, b) => a.productPrice - b.productPrice)

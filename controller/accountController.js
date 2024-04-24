@@ -136,7 +136,7 @@ const cancelOrder = async (req, res) => {
     try {
         console.log('cancelOrder' + req.query.id)
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled' } })
-        
+
         res.send({ success: true })
     } catch (err) {
         console.log(err);
@@ -175,7 +175,7 @@ const accountViewOrder = async (req, res) => {
         console.log(cartProducts)
         const productDet = await productCollection.find({ _id: cartProducts })
         console.log("DB" + productDet)
-        res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet,productDet })
+        res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet, productDet })
     } catch (err) {
         console.log(err);
     }
@@ -184,7 +184,8 @@ const accountViewOrder = async (req, res) => {
 
 
 
+
 module.exports = {
     account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
-    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder,returnOrder
+    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder
 }

@@ -67,10 +67,10 @@ const userBlock = async (req, res) => {
         // await userCollection.updateOne({ _id: req.query.id }, { $set: { isBlocked: userBlock } })
 
 
-        const user=userCollection.find({_id: req.query.id})
+        const user= await userCollection.findOne({_id: req.query.id})
         user.isBlocked= !user.isBlocked
         await user.save()
-        res.send({ userStat: userBlock })
+        res.send({ userStat: true })
     } catch (err) {
         console.log(err);
     }

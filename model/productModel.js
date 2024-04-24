@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
   priceBeforeOffer : { type: Number, default: null },
   isListed: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
+  wishlist:{ type: Boolean, default: false }
 });
 
 module.exports =  mongoose.model("products", productSchema)
