@@ -244,8 +244,10 @@
                 <div class="col-sm-12">
                   <div class="checkboxArea card-check">
                     <div class="col-sm-12 mb-2">
-                      <input id="paymentMethod" type="radio" name="paymentMethod" value="Cash On Delivery">
+                      <input id="paymentMethod1" type="radio" name="paymentMethod" value="Cash On Delivery">
                       <label for="paymentMethod"><span></span>Cash on delivery</label>
+                      <input id="paymentMethod2" type="radio" name="paymentMethod" value="Online Payment">
+                      <label for="paymentMethod"><span></span>Online Payment(Stripe)</label>
                     </div>
                   </div>
                 </div>
@@ -255,14 +257,15 @@
                   <div class="well well-lg clearfix">
                     <ul class="pager">
                       <li class="next">
-                        <a class='btn btn-primary btn-default float-end' onclick="checkoutReview()">Continue <i class="fa fa-angle-right"></i></a>
+                        <a class='btn btn-primary btn-default float-end' onclick="checkoutReview()">Continue <i
+                            class="fa fa-angle-right"></i></a>
                       </li>
                     </ul>
                   </div>
                 </div>
               </div>
             </form>
-            
+
 
           </div>
         </div>
@@ -271,10 +274,19 @@
     </div>
   </section>
 
-  <script>  
+  <script>
     async function checkoutReview() {
-      let paymentMethod = document.getElementById('paymentMethod');
-      let paymentMethodValue = paymentMethod.checked ? paymentMethod.value : null;
+      let paymentMethod1 = document.getElementById('paymentMethod1');
+      let paymentMethod2 = document.getElementById('paymentMethod2');
+      let paymentMethodValue;
+
+      if (paymentMethod1.checked) {
+        paymentMethodValue = paymentMethod1.value;
+      } else if (paymentMethod2.checked) {
+        paymentMethodValue = paymentMethod2.value;
+      } else {
+        paymentMethodValue = null;
+      }
 
       let response = await fetch(`/cartCheckout/review?id=${paymentMethodValue}`, {
         method: 'GET'

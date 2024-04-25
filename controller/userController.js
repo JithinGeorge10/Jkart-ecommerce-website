@@ -94,6 +94,7 @@ const login = async (req, res) => {
 const logout = (req, res) => {
     try {
         req.session.logged = null
+        req.session.grandTotal = null
         res.redirect('/')
     } catch (err) {
         console.log(err);

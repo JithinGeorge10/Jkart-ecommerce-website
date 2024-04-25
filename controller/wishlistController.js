@@ -4,7 +4,7 @@ const productCollection = require('../model/productModel')
 const cartCollection = require('../model/cartModel')
 const wishlist = async (req, res) => {
     try {
-        const wishlistDet = await wishlistCollection.find().populate('productId').sort({ _id: -1 })
+        const wishlistDet = await wishlistCollection.find({userId:req.session.logged._id}).populate('productId').sort({ _id: -1 })
         res.render('userPages/wishlist', { userLogged: req.session.logged, wishlistDet })
     } catch (err) {
         console.log(err);

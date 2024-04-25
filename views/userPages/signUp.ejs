@@ -352,25 +352,27 @@
                         await Swal.fire({
                             title: "OTP Authentication",
                             showDenyButton: true,
+                            showConfirmButtonText:false,
                             // showCancelButton: true,
-                            confirmButtonText: "Continue without OTP",
+                            // confirmButtonText: "Continue without OTP",
                             denyButtonText: 'Request OTP'
                         }).then(async (result) => {
                             /* Read more about isConfirmed, isDenied below */
-                            if (result.isConfirmed) {
+                            // if (result.isConfirmed) {   
 
-                                ///fetch to save the details in database after clicking Continue without OTP
-                                let response = await fetch('/saveUser', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(formData)
-                                })
-                                const result = await response.json()
-                                if (result.userSaved) {
-                                    window.location.href = '/'
-                                }
+                            //     ///fetch to save the details in database after clicking Continue without OTP
+                            //     let response = await fetch('/saveUser', {
+                            //         method: 'POST',
+                            //         headers: { 'Content-Type': 'application/json' },
+                            //         body: JSON.stringify(formData)
+                            //     })
+                            //     const result = await response.json()
+                            //     if (result.userSaved) {
+                            //         window.location.href = '/'
+                            //     }
 
-                            } else if (result.isDenied) {
+                            // } 
+                             if (result.isDenied) {
                                 let response = await fetch('/saveUser?otp=true', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
