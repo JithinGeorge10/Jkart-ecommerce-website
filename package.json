@@ -12,6 +12,7 @@
   "dependencies": {
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@stripe/stripe-js": "^3.3.0",
+    "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "cropperjs": "^1.6.2",
     "dotenv": "^16.4.5",
@@ -24,7 +25,9 @@
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "paypal-rest-sdk": "^1.8.1",
+    "sha256": "^0.2.0",
     "stripe": "^15.3.0",
-    "sweetalert": "^2.1.2"
+    "sweetalert": "^2.1.2",
+    "uniqid": "^5.4.0"
   }
 }

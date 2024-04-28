@@ -4,6 +4,9 @@ const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel')
 const paypal = require('paypal-rest-sdk')
+const axios = require('axios');
+const uniqid = require('uniqid')
+const sha256 = require('sha256')
 paypal.configure({
     'mode': process.env.PAYPAL_MODE, //sandbox or live
     'client_id': process.env.PAYPAL_CLIENT_KEY,
@@ -179,10 +182,9 @@ const orderPlace = async (req, res) => {
             res.send({ success: true })
 
 
-        } else if (req.session.paymentMethod == 'Online Payment') {
-            res.send({ onlinePayment: true })
+        }else if (req.session.paymentMethod == 'phone pe') {
+            res.send({ phonepe: true })
         }
-
 
 
     } catch (err) {
@@ -193,6 +195,26 @@ const orderPlace = async (req, res) => {
 
 const orderPlaceComleted = async (req, res) => {
     try {
+        const cartDet = await cartCollection.find({ userId: req.session.logged._id })
+        console.log(req.query.tranId);
+        if (req.query.tranId) {
+            await orderCollection.insertMany({
+                userId: req.session.logged._id,
+                paymentType: req.session.paymentMethod,
+                addressChosen: req.session.selectedAddress,
+                cartData: cartDet,
+                grandTotalCost: req.session.grandTotal
+            })
+            for (let cart of cartDet) {
+                await productCollection.updateOne(
+                    { _id: cart.productId },
+                    { $inc: { productStock: -cart.productQuantity } }
+                );
+            }
+
+            await cartCollection.deleteMany({ userId: req.session.logged._id })
+        }
+
         const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 }).limit(1)
 
         req.session.grandTotal = null
@@ -205,8 +227,8 @@ const orderPlaceComleted = async (req, res) => {
 const onlinePayment = async (req, res) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id }).populate('productId');
-        const address=await addressCollection.find({_id: req.session.selectedAddress })
-        console.log('address'+address)
+        const address = await addressCollection.find({ _id: req.session.selectedAddress })
+        console.log('address' + address)
         // Check if the cartDet is empty
         if (cartDet.length === 0) {
             return res.status(400).send('Cart is empty');
@@ -246,16 +268,16 @@ const onlinePayment = async (req, res) => {
                 "description": "This is the payment description.",
                 "shipping": {
                     name: {
-                     full_name: address.username
+                        full_name: address.username
                     },
                     type: 'SHIPPING',
                     address: {
-                     address_line_1: address.address1+' '+ address.address2,
-                     postal_code: address.zip_code,
-                     admin_area_2: address.city,
-                     admin_area_1: address.state
-                   }
-                  }
+                        address_line_1: address.address1 + ' ' + address.address2,
+                        postal_code: address.zip_code,
+                        admin_area_2: address.city,
+                        admin_area_1: address.state
+                    }
+                }
             }]
         };
 
@@ -281,7 +303,69 @@ const onlinePayment = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+
+
+const phonePay = async (req, res) => {
+    try {
+
+        const payEndpoint = '/pg/v1/pay'
+        const merchantTransactionId = uniqid()
+        const amountInPaise = req.session.grandTotal * 100;
+        console.log(req.session.grandTotal);
+        console.log(amountInPaise);
+        const payload =
+        {
+            "merchantId": process.env.MERCHANT_ID,
+            "merchantTransactionId": merchantTransactionId,
+            "merchantUserId": req.session.logged._id,
+            "amount": amountInPaise,
+            "redirectUrl": `http://localhost:3000/orderPlaceComleted?tranId=${merchantTransactionId}`,
+
+
+            "redirectMode": "REDIRECT",
+            "mobileNumber": req.session.logged.phone,
+            "paymentInstrument": {
+                "type": "PAY_PAGE"
+            }
+        }
+
+        const bufferObj = Buffer.from(JSON.stringify(payload), 'utf8')
+        const base63EncodedPayload = bufferObj.toString('base64')
+        const xVerify = sha256(base63EncodedPayload + payEndpoint + process.env.SALT_KEY) + '###' + process.env.SALT_INDEX;
+
+
+        const options = {
+            method: 'post',
+            url: 'https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay',
+            headers: {
+                accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-VERIFY': xVerify
+            },
+            data: {
+                request: base63EncodedPayload
+            }
+        };
+        axios
+            .request(options)
+            .then(function (response) {
+                console.log(response.data);
+
+                const url = response.data.data.instrumentResponse.redirectInfo.url
+                res.redirect(url)
+                // res.send({url})
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 module.exports = {
     addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress,
-    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, onlinePayment
+    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, onlinePayment, phonePay
 }
