@@ -14,7 +14,6 @@ const account = async (req, res) => {
         console.log(err);
     }
 }
-
 const editProfile = async (req, res) => {
     try {
         const contactDet = await userCollection.find({ phone: req.body.phone })
@@ -28,8 +27,6 @@ const editProfile = async (req, res) => {
     } catch (err) {
     }
 }
-
-
 const addAddress = async (req, res) => {
     try {
         res.render('userPages/addAddress', { userLogged: req.session.logged })
@@ -37,7 +34,6 @@ const addAddress = async (req, res) => {
         console.log(err);
     }
 }
-
 const addAddressPost = async (req, res) => {
     try {
         if (/^\s*$/.test(req.body.address1) || /^\s*$/.test(req.body.address2) || /^\s*$/.test(req.body.city) || /^\s*$/.test(req.body.pincode)) {
@@ -65,7 +61,6 @@ const addAddressPost = async (req, res) => {
         console.log(err);
     }
 }
-
 const myAddressget = async (req, res) => {
     try {
         const userAddress = await addressCollection.find({ userId: req.session.logged._id })
@@ -82,10 +77,9 @@ const addressDelete = async (req, res) => {
         console.log(err);
     }
 }
-
 const editAddressGet = async (req, res) => {
     try {
-    
+
         const userAddress = await addressCollection.findOne({ _id: req.query.id })
         res.render('userPages/editAddress', { userLogged: req.session.logged, userAddress })
 
@@ -93,7 +87,6 @@ const editAddressGet = async (req, res) => {
         console.log(err);
     }
 }
-
 const editAddressPost = async (req, res) => {
     try {
 
@@ -120,9 +113,6 @@ const editAddressPost = async (req, res) => {
         console.log(err);
     }
 }
-
-
-
 const allOrders = async (req, res) => {
     try {
         const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 })
@@ -131,11 +121,17 @@ const allOrders = async (req, res) => {
         console.log(err);
     }
 }
-
 const cancelOrder = async (req, res) => {
     try {
-      
+
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled' } })
+        const orderDet = await orderCollection.findOne({ _id: req.query.id })
+        for (let i = 0; i < orderDet.cartData.length; i++) {
+            await productCollection.updateOne(
+                { _id: orderDet.cartData[i].productId },
+                { $inc: { productStock: orderDet.cartData[i].productQuantity } }
+            );
+        }
 
         res.send({ success: true })
     } catch (err) {
@@ -151,38 +147,32 @@ const returnOrder = async (req, res) => {
         console.log(err);
     }
 }
-
 const viewOrder = async (req, res) => {
     try {
-  
+
         let orderId = req.query.id
         res.send({ success: true, orderId })
     } catch (err) {
         console.log(err);
     }
 }
-
-
 const accountViewOrder = async (req, res) => {
     try {
         const orderDet = await orderCollection.findOne({ _id: req.query.id }).populate('userId')
         const addressDet = await addressCollection.findOne({ _id: orderDet.addressChosen })
-    
+
         let cartProducts = []
         for (let i = 0; i < orderDet.cartData.length; i++) {
             cartProducts[i] = orderDet.cartData[i].productId
         }
-     
+
         const productDet = await productCollection.find({ _id: cartProducts })
-      
+
         res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet, productDet })
     } catch (err) {
         console.log(err);
     }
 }
-
-
-
 
 
 module.exports = {

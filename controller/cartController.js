@@ -321,8 +321,6 @@ const phonePay = async (req, res) => {
             "merchantUserId": req.session.logged._id,
             "amount": amountInPaise,
             "redirectUrl": `http://localhost:3000/orderPlaceComleted?tranId=${merchantTransactionId}`,
-
-
             "redirectMode": "REDIRECT",
             "mobileNumber": req.session.logged.phone,
             "paymentInstrument": {
@@ -351,7 +349,6 @@ const phonePay = async (req, res) => {
             .request(options)
             .then(function (response) {
                 console.log(response.data);
-
                 const url = response.data.data.instrumentResponse.redirectInfo.url
                 res.redirect(url)
                 // res.send({url})

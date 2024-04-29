@@ -241,31 +241,32 @@
             </div>
             <form>
               <div class="row">
-                  <div class="col-sm-12">
-                      <div class="checkboxArea card-check">
-                          <div class="col-sm-12 mb-2">
-                              <input id="paymentMethod1" type="radio" name="paymentMethod" value="Cash On Delivery">
-                              <label for="paymentMethod1" style="margin-right: 20px;"><span></span>Cash on delivery</label>
-          
-                              <input id="paymentMethod3" type="radio" name="paymentMethod" value="phone pe">
-                              <label for="paymentMethod3"><span></span>Online Payment(PhonePe)</label>
-                          </div>
-                      </div>
+                <div class="col-sm-12">
+                  <div class="checkboxArea card-check">
+                    <div class="col-sm-12 mb-2">
+                      <input id="paymentMethod1" type="radio" name="paymentMethod" value="Cash On Delivery">
+                      <label for="paymentMethod1" style="margin-right: 20px;"><span></span>Cash on delivery</label>
+
+                      <input id="paymentMethod3" type="radio" name="paymentMethod" value="phone pe">
+                      <label for="paymentMethod3"><span></span>Online Payment(PhonePe)</label>
+                    </div>
                   </div>
+                </div>
               </div>
               <div class="row">
-                  <div class="col-sm-12">
-                      <div class="well well-lg clearfix">
-                          <ul class="pager">
-                              <li class="next">
-                                <a class='btn btn-primary btn-default float-end' onclick="checkoutReview()">Continue <i
-                                  class="fa fa-angle-right"></i></a>                              </li>
-                          </ul>
-                      </div>
+                <div class="col-sm-12">
+                  <div class="well well-lg clearfix">
+                    <ul class="pager">
+                      <li class="next">
+                        <a class='btn btn-primary btn-default float-end' onclick="checkoutReview()">Continue <i
+                            class="fa fa-angle-right"></i></a>
+                      </li>
+                    </ul>
                   </div>
+                </div>
               </div>
-          </form>
-          
+            </form>
+
 
 
           </div>
@@ -284,7 +285,7 @@
 
       if (paymentMethod1.checked) {
         paymentMethodValue = paymentMethod1.value;
-      }else if (paymentMethod3.checked) {
+      } else if (paymentMethod3.checked) {
         paymentMethodValue = paymentMethod3.value;
       }
       else {
