@@ -3,6 +3,7 @@ const adminController = require('../controller/adminController')
 const categoryController = require('../controller/categoryController')
 const productController = require('../controller/productController')
 const orderController=require('../controller/orderController')
+const couponController=require('../controller/couponController')
 const adminAuth = require('../middleware/adminAuth.js')
 const router=express.Router()
 const upload = require('../services/multer.js')
@@ -38,6 +39,10 @@ router.post('/admin/viewOrder',adminAuth,orderController.adminViewOrder)
 router.get('/orderView',adminAuth,orderController.orderView)
 router.post('/searchOrder',adminAuth,orderController.searchOrder)
 
+router.get('/couponManagement',adminAuth,couponController.couponManagement)
+router.post('/admin/addCoupon',adminAuth,couponController.addCoupon)
+router.get('/editCouponGet',adminAuth,couponController.editCouponGet)
+router.post('/admin/editCoupon',adminAuth,couponController.adminEditCoupon)
 
 
 

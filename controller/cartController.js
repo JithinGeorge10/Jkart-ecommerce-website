@@ -224,85 +224,85 @@ const orderPlaceComleted = async (req, res) => {
     }
 }
 
-const onlinePayment = async (req, res) => {
-    try {
-        const cartDet = await cartCollection.find({ userId: req.session.logged._id }).populate('productId');
-        const address = await addressCollection.find({ _id: req.session.selectedAddress })
-        console.log('address' + address)
-        // Check if the cartDet is empty
-        if (cartDet.length === 0) {
-            return res.status(400).send('Cart is empty');
-        }
-        var items = []
-        for (let i = 0; i < cartDet.length; i++) {
-            items.push({
-                'name': cartDet[i].productId.productName,
-                'price': cartDet[i].productId.productPrice,
-                'currency': 'USD',
-                'quantity': cartDet[i].productQuantity
+// const onlinePayment = async (req, res) => {
+//     try {
+//         const cartDet = await cartCollection.find({ userId: req.session.logged._id }).populate('productId');
+//         const address = await addressCollection.find({ _id: req.session.selectedAddress })
+//         console.log('address' + address)
+//         // Check if the cartDet is empty
+//         if (cartDet.length === 0) {
+//             return res.status(400).send('Cart is empty');
+//         }
+//         var items = []
+//         for (let i = 0; i < cartDet.length; i++) {
+//             items.push({
+//                 'name': cartDet[i].productId.productName,
+//                 'price': cartDet[i].productId.productPrice,
+//                 'currency': 'USD',
+//                 'quantity': cartDet[i].productQuantity
 
-            })
-        }
+//             })
+//         }
 
-        console.log('items' + items)
-        console.log('cart' + cartDet)
-        const totalAmount = cartDet.reduce((acc, item) => acc + item.totalCostPerProduct, 0);
+//         console.log('items' + items)
+//         console.log('cart' + cartDet)
+//         const totalAmount = cartDet.reduce((acc, item) => acc + item.totalCostPerProduct, 0);
 
-        var create_payment_json = {
-            "intent": "sale",
-            "payer": {
-                "payment_method": "paypal"
-            },
-            "redirect_urls": {
-                "return_url": "http://localhost:3000/orderPlaceComleted",
-                "cancel_url": "http://localhost:3000/orderSummary"
-            },
-            "transactions": [{
-                "item_list": {
-                    "items": items
-                },
-                "amount": {
-                    "currency": "USD",
-                    "total": totalAmount.toFixed(2) // Fix the total amount to 2 decimal places
-                },
-                "description": "This is the payment description.",
-                "shipping": {
-                    name: {
-                        full_name: address.username
-                    },
-                    type: 'SHIPPING',
-                    address: {
-                        address_line_1: address.address1 + ' ' + address.address2,
-                        postal_code: address.zip_code,
-                        admin_area_2: address.city,
-                        admin_area_1: address.state
-                    }
-                }
-            }]
-        };
+//         var create_payment_json = {
+//             "intent": "sale",
+//             "payer": {
+//                 "payment_method": "paypal"
+//             },
+//             "redirect_urls": {
+//                 "return_url": "http://localhost:3000/orderPlaceComleted",
+//                 "cancel_url": "http://localhost:3000/orderSummary"
+//             },
+//             "transactions": [{
+//                 "item_list": {
+//                     "items": items
+//                 },
+//                 "amount": {
+//                     "currency": "USD",
+//                     "total": totalAmount.toFixed(2) // Fix the total amount to 2 decimal places
+//                 },
+//                 "description": "This is the payment description.",
+//                 "shipping": {
+//                     name: {
+//                         full_name: address.username
+//                     },
+//                     type: 'SHIPPING',
+//                     address: {
+//                         address_line_1: address.address1 + ' ' + address.address2,
+//                         postal_code: address.zip_code,
+//                         admin_area_2: address.city,
+//                         admin_area_1: address.state
+//                     }
+//                 }
+//             }]
+//         };
 
-        // Create payment
-        paypal.payment.create(create_payment_json, function (error, payment) {
-            if (error) {
-                console.error("Error in creating payment:", error);
-                return res.status(500).send('Error in creating payment');
-            } else {
-                console.log("Create Payment Response");
-                console.log(payment);
-                for (let i = 0; i < payment.links.length; i++) {
-                    if (payment.links[i].rel === 'approval_url') {
-                        return res.redirect(payment.links[i].href);
-                    }
-                }
+//         // Create payment
+//         paypal.payment.create(create_payment_json, function (error, payment) {
+//             if (error) {
+//                 console.error("Error in creating payment:", error);
+//                 return res.status(500).send('Error in creating payment');
+//             } else {
+//                 console.log("Create Payment Response");
+//                 console.log(payment);
+//                 for (let i = 0; i < payment.links.length; i++) {
+//                     if (payment.links[i].rel === 'approval_url') {
+//                         return res.redirect(payment.links[i].href);
+//                     }
+//                 }
 
-                res.status(500).send('Approval URL not found.');
-            }
-        });
-    } catch (err) {
-        console.error("Error in onlinePayment:", err);
-        res.status(500).send('Internal Server Error');
-    }
-};
+//                 res.status(500).send('Approval URL not found.');
+//             }
+//         });
+//     } catch (err) {
+//         console.error("Error in onlinePayment:", err);
+//         res.status(500).send('Internal Server Error');
+//     }
+// };
 
 
 
@@ -320,7 +320,7 @@ const phonePay = async (req, res) => {
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": req.session.logged._id,
             "amount": amountInPaise,
-            "redirectUrl": `http://localhost:3000/orderPlaceComleted?tranId=${merchantTransactionId}`,
+            "redirectUrl": `http://localhost:`+process.env.PORT+`/orderPlaceComleted?tranId=${merchantTransactionId}`,
             "redirectMode": "REDIRECT",
             "mobileNumber": req.session.logged.phone,
             "paymentInstrument": {
@@ -364,5 +364,5 @@ const phonePay = async (req, res) => {
 
 module.exports = {
     addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress,
-    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, onlinePayment, phonePay
+    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, phonePay
 }

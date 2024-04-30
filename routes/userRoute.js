@@ -70,7 +70,7 @@ router.get('/cartCheckout/review',userAuth,cartController.cartCheckoutreview)
 router.get('/orderSummary',userAuth,cartController.orderSummary)
 router.get('/orderPlace',userAuth,cartController.orderPlace)
 router.get('/orderPlaceComleted',userAuth,cartController.orderPlaceComleted)
-router.get('/onlinePayment',userAuth,cartController.onlinePayment)
+// router.get('/onlinePayment',userAuth,cartController.onlinePayment)
 router.get('/phonePay',userAuth,cartController.phonePay)
 
 
