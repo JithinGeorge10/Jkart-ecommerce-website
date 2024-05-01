@@ -67,6 +67,32 @@ const adminEditCoupon = async (req, res) => {
     }
 }
 
+
+
+const applyCoupon = async (req, res) => {
+    try {
+        if (/^\s*$/.test(req.query.code)) {
+            res.send({ noValue: true })
+        }else if(req.query.code){
+            const couponDet=await couponCollecton.findOne({couponCode:req.query.code})
+            if(couponDet){
+                if( req.session.grandTotal>couponDet.minimumPurchase){
+                    req.session.grandTotal=req.session.grandTotal-couponDet.couponAmount
+                }else{
+                    res.send({couponNotValid:true})
+                }
+              
+                res.send({success:true})
+            }else{
+                res.send({noCoupon:true})
+            }
+        }
+       console.log(req.query.code)
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 module.exports = {
-    couponManagement, addCoupon, editCouponGet, adminEditCoupon
+    couponManagement, addCoupon, editCouponGet, adminEditCoupon,applyCoupon
 }

@@ -3,6 +3,8 @@ const cartCollection = require('../model/cartModel')
 const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel')
+const couponCollection = require('../model/couponModel')
+
 const paypal = require('paypal-rest-sdk')
 const axios = require('axios');
 const uniqid = require('uniqid')
@@ -152,8 +154,8 @@ const orderSummary = async (req, res) => {
     try {
         const shippingAddress = await addressCollection.findOne({ _id: req.session.selectedAddress })
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
-
-        res.render('userPages/orderSummary', { userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: req.session.paymentMethod, grandTotal: req.session.grandTotal })
+        const couponDet=await couponCollection.find()
+        res.render('userPages/orderSummary', {couponDet, userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: req.session.paymentMethod, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
     }

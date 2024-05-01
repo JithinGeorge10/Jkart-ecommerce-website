@@ -7,6 +7,7 @@ const cartController = require('../controller/cartController')
 const userAuth = require('../middleware/userAuth.js')
 const userAuthFetch = require('../middleware/userAuthFetch.js')
 const wishlistController=require('../controller/wishlistController')
+const couponController=require('../controller/couponController')
 const router = express.Router()
 const passport=require('passport')
 
@@ -79,6 +80,9 @@ router.get('/wishlist',userAuth,wishlistController.wishlist)
 router.post('/addToWishlist',userAuthFetch,wishlistController.addToWishlist)
 router.delete('/removeWishlist',userAuthFetch,wishlistController.removeWishlist)
 router.post('/wishlist/AddToCart',userAuthFetch,wishlistController.AddToCart)
+
+
+router.post('/user/applyCoupon',userAuthFetch,couponController.applyCoupon)
 
 
 
