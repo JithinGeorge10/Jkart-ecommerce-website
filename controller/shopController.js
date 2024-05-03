@@ -2,12 +2,12 @@ const productCollection = require('../model/productModel')
 const categoryCollection = require('../model/categoryModel')
 const cartCollection = require('../model/cartModel')
 const wishlistCollection = require('../model/wishlistModel')
-
+const applyProductOffer = require("../helper/offer");
 
 const shopPage = async (req, res) => {
     try {
 
-
+        await applyProductOffer()
 
         const catProducts = await productCollection({ parentCategory: req.query.id, isListed: true, isDeleted: false })
 
