@@ -5,15 +5,15 @@ const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel')
 const couponCollection = require('../model/couponModel')
 
-const paypal = require('paypal-rest-sdk')
 const axios = require('axios');
 const uniqid = require('uniqid')
 const sha256 = require('sha256')
-paypal.configure({
-    'mode': process.env.PAYPAL_MODE, //sandbox or live
-    'client_id': process.env.PAYPAL_CLIENT_KEY,
-    'client_secret': process.env.PAYPAL_SECRET_KEY
-});
+
+// paypal.configure({
+//     'mode': process.env.PAYPAL_MODE, //sandbox or live
+//     'client_id': process.env.PAYPAL_CLIENT_KEY,
+//     'client_secret': process.env.PAYPAL_SECRET_KEY
+// });
 
 const addToCart = async (req, res) => {
     try {
@@ -141,9 +141,38 @@ const cartCheckoutreview = async (req, res) => {
         if (req.query.id === 'null') {
             res.send({ noPaymentMethod: true })
         } else {
-            req.session.paymentMethod = req.query.id
-            res.send({ success: true })
+
+            const cartDet = await cartCollection.find({ userId: req.session.logged._id })
+
+            if (req.session.orderDetails) {
+                const order=await orderCollection.find({_id:req.session.orderDetails})
+                await orderCollection.updateOne({ _id: req.session.orderDetails }, {
+                    $set: {
+                        userId: req.session.logged._id,
+                        paymentType: req.query.id,
+                        addressChosen: req.session.selectedAddress,
+                        cartData: cartDet,
+                        grandTotalCost: order.grandTotalCost
+                    }
+                });
+
+            } else {
+                order = await orderCollection.create({
+                    userId: req.session.logged._id,
+                    paymentType: req.query.id,
+                    addressChosen: req.session.selectedAddress,
+                    cartData: cartDet,
+                    grandTotalCost: req.session.grandTotal
+                });
+                req.session.orderDetails = order._id
+            }
+
         }
+
+        res.send({ success: true })
+
+
+
     } catch (err) {
         console.log(err);
     }
@@ -152,10 +181,13 @@ const cartCheckoutreview = async (req, res) => {
 
 const orderSummary = async (req, res) => {
     try {
-        const shippingAddress = await addressCollection.findOne({ _id: req.session.selectedAddress })
+
+        const orderDet = await orderCollection.findOne({ _id: req.session.orderDetails })
+        const shippingAddress = await addressCollection.findOne({ _id: orderDet.addressChosen })
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
-        const couponDet=await couponCollection.find()
-        res.render('userPages/orderSummary', {couponDet, userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: req.session.paymentMethod, grandTotal: req.session.grandTotal })
+        const couponDet = await couponCollection.find()
+        const couponAmount=await couponCollection.findOne({_id:orderDet.couponApplied})
+        res.render('userPages/orderSummary', { couponDet, orderDet, couponAmount,userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: orderDet.paymentType, grandTotal: orderDet.grandTotalCost })
     } catch (err) {
         console.log(err);
     }
@@ -164,30 +196,22 @@ const orderSummary = async (req, res) => {
 const orderPlace = async (req, res) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
-        if (req.session.paymentMethod == 'Cash On Delivery') {
-            await orderCollection.insertMany({
-                userId: req.session.logged._id,
-                paymentType: req.session.paymentMethod,
-                addressChosen: req.session.selectedAddress,
-                cartData: cartDet,
-                grandTotalCost: req.session.grandTotal
-            })
+        const orderDet = await orderCollection.findOne({ _id: req.session.orderDetails })
+        console.log('bla' + orderDet)
+        if (orderDet.paymentType === 'Cash On Delivery') {
+            console.log('orderplace COD');
+            await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'COD' } })
             for (let cart of cartDet) {
                 await productCollection.updateOne(
                     { _id: cart.productId },
                     { $inc: { productStock: -cart.productQuantity } }
                 );
             }
-
             await cartCollection.deleteMany({ userId: req.session.logged._id })
-
             res.send({ success: true })
-
-
-        }else if (req.session.paymentMethod == 'phone pe') {
+        } else if (orderDet.paymentType === 'phone pe') {
             res.send({ phonepe: true })
         }
-
 
     } catch (err) {
         console.log(err);
@@ -200,13 +224,7 @@ const orderPlaceComleted = async (req, res) => {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
         console.log(req.query.tranId);
         if (req.query.tranId) {
-            await orderCollection.insertMany({
-                userId: req.session.logged._id,
-                paymentType: req.session.paymentMethod,
-                addressChosen: req.session.selectedAddress,
-                cartData: cartDet,
-                grandTotalCost: req.session.grandTotal
-            })
+            await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'PhonePe' } })
             for (let cart of cartDet) {
                 await productCollection.updateOne(
                     { _id: cart.productId },
@@ -219,6 +237,7 @@ const orderPlaceComleted = async (req, res) => {
 
         const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 }).limit(1)
 
+        req.session.orderDetails=null
         req.session.grandTotal = null
         res.render('userPages/orderPlaced', { userLogged: req.session.logged, orderDet })
     } catch (err) {
@@ -226,105 +245,25 @@ const orderPlaceComleted = async (req, res) => {
     }
 }
 
-// const onlinePayment = async (req, res) => {
-//     try {
-//         const cartDet = await cartCollection.find({ userId: req.session.logged._id }).populate('productId');
-//         const address = await addressCollection.find({ _id: req.session.selectedAddress })
-//         console.log('address' + address)
-//         // Check if the cartDet is empty
-//         if (cartDet.length === 0) {
-//             return res.status(400).send('Cart is empty');
-//         }
-//         var items = []
-//         for (let i = 0; i < cartDet.length; i++) {
-//             items.push({
-//                 'name': cartDet[i].productId.productName,
-//                 'price': cartDet[i].productId.productPrice,
-//                 'currency': 'USD',
-//                 'quantity': cartDet[i].productQuantity
-
-//             })
-//         }
-
-//         console.log('items' + items)
-//         console.log('cart' + cartDet)
-//         const totalAmount = cartDet.reduce((acc, item) => acc + item.totalCostPerProduct, 0);
-
-//         var create_payment_json = {
-//             "intent": "sale",
-//             "payer": {
-//                 "payment_method": "paypal"
-//             },
-//             "redirect_urls": {
-//                 "return_url": "http://localhost:3000/orderPlaceComleted",
-//                 "cancel_url": "http://localhost:3000/orderSummary"
-//             },
-//             "transactions": [{
-//                 "item_list": {
-//                     "items": items
-//                 },
-//                 "amount": {
-//                     "currency": "USD",
-//                     "total": totalAmount.toFixed(2) // Fix the total amount to 2 decimal places
-//                 },
-//                 "description": "This is the payment description.",
-//                 "shipping": {
-//                     name: {
-//                         full_name: address.username
-//                     },
-//                     type: 'SHIPPING',
-//                     address: {
-//                         address_line_1: address.address1 + ' ' + address.address2,
-//                         postal_code: address.zip_code,
-//                         admin_area_2: address.city,
-//                         admin_area_1: address.state
-//                     }
-//                 }
-//             }]
-//         };
-
-//         // Create payment
-//         paypal.payment.create(create_payment_json, function (error, payment) {
-//             if (error) {
-//                 console.error("Error in creating payment:", error);
-//                 return res.status(500).send('Error in creating payment');
-//             } else {
-//                 console.log("Create Payment Response");
-//                 console.log(payment);
-//                 for (let i = 0; i < payment.links.length; i++) {
-//                     if (payment.links[i].rel === 'approval_url') {
-//                         return res.redirect(payment.links[i].href);
-//                     }
-//                 }
-
-//                 res.status(500).send('Approval URL not found.');
-//             }
-//         });
-//     } catch (err) {
-//         console.error("Error in onlinePayment:", err);
-//         res.status(500).send('Internal Server Error');
-//     }
-// };
-
-
-
 const phonePay = async (req, res) => {
     try {
 
+        const order = await orderCollection.findOne({ _id: req.session.orderDetails })
+        console.log('orderphonepe' + order);
         const payEndpoint = '/pg/v1/pay'
         const merchantTransactionId = uniqid()
-        const amountInPaise = req.session.grandTotal * 100;
-        console.log(req.session.grandTotal);
-        console.log(amountInPaise);
+        const amountInPaise = order.grandTotalCost * 100;
+        console.log('grandtotal' + amountInPaise);
         const payload =
         {
             "merchantId": process.env.MERCHANT_ID,
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": req.session.logged._id,
             "amount": amountInPaise,
-            "redirectUrl": `http://localhost:`+process.env.PORT+`/orderPlaceComleted?tranId=${merchantTransactionId}`,
+            "redirectUrl": `http://localhost:` + process.env.PORT + `/orderPlaceComleted?tranId=${merchantTransactionId}`,
             "redirectMode": "REDIRECT",
             "mobileNumber": req.session.logged.phone,
+            // "callbackUrl": `http://localhost:` + process.env.PORT + `/orderPlaceComleted?tranId=${merchantTransactionId}`,
             "paymentInstrument": {
                 "type": "PAY_PAGE"
             }
@@ -347,6 +286,7 @@ const phonePay = async (req, res) => {
                 request: base63EncodedPayload
             }
         };
+
         axios
             .request(options)
             .then(function (response) {
@@ -356,11 +296,18 @@ const phonePay = async (req, res) => {
                 // res.send({url})
             })
             .catch(function (error) {
+                console.log('error caught');
                 console.error(error);
             });
+
     } catch (err) {
+        console.log('error caught');
         console.log(err);
     }
+
+
+
+    
 }
 
 

@@ -1,9 +1,9 @@
 
-const couponCollecton = require('../model/couponModel')
-
+const couponCollection = require('../model/couponModel')
+const orderCollection = require('../model/ordersModel')
 const couponManagement = async (req, res) => {
     try {
-        const couponDet = await couponCollecton.find()
+        const couponDet = await couponCollection.find().sort({_id:-1})
         res.render('adminPages/couponManagement', { couponDet })
     } catch (err) {
         console.log(err);
@@ -15,7 +15,7 @@ const couponManagement = async (req, res) => {
 const addCoupon = async (req, res) => {
     try {
         console.log(req.body)
-        const newCoupon = new couponCollecton({
+        const newCoupon = new couponCollection({
             couponCode: req.body.couponCode,
             couponAmount: req.body.couponAmount,
             expiryDate: req.body.expiryDate,
@@ -23,6 +23,7 @@ const addCoupon = async (req, res) => {
             startDate: req.body.startDate
         })
         await newCoupon.save()
+
         res.send({ success: true })
     } catch (err) {
         console.log(err);
@@ -32,7 +33,7 @@ const addCoupon = async (req, res) => {
 const editCouponGet = async (req, res) => {
     try {
         console.log('edit' + req.query.couponId)
-        const couponDet = await couponCollecton.findOne({ _id: req.query.couponId })
+        const couponDet = await couponCollection.findOne({ _id: req.query.couponId })
         console.log(couponDet);
         res.render('adminPages/couponEdit', { couponDet })
     } catch (err) {
@@ -41,16 +42,16 @@ const editCouponGet = async (req, res) => {
 }
 const adminEditCoupon = async (req, res) => {
     try {
-        const couponExists = await couponCollecton.findOne({
+        const couponExists = await couponCollection.findOne({
             couponCode: { $regex: new RegExp('^' + req.body.couponCode + '$', 'i') }
         });
-        const couponDet = await couponCollecton.findOne({ _id: req.query.id })
+        const couponDet = await couponCollection.findOne({ _id: req.query.id })
         if (couponExists && couponDet.couponCode != req.body.couponCode) {
             res.send({ couponExists: true })
         } else if (/^\s*$/.test(req.body.couponCode) || /^\s*$/.test(req.body.minimumPurchase) || /^\s*$/.test(req.body.couponAmount)) {
             res.send({ noValue: true })
         } else {
-            await couponCollecton.updateOne({ _id: req.query.id }, {
+            await couponCollection.updateOne({ _id: req.query.id }, {
                 $set: {
                     couponCode: req.body.couponCode,
                     couponAmount: req.body.couponAmount,
@@ -73,26 +74,76 @@ const applyCoupon = async (req, res) => {
     try {
         if (/^\s*$/.test(req.query.code)) {
             res.send({ noValue: true })
-        }else if(req.query.code){
-            const couponDet=await couponCollecton.findOne({couponCode:req.query.code})
-            if(couponDet){
-                if( req.session.grandTotal>couponDet.minimumPurchase){
-                    req.session.grandTotal=req.session.grandTotal-couponDet.couponAmount
-                }else{
-                    res.send({couponNotValid:true})
+        } else if (req.query.code) {
+            const couponDet = await couponCollection.findOne({ couponCode: req.query.code })
+            if (couponDet) {
+                const order = await orderCollection.findOne({ _id: req.session.orderDetails })
+                console.log('order123');
+                if (order.grandTotalCost > couponDet.minimumPurchase) {
+                    await orderCollection.updateOne(
+                        { _id: req.session.orderDetails },
+                        {
+                            $set: { couponApplied: couponDet._id },
+                            $inc: { grandTotalCost: -couponDet.couponAmount }
+                        }
+                    );
+                    res.send({ success: true, orderDet: req.session.orderDetails })
+
+                } else {
+                    res.send({ couponNotValid: true })
                 }
-              
-                res.send({success:true})
-            }else{
-                res.send({noCoupon:true})
+
+
+            } else {
+                res.send({ noCoupon: true })
             }
         }
-       console.log(req.query.code)
+        console.log(req.query.code)
     } catch (err) {
         console.log(err);
     }
 }
 
+
+
+
+
+const removeCoupon = async (req, res) => {
+    try {
+        const order = await orderCollection.findOne({ _id: req.session.orderDetails });
+        const coupon = await couponCollection.findOne({ _id: order.couponApplied });
+        console.log(order);
+        await orderCollection.updateOne(
+            { _id: order._id },
+            {
+                $set: { 
+                    couponApplied: null 
+                },
+                $inc: { 
+                    grandTotalCost: +coupon.couponAmount 
+                }
+            }
+        );
+        res.send({ success: true });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ success: false, error: err.message }); // Sending an error response if something goes wrong
+    }
+};
+
+
+
+const deleteCoupon = async (req, res) => {
+    try {     
+        await couponCollection.deleteOne({_id:req.query.id})
+        res.send({success:true})
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ success: false, error: err.message }); // Sending an error response if something goes wrong
+    }
+};
+
+
 module.exports = {
-    couponManagement, addCoupon, editCouponGet, adminEditCoupon,applyCoupon
+    couponManagement, addCoupon, editCouponGet, adminEditCoupon, applyCoupon, removeCoupon,deleteCoupon
 }

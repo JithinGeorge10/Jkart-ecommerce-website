@@ -146,6 +146,7 @@
                 <th scope="col">Expiry Date</th>
                 <th scope="col">Status</th>
                 <th scope="col">Edit Coupon</th>
+                <th scope="col">Delete Coupon</th>
             </tr>
         </thead>
         <tbody>
@@ -174,11 +175,43 @@
                     </td>
                     <td>
                         <a href="/editCouponGet?couponId=<%= couponDet[i]._id %>">
-                            <button id="unblock<%i%>"  type="button"
-                                class="btn btn-info">Edit</button>
+                            <button id="unblock<%i%>" type="button" class="btn btn-info">Edit</button>
                         </a>
                     </td>
-                    
+                    <td>
+                        <button onclick="deleteCoupon('<%=couponDet[i]._id%>')" class="btn btn-danger">Delete</button>
+                    </td>
+                    <script>
+                        async function deleteCoupon(couponId) {
+
+                            await Swal.fire({
+                                title: "Are you sure?",
+                                text: "You won't be able to revert this!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Yes, delete it!"
+                            }).then(async (result) => {
+                                if (result.isConfirmed) {
+                                    let response = await fetch(`deleteCoupon?id=${couponId}`, {
+                                        method: 'DELETE'
+                                    })
+                                    let result = await response.json()
+                                    if (result.success) {
+                                        await Swal.fire({
+                                            icon: "success",
+                                            title: "Coupon Deleted",
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+                                        window.location.reload()
+                                    }
+                                }
+                            });
+
+                        }
+                    </script>
                 </tr>
                 <% } %>
 

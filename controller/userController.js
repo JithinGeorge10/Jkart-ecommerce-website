@@ -319,9 +319,33 @@ const updatePassword = async (req, res) => {
 }
 
 
+const googleCallback=async (req, res) => {
+    try {
+      // Add the user's name to the database
+      const user = await userCollection.findOneAndUpdate(
+        { email: req.user.email },
+        { $set: { name: req.user.displayName } },
+        { upsert: true }
+      );
+  
+      // Set the user session
+      req.session.logged = {
+        _id:user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone
+      };
+  
+      // Redirect to the homepage
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      res.redirect('/login');
+    }
+  } 
 
 module.exports = {
     landingPage, signUp, login, register, saveUser, logout, otpPage, verifyOtp, resendOtp, userLogin, forgotPassword,
     forgotPasswordsendOtp, forgotPasswordVerifyOtp, forgotPasswordVerifyOtpPost,
-    forgotPasswordresendOtp,forgotPasswordnewPassword,updatePassword
+    forgotPasswordresendOtp,forgotPasswordnewPassword,updatePassword,googleCallback
 }

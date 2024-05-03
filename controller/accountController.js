@@ -4,6 +4,7 @@ const userCollection = require('../model/userModel')
 const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel');
 const productCollection = require('../model/productModel');
+const walletCollection = require('../model/walletModel');
 
 const { productList } = require('./productController');
 const account = async (req, res) => {
@@ -115,8 +116,17 @@ const editAddressPost = async (req, res) => {
 }
 const allOrders = async (req, res) => {
     try {
-        const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 })
-        res.render('userPages/allOrders', { userLogged: req.session.logged, orderDet })
+        let orderDet = await orderCollection.find({ userId: req.session.logged._id, paymentId: { $ne: null } }).sort({ _id: -1 })
+        const ordersPerPage = 10
+        const totalPages = orderDet.length / ordersPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * ordersPerPage
+        const end = start + ordersPerPage
+        orderDet = orderDet.slice(start, end)
+
+
+
+        res.render('userPages/allOrders', { userLogged: req.session.logged, orderDet, totalPages })
     } catch (err) {
         console.log(err);
     }
@@ -132,6 +142,23 @@ const cancelOrder = async (req, res) => {
                 { $inc: { productStock: orderDet.cartData[i].productQuantity } }
             );
         }
+        console.log('user and order' + req.session.logged._id + orderDet.grandTotalCost)
+        await walletCollection.updateOne(
+            { userId: req.session.logged._id },
+            {
+                $inc: {
+                    walletBalance: orderDet.grandTotalCost
+                },
+                $push: {
+                    walletTransaction: {
+                        transactionDate: new Date(),
+                        transactionAmount: orderDet.grandTotalCost,
+                        transactionType: 'credit on cancel'
+                    }
+                }
+            },
+            { upsert: true }
+        );
 
         res.send({ success: true })
     } catch (err) {

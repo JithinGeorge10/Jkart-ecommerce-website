@@ -8,6 +8,8 @@ const userAuth = require('../middleware/userAuth.js')
 const userAuthFetch = require('../middleware/userAuthFetch.js')
 const wishlistController=require('../controller/wishlistController')
 const couponController=require('../controller/couponController')
+const userCollection = require('../model/userModel')
+const walletController=require('../controller/walletController')
 const router = express.Router()
 const passport=require('passport')
 
@@ -29,13 +31,7 @@ router.post('/forgotPassword/resendOtp', userController.forgotPasswordresendOtp)
 router.get('/newPassword', userController.forgotPasswordnewPassword)
 router.post('/forgotPassword/updatePassword', userController.updatePassword)
 router.get('/auth/google', passport.authenticate('google',{scope:['email','profile']}))
-router.get('/google/callback', passport.authenticate('google',{
-    successRedirect:'/',
-    failureRedirect:'/login'
-}))    
-
-
-
+router.get('/google/callback', passport.authenticate('google',{failureRedirect:'/login'}),userController.googleCallback)    
 router.get('/shop',shopController.shopPage)
 router.get('/singleProduct',shopController.singleProduct)
 router.post('/searchProducts',shopController.searchProducts)
@@ -75,7 +71,6 @@ router.get('/orderPlaceComleted',userAuth,cartController.orderPlaceComleted)
 router.get('/phonePay',userAuth,cartController.phonePay)
 
 
-
 router.get('/wishlist',userAuth,wishlistController.wishlist)
 router.post('/addToWishlist',userAuthFetch,wishlistController.addToWishlist)
 router.delete('/removeWishlist',userAuthFetch,wishlistController.removeWishlist)
@@ -83,8 +78,8 @@ router.post('/wishlist/AddToCart',userAuthFetch,wishlistController.AddToCart)
 
 
 router.post('/user/applyCoupon',userAuthFetch,couponController.applyCoupon)
+router.post('/user/removeCoupon',userAuthFetch,couponController.removeCoupon)
 
-
-
+router.get('/wallet',userAuth,walletController.wallet)
 
 module.exports = router
