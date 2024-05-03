@@ -49,7 +49,8 @@ router.delete('/deleteCoupon',adminAuth,couponController.deleteCoupon)
 
 router.get('/productOfferManagement',adminAuth,offerController.productOfferManagement)
 router.post('/addProductOffer',adminAuth,offerController.addProductOffer)
-
+router.get('/editProductOfferGet',adminAuth,offerController.editProductOfferGet)
+router.post('/admin/editProductOffer',adminAuth,offerController.editProductOffer)
 
 
 module.exports=router

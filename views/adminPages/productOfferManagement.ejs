@@ -38,13 +38,22 @@
                     <td>
                         <%=offerDetail[i].endDate.toDateString()%>
                     </td>
-                    <td>
-                        <%=offerDetail[i].currentStatus%>
-                    </td>
-                    <td>
-                      <button>Edit</button>
-                    </td>
-                    
+                    <% if(offerDetail[i].currentStatus==true){ %>
+                        <td>
+                            available
+                        </td>
+                        <% }else{ %>
+                            <td>
+                                Not available
+                            </td>
+                            <% } %>
+
+                                <td>
+                                    <a href="/editProductOfferGet?offerId=<%= offerDetail[i]._id %>">
+                                        <button id="unblock<%i%>" type="button" class="btn btn-info">Edit</button>
+                                    </a>
+                                </td>
+
 
                 </tr>
                 <%}%>
