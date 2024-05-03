@@ -1,0 +1,190 @@
+<%- include('../adminPartials/header') %>
+
+    <head>
+        <title>Admin-Product Offer</title>
+    </head>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Add Product Offer
+    </button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product</th>
+                <th scope="col">Percentage</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <% for(let i=0;i<offerDetail.length;i++){ %>
+                <tr>
+                    <td>
+                        <%=i+1%>
+                    </td>
+                    <td>
+                        <%=offerDetail[i].productName%>
+                    </td>
+                    <td>
+                        <%=offerDetail[i].productOfferPercentage%>%
+                    </td>
+                    <td>
+                        <%=offerDetail[i].startDate.toDateString()%>
+                    </td>
+                    <td>
+                        <%=offerDetail[i].endDate.toDateString()%>
+                    </td>
+                    <td>
+                        <%=offerDetail[i].currentStatus%>
+                    </td>
+                    <td>
+                      <button>Edit</button>
+                    </td>
+                    
+
+                </tr>
+                <%}%>
+
+
+        </tbody>
+    </table>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Product Offer</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductOffer">
+                        <div class="couponCodeInput p-2">
+                            <div class="btn-group">
+                                <select id="changeStatus" name="changeStatus" class="form control">
+                                    <option value="0" disabled selected>Select Product</option>
+                                    <%for(let i=0;i<productDet.length;i++){%>
+                                        <option>
+                                            <%=productDet[i].productName%>
+                                        </option>
+                                        <%}%>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="minimumPurchaseInput p-2">
+
+                            <div class="input-group">
+                                <input id="percentage" name="percentage" type="text" class="form-control"
+                                    placeholder="Product Offer Percentage">
+                            </div>
+                            <div class="form-text">Choose a percentage to be discounted.Between 5% and 90%
+                            </div>
+                        </div>
+
+                        <div class="startDateInput p-2">
+                            <label for="startDate">Offer Start Date: </label>
+                            <div class="input-group">
+                                <input id="startDate" name="startDate" id="startDate" type="date" class="form-control"
+                                    required>
+                            </div>
+                            <div class="form-text">Choose a start date for the discount to be considered.</div>
+                        </div>
+
+                        <div class="expiryDateInput p-2">
+                            <label for="expiryDate">Offer Expiry Date : </label>
+                            <div class="input-group">
+                                <input id="expiryDate" name="expiryDate" type="date" class="form-control" required>
+                            </div>
+                            <div class="form-text">Choose an exipry date for the discount to end.</div>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save
+                                changes</button>
+                        </div>
+                    </form>
+                </div>
+                <script>
+                    var today = new Date().toISOString().split('T')[0];
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.getElementById('startDate').setAttribute('min', today);
+                    });
+
+                    var startDateInput = document.getElementById('startDate');
+                    var endDateInput = document.getElementById('endDate');
+                    var expiryDateInput = document.getElementById('expiryDate');
+
+                    startDateInput.addEventListener('change', function () {
+                        var startDate = startDateInput.value;
+                        expiryDateInput.setAttribute('min', startDate);
+                    });
+
+                    expiryDateInput.addEventListener('change', function () {
+                        var endDate = endDateInput.value;
+                        expiryDateInput.setAttribute('max', endDate);
+                    });
+                </script>
+                <script>
+                    $('#addProductOffer ').validate({
+                        rules: {
+                            changeStatus: {
+                                required: true
+                            },
+                            percentage: {
+                                required: true,
+
+                            }
+                        },
+                        submitHandler: async (form, event) => {
+                            event.preventDefault()
+                            let formData = {
+                                productName: form.changeStatus.value,
+                                offerPercentage: form.percentage.value,
+                                startDate: form.startDate.value,
+                                expiryDate: form.expiryDate.value,
+
+                            }
+                            let response = await fetch('/addProductOffer', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(formData)
+                            })
+                            let result = await response.json()
+                            if (result.success) {
+                                await Swal.fire({
+                                    icon: "success",
+                                    title: "New Product Offer Added"
+                                })
+                                window.location.reload()
+
+                            } if (result.offerExists) {
+                                await Swal.fire({
+                                    icon: "error",
+                                    title: "Offer Already Applied for this product"
+                                })
+                            } if (result.noValue) {
+                                await Swal.fire({
+                                    icon: "error",
+                                    title: "Enter Product Offer Percentage"
+                                })
+                            } if (result.limitExceeds) {
+                                await Swal.fire({
+                                    icon: "error",
+                                    title: "Enter Product Offer Percentage between 5 and 90"
+                                })
+                            }
+                        }
+                    });
+
+                </script>
+
+            </div>
+
+        </div>
+    </div>

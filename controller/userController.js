@@ -325,17 +325,11 @@ const googleCallback=async (req, res) => {
       const user = await userCollection.findOneAndUpdate(
         { email: req.user.email },
         { $set: { name: req.user.displayName } },
-        { upsert: true }
+        { upsert: true,new :true }
       );
   
       // Set the user session
-      req.session.logged = {
-        _id:user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone
-      };
-  
+        req.session.logged = user
       // Redirect to the homepage
       res.redirect('/');
     } catch (err) {

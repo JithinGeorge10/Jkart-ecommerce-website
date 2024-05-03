@@ -47,7 +47,8 @@ router.post('/admin/editCoupon',adminAuth,couponController.adminEditCoupon)
 router.delete('/deleteCoupon',adminAuth,couponController.deleteCoupon)
 
 
-router.get('/offerManagement',adminAuth,offerController.offerManagement)
+router.get('/productOfferManagement',adminAuth,offerController.productOfferManagement)
+router.post('/addProductOffer',adminAuth,offerController.addProductOffer)
 
 
 
