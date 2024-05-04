@@ -60,9 +60,10 @@ const addProducts = async (req, res) => {
             parentCategory: req.body.parentCategory,
             productImage: imgFiles,
             productPrice: req.body.productPrice,
-            productStock: req.body.productStock
+            productStock: req.body.productStock,
+            offerPrice: req.body.productPrice
         })
-        const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') },isDeleted:false })
+        const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
             res.send({ noValue: true })
         }
@@ -83,7 +84,7 @@ const editProduct = async (req, res) => {
         const categoryDetail = await categoryCollection.find()
         const categoryDet = await categoryCollection.findOne({ _id: req.query.cid })
         const productDet = await productCollection.findOne({ _id: req.query.pid })
-        
+
         res.render('adminPages/editProduct', { categoryDet, productDet, categoryDetail })
     } catch (err) {
         console.log(err);
@@ -105,7 +106,7 @@ const editProducts = async (req, res) => {
             }
         }
 
-        const productDetails = await productCollection.find({ _id: { $ne: req.params.id }, productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') },isDeleted:false })
+        const productDetails = await productCollection.find({ _id: { $ne: req.params.id }, productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
             res.send({ noValue: true })
         }
@@ -119,7 +120,8 @@ const editProducts = async (req, res) => {
                     parentCategory: req.body.parentCategory,
                     productImage: imgFiles,
                     productPrice: req.body.productPrice,
-                    productStock: req.body.productStock
+                    productStock: req.body.productStock,
+                    offerPrice:req.body.productPrice
                 }
             })
             res.send({ success: true })
@@ -137,7 +139,7 @@ const searchProducts = async (req, res) => {
 
         const productDet = await productCollection.find({ productName: { $regex: new RegExp(req.body.search, 'i') } });
 
-   
+
         if (/^\s*$/.test(req.body.search)) {
             res.send({ noValue: true })
         } else if (productDet.length > 0) {
@@ -153,7 +155,7 @@ const searchProducts = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-   
+
         await productCollection.updateOne({ _id: req.query.id }, { $set: { isDeleted: true } })
         res.send({ deleted: true })
     } catch (err) {

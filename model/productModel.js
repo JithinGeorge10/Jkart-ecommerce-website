@@ -7,8 +7,7 @@ const productSchema = new mongoose.Schema({
   productPrice: { type: Number, required: true },
   productStock: { type: Number, required: true },
   productOfferId: { type: mongoose.Types.ObjectId, default: null },
-  productOfferPercentage: { type: Number, default: null },
-  priceBeforeOffer : { type: Number, default: null },
+  offerPrice : { type: Number, default: null },
   isListed: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   wishlist:{ type: Boolean, default: false }
