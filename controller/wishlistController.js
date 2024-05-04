@@ -38,7 +38,8 @@ const removeWishlist = async (req, res) => {
 }
 const AddToCart = async (req, res) => {
     try {
-       
+        
+        
         const productDet = await productCollection.findOne({ _id: req.query.id })
        
         const cartDet = await cartCollection.findOne({ productId: req.query.id, userId: req.session.logged._id })
