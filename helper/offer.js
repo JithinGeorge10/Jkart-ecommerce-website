@@ -4,9 +4,9 @@ const ProductOfferModel = require("../model/productOfferModel");
 const applyProductOffer = async () => {
     try {
         const today = Date.now();
-  
+
         const offers = await ProductOfferModel.find().populate("productId");
-  
+        console.log(offers);
         for (const offer of offers) {
             if (offer.productId.offerPrice === offer.productId.productPrice) {
                 if (
@@ -33,4 +33,4 @@ const applyProductOffer = async () => {
 };
 
 
-module.exports =  applyProductOffer ;
+module.exports = applyProductOffer;

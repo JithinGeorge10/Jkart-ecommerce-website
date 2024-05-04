@@ -22,7 +22,7 @@ const addToCart = async (req, res) => {
 
         if (existingCartItem) {
             const updatedQuantity = parseInt(existingCartItem.productQuantity) + parseInt(req.query.qty);
-            const updatedTotalCost = updatedQuantity * productDet.productPrice;
+            const updatedTotalCost = updatedQuantity * productDet.offerPrice;
 
             await cartCollection.updateOne({ _id: existingCartItem._id }, {
                 $set: {
@@ -35,7 +35,7 @@ const addToCart = async (req, res) => {
                 userId: req.session.logged._id,
                 productId: req.query.pid,
                 productQuantity: req.query.qty,
-                totalCostPerProduct: req.query.qty * productDet.productPrice
+                totalCostPerProduct: req.query.qty * productDet.offerPrice
             });
         }
         req.session.cartDetails = await cartCollection.find({ userId: req.session.logged._id });
@@ -67,11 +67,11 @@ const qtyInc = async (req, res) => {
         await cartCollection.updateOne(
             { productId: req.query.id },
             {
-                $inc: { productQuantity: 1, totalCostPerProduct: productDet.productPrice },
+                $inc: { productQuantity: 1, totalCostPerProduct: productDet.offerPrice },
             }
         )
         req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
-        req.session.grandTotal = req.session.grandTotal + productDet.productPrice
+        req.session.grandTotal = req.session.grandTotal + productDet.offerPrice
         res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
