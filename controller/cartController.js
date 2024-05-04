@@ -304,10 +304,6 @@ const phonePay = async (req, res) => {
         console.log('error caught');
         console.log(err);
     }
-
-
-
-    
 }
 
 

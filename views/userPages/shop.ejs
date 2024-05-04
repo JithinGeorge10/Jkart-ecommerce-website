@@ -1,5 +1,9 @@
 <%- include('../userPartials/header') %>
-
+  <style>
+    .red-text {
+      color: red;
+    }
+  </style>
   <!-- LIGHT SECTION -->
   <section class="lightSection clearfix pageHeader">
     <div class="container">
@@ -191,8 +195,8 @@
                     </a>
                   </div>
                   <% if(productDet[i].isWishlisted==true){ %>
-                    <button id="removeWishlist<%=i%>" onclick="removeWishlist('<%=productDet[i]._id%>')" class='fa fa-heart'
-                      style='font-size: 24px; color: red; background: none; border: none;'>
+                    <button id="removeWishlist<%=i%>" onclick="removeWishlist('<%=productDet[i]._id%>')"
+                      class='fa fa-heart' style='font-size: 24px; color: red; background: none; border: none;'>
                     </button>
                     <% }else{ %>
                       <button id="wishlist<%=i%>" onclick="addToWishlist('<%=productDet[i]._id%>')" class='fa fa-heart'
@@ -236,21 +240,28 @@
                             }
                           }
                         </script>
-
                         <div class="productCaption clearfix">
                           <h5>
                             <%=productDet[i].productName%>
                           </h5>
-                          <h3>&#8377 <%=productDet[i].productPrice%>
-                          </h3>
+                          <% if(productDet[i].productPrice !=productDet[i].offerPrice) { %>
+                            <h3>&#8377 <%= productDet[i].offerPrice %> <span class="red-text"><s>&#8377 <%=productDet[i].productPrice %></s></span></h3>
+                            <% } else { %>
+                              <h3>&#8377 <%= productDet[i].productPrice %>
+                              </h3>
+                              <% } %>
 
-                          <% if(productDet[i].productStock===0){%>
-                            <h6 style="color: red;">Out of stock</h6>
-                            <% }%>
-                              <% if(productDet[i].productStock<10 && productDet[i].productStock>0){%>
-                                <h6 style="color: red;">Limited stock only <%=productDet[i].productStock%> left</h6>
-                                <% }%>
-                                  <!-- <h3><%=productDet[i].productStock%></h3> -->
+
+
+
+                                <% if(productDet[i].productStock===0){%>
+                                  <h6 style="color: red;">Out of stock</h6>
+                                  <% }%>
+                                    <% if(productDet[i].productStock<10 && productDet[i].productStock>0){%>
+                                      <h6 style="color: red;">Limited stock only <%=productDet[i].productStock%> left
+                                      </h6>
+                                      <% }%>
+                                        <!-- <h3><%=productDet[i].productStock%></h3> -->
                         </div>
                 </div>
               </div>
