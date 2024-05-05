@@ -36,5 +36,5 @@ const userSchema=new mongoose.Schema({
         default:false,
     }
 })
-
-module.exports=mongoose.model('users',userSchema)
+const users=mongoose.model('users',userSchema)
+module.exports=users

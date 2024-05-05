@@ -71,7 +71,7 @@ const qtyInc = async (req, res) => {
             }
         )
         req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
-        req.session.grandTotal = req.session.grandTotal + productDet.offerPrice
+        req.session.grandTotal = req.session.grandTotal + productDet.   
         res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
@@ -84,11 +84,11 @@ const qtyDec = async (req, res) => {
         await cartCollection.updateOne(
             { productId: req.query.id },
             {
-                $inc: { productQuantity: -1, totalCostPerProduct: -productDet.productPrice },
+                $inc: { productQuantity: -1, totalCostPerProduct: -productDet.offerPrice },
             }
         )
         req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
-        req.session.grandTotal = req.session.grandTotal - productDet.productPrice
+        req.session.grandTotal = req.session.grandTotal - productDet.offerPrice
 
         res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {

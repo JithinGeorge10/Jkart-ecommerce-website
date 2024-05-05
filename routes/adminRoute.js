@@ -6,6 +6,7 @@ const orderController=require('../controller/orderController')
 const couponController=require('../controller/couponController')
 const offerController=require('../controller/offerController')
 const adminAuth = require('../middleware/adminAuth.js')
+const salesReportController=require('../controller/salesReportController')
 const router=express.Router()
 const upload = require('../services/multer.js')
 
@@ -51,6 +52,9 @@ router.get('/productOfferManagement',adminAuth,offerController.productOfferManag
 router.post('/addProductOffer',adminAuth,offerController.addProductOffer)
 router.get('/editProductOfferGet',adminAuth,offerController.editProductOfferGet)
 router.post('/admin/editProductOffer',adminAuth,offerController.editProductOffer)
+
+
+router.get('/salesReport',adminAuth,salesReportController.salesReport)
 
 
 module.exports=router

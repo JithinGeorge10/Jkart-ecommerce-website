@@ -1,0 +1,58 @@
+<%- include('../adminPartials/header') %>
+
+    <head>
+        <title>Sales Report</title>
+    </head>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Order Date</th>
+                <th scope="col" colspan="2">No of items/Products</th> <!-- Span 2 columns for cartData -->
+                <th scope="col">Total Cost</th>
+                <th scope="col">Payment Method</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i=0; i<salesDetails.length; i++){ %>
+                <tr>
+                    <th scope="row"><%= i+1 %></th>
+                    <td><%= salesDetails[i].userId.name %></td>
+                    <td><%= salesDetails[i].orderDate.toDateString() %></td>
+                    <td colspan="2"> <!-- Span 2 columns for cartData -->
+                        <ul> <!-- Use an unordered list to display cartData items -->
+                            <% for(let j=0; j<salesDetails[i].cartData.length; j++){ %>
+                                <li>
+                                    <%= salesDetails[i].cartData[j].productQuantity %> 
+                                    <%= salesDetails[i].cartData[j].productId.productName %>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </td>
+                    <td><%= salesDetails[i].grandTotalCost %></td>
+                    <td><%= salesDetails[i].paymentType %></td>
+                    <td><%= salesDetails[i].orderStatus %></td>
+                </tr>
+            <% } %>
+        </tbody>
+       
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link">Pages</a></li>
+
+          <% for(let i=0;i<totalPages;i++){ %>
+            <li class="page-item"><a class="page-link" href="/salesReport?pageNo=<%=i+1%>">
+                <%=i+1%>
+              </a></li>
+            <% } %>
+
+              <!-- <li class="page-item"><a class="page-link" href="/shop?pageId=2">2</a></li>
+          <li class="page-item"><a class="page-link" href="/shop?pageId=3">3</a></li> -->
+
+
+              <!-- <li class="page-item"><a class="page-link">Next</a></li> -->
+        </ul>
+      </nav>

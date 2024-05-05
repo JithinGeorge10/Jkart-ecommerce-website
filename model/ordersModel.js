@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
     paymentId: { type: String,default: null },
     couponApplied: { type: mongoose.Types.ObjectId , default: null, ref: 'coupons' },
   
-} , { timestamps: true }
+} , { timestamps: true,strictPopulate: false }
 )
-
-module.exports=mongoose.model('order',orderSchema)
+const orders=mongoose.model('order',orderSchema)
+module.exports= orders
