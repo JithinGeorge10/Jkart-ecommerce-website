@@ -99,11 +99,13 @@
       </div>
       <div class="image-preview">
         <% for(let i=0;i<productDet.productImage.length;i++){ %>
-          <div class="image-box">
+        <div class="image-box">
             <img src="assets/img/uploads/<%=productDet.productImage[i]%>" class="product-image">
-          </div>
+            <button class="btn btn-danger" type="button">X</button>
+        </div>
         <% } %>
-      </div>
+    </div>
+    
       <div class="form-group">
         <label for="images">Add image</label>
         <input accept="image/*" type="file" name="images" class="form-control-file" id="images" multiple>
