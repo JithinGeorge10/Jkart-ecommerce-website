@@ -133,6 +133,7 @@
                 window.location.reload()
               }
             }
+          
           </script>
 
 
@@ -149,8 +150,6 @@
             <button type="button" onclick="fnSearch()" class="btn btn-primary" data-mdb-ripple-init>
               <i class="fas fa-search"></i>
             </button>
-
-
           </div>
 
 
@@ -196,10 +195,10 @@
                   </div>
                   <% if(productDet[i].isWishlisted==true){ %>
                     <button id="removeWishlist<%=i%>" onclick="removeWishlist('<%=productDet[i]._id%>')"
-                      class='fa fa-heart' style='font-size: 24px; color: red; background: none; border: none;'>
+                      class='fa fa-heart fa-beat' style='font-size: 24px; color: red; background: none; border: none;'>
                     </button>
                     <% }else{ %>
-                      <button id="wishlist<%=i%>" onclick="addToWishlist('<%=productDet[i]._id%>')" class='fa fa-heart'
+                      <button id="wishlist<%=i%>" onclick="addToWishlist('<%=productDet[i]._id%>')" class='fa fa-heart fa-beat'
                         style='font-size: 24px; color: white; background: none; border: none; text-shadow: 0 0 5px black;'>
                       </button>
                       <% } %>

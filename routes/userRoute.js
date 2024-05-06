@@ -39,6 +39,8 @@ router.get('/shop/filter/:by',shopController.filter)
 router.get('/shop/sort',shopController.shopSort)
 router.post('/clearFilter',shopController.clearFilter)
 
+
+
 router.get('/account',userAuth,accountController.account)
 router.post('/editProfile',userAuth,accountController.editProfile)
 router.get('/addAddress',userAuth,accountController.addAddress)

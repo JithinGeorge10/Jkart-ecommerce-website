@@ -90,19 +90,21 @@ const editProduct = async (req, res) => {
         console.log(err);
     }
 }
-
 const editProducts = async (req, res) => {
     try {
+        let imgFiles = [];
         if (req.files.length === 0) {
             // No new images uploaded, retain existing images
             const existingProduct = await productCollection.findOne({ _id: req.params.id });
-            var imgFiles = existingProduct.productImage;
-        } else if (req.files.length < 3) {
-            res.send({ noImage: true })
+            imgFiles = existingProduct.productImage;
         } else {
-            var imgFiles = []
+            // New images uploaded
+            const existingProduct = await productCollection.findOne({ _id: req.params.id });
+            imgFiles = existingProduct.productImage || [];
+
+            // Append new image filenames to the existing ones
             for (let i = 0; i < req.files.length; i++) {
-                imgFiles[i] = req.files[i].filename
+                imgFiles.push(req.files[i].filename);
             }
         }
 
@@ -121,7 +123,7 @@ const editProducts = async (req, res) => {
                     productImage: imgFiles,
                     productPrice: req.body.productPrice,
                     productStock: req.body.productStock,
-                    offerPrice:req.body.productPrice
+                    offerPrice: req.body.productPrice
                 }
             })
             res.send({ success: true })
@@ -132,6 +134,7 @@ const editProducts = async (req, res) => {
         console.log(err);
     }
 }
+
 
 
 const searchProducts = async (req, res) => {
