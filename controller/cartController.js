@@ -71,8 +71,8 @@ const qtyInc = async (req, res) => {
             }
         )
         req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
-        req.session.grandTotal = req.session.grandTotal + productDet.   
-        res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
+        req.session.grandTotal = req.session.grandTotal + productDet.
+            res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
     }
@@ -109,12 +109,24 @@ const removeCart = async (req, res) => {
 
 const cartCheckout = async (req, res) => {
     try {
-        const addressDet = await addressCollection.find({ userId: req.session.logged._id })
+        const addressDet = await addressCollection.find({ userId: req.session.logged._id, setAsDefault: true })
         res.render('userPages/cartCheckout', { userLogged: req.session.logged, userAddress: addressDet })
     } catch (err) {
         console.log(err);
     }
 }
+
+
+const changeAddressGet = async (req, res) => {
+    try {
+        const addressDet = await addressCollection.find({ userId: req.session.logged._id, setAsDefault: false })
+        res.render('userPages/changeAddress', { userLogged: req.session.logged, userAddress: addressDet })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 
 const cartCheckoutAddress = async (req, res) => {
     try {
@@ -145,7 +157,7 @@ const cartCheckoutreview = async (req, res) => {
             const cartDet = await cartCollection.find({ userId: req.session.logged._id })
 
             if (req.session.orderDetails) {
-                const order=await orderCollection.find({_id:req.session.orderDetails})
+                const order = await orderCollection.find({ _id: req.session.orderDetails })
                 await orderCollection.updateOne({ _id: req.session.orderDetails }, {
                     $set: {
                         userId: req.session.logged._id,
@@ -186,8 +198,8 @@ const orderSummary = async (req, res) => {
         const shippingAddress = await addressCollection.findOne({ _id: orderDet.addressChosen })
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
         const couponDet = await couponCollection.find()
-        const couponAmount=await couponCollection.findOne({_id:orderDet.couponApplied})
-        res.render('userPages/orderSummary', { couponDet, orderDet, couponAmount,userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: orderDet.paymentType, grandTotal: orderDet.grandTotalCost })
+        const couponAmount = await couponCollection.findOne({ _id: orderDet.couponApplied })
+        res.render('userPages/orderSummary', { couponDet, orderDet, couponAmount, userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: orderDet.paymentType, grandTotal: orderDet.grandTotalCost })
     } catch (err) {
         console.log(err);
     }
@@ -237,7 +249,7 @@ const orderPlaceComleted = async (req, res) => {
 
         const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 }).limit(1)
 
-        req.session.orderDetails=null
+        req.session.orderDetails = null
         req.session.grandTotal = null
         res.render('userPages/orderPlaced', { userLogged: req.session.logged, orderDet })
     } catch (err) {
@@ -309,5 +321,5 @@ const phonePay = async (req, res) => {
 
 module.exports = {
     addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress,
-    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, phonePay
+    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, phonePay, changeAddressGet
 }
