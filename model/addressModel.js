@@ -11,7 +11,8 @@ const addressSchema = new mongoose.Schema({
   city: { type: String, required: true },
   state: { type: String, required: true },
   pincode: { type: Number, required: true },
-  addressTitle: { type: String, required: true }
+  addressTitle: { type: String, required: true },
+  setAsDefault:{type:Boolean,default:false}
 });
 
 module.exports=mongoose.model('address',addressSchema)

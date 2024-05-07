@@ -202,7 +202,16 @@ const accountViewOrder = async (req, res) => {
 }
 
 
+const setDefault = async (req, res) => {
+    try {
+        await addressCollection.updateMany({}, { $set: { setAsDefault: false } })
+        await addressCollection.updateOne({ _id: req.query.id }, { $set: { setAsDefault: true } })
+        res.send({ success: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
 module.exports = {
     account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
-    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder
+    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder, setDefault
 }

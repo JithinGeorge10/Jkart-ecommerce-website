@@ -52,6 +52,8 @@ router.post('/editAddressPost',userAuth,accountController.editAddressPost)
 router.get('/allOrders',userAuth,accountController.allOrders)
 router.post('/user/cancelOrder',userAuth,accountController.cancelOrder)
 router.post('/user/returnOrder',userAuth,accountController.returnOrder)
+router.post('/setDefault',userAuth,accountController.setDefault)
+
 
 router.post('/viewOrder',userAuth,accountController.viewOrder)
 router.get('/allOrder/viewOrder',userAuth,accountController.accountViewOrder)

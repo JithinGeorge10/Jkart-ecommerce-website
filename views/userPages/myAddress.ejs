@@ -86,14 +86,27 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
+
                                                     <button id="delete<%i%>"
                                                         onclick="addressDelete('<%=userAddress[i]._id %>')"
                                                         type="button" class="btn btn-danger">Delete</button>
 
 
-                                                        <button onclick="window.location.href='editAddressGet?id=<%= userAddress[i]._id %>'"
-                                                            id="edit<%= i %>" type="button" class="btn btn-primary">Edit</button>
-                                                    
+                                                    <button
+                                                        onclick="window.location.href='editAddressGet?id=<%= userAddress[i]._id %>'"
+                                                        id="edit<%= i %>" type="button"
+                                                        class="btn btn-primary">Edit</button>
+                                                    <% if(userAddress[i].setAsDefault==true){ %>
+                                                        <button id="default<%= i %>" type="button"
+                                                            class="btn btn-dark">Default Address</button>
+                                                        <%}else{%>
+                                                            <button onclick="setDefault('<%=userAddress[i]._id%>')"
+                                                                id="default<%= i %>" type="button"
+                                                                class="btn btn-primary">Set
+                                                                as
+                                                                default</button>
+                                                            <% }%>
+
 
                                                 </div>
                                             </td>
@@ -141,7 +154,21 @@
 
         }
 
-
+        async function setDefault(addressID) {
+            let response = await fetch(`/setDefault?id=${addressID}`, {
+                method: 'POST'
+            })
+            let result = await response.json()
+            if (result.success) {
+                await Swal.fire({
+                    icon: "success",
+                    title: "Address set as default",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                window.location.reload()
+            }
+        }
     </script>
 
 
