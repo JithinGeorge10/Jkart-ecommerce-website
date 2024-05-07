@@ -26,6 +26,7 @@ router.get('/editProductGet',adminAuth,productController.editProduct)
 router.post('/editProductsPost/:id',adminAuth,upload.any(),productController.editProducts)
 router.post('/searchProduct',adminAuth,productController.searchProducts)
 router.get('/deleteProduct',adminAuth,productController.deleteProduct)
+router.post('/admin/editProduct/imageDelete',adminAuth,productController.imageDelete)
 
 
 

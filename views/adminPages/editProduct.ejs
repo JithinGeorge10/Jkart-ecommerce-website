@@ -58,8 +58,9 @@
       padding: 5px;
       margin-right: 10px;
     }
-    .error{
-     color: red;
+
+    .error {
+      color: red;
     }
   </style>
 </head>
@@ -68,7 +69,9 @@
   <div class="container">
     <nav class="navbar navbar-light bg-light justify-content-between">
       <a href="/admin"><img src="./assets/img/logo.png" alt="gg"></a>
-      <a href="/admin" style="text-decoration: none; color: black;"><h1>Jkart</h1></a>
+      <a href="/admin" style="text-decoration: none; color: black;">
+        <h1>Jkart</h1>
+      </a>
     </nav>
   </div>
   <div class="container">
@@ -76,36 +79,73 @@
     <form id="editProduct" enctype="multipart/form-data">
       <div class="form-group">
         <label for="productName">Product Name</label>
-        <input type="text" value="<%=productDet.productName%>" name="productName" class="form-control"
-          id="productName" maxlength="50" style="max-width: 200px;">
+        <input type="text" value="<%=productDet.productName%>" name="productName" class="form-control" id="productName"
+          maxlength="50" style="max-width: 200px;">
       </div>
       <div class="form-group">
         <label for="parentCategory">Parent Category</label>
         <select name="parentCategory" class="form-control" style="max-width: 200px;">
-          <option disabled selected><%= categoryDet.categoryName %></option>
+          <option disabled selected>
+            <%= categoryDet.categoryName %>
+          </option>
           <% for(let i=0;i<categoryDetail.length;i++){ %>
-            <option value="<%=categoryDetail[i]._id%>"><%=categoryDetail[i].categoryName%></option>
-          <% } %>
+            <option value="<%=categoryDetail[i]._id%>">
+              <%=categoryDetail[i].categoryName%>
+            </option>
+            <% } %>
         </select>
       </div>
       <div class="form-group">
         <span id="imageCount">
           <% if (productDet.productImage.length> 0) { %>
             <%=productDet.productImage.length%> images exist
-          <% } else { %>
-            No image exists
-          <% } %>
+              <% } else { %>
+                No image exists
+                <% } %>
         </span>
       </div>
       <div class="image-preview">
-        <% for(let i=0;i<productDet.productImage.length;i++){ %>
-        <div class="image-box">
-            <img src="assets/img/uploads/<%=productDet.productImage[i]%>" class="product-image">
-            <button class="btn btn-danger" type="button">X</button>
-        </div>
-        <% } %>
-    </div>
-    
+        <% for(let i=0; i < productDet.productImage.length; i++) { %>
+          <div class="image-box">
+            <img src="assets/img/uploads/<%= productDet.productImage[i] %>" class="product-image">
+            <button class="btn btn-danger" type="button"
+              onclick="deleteFn('<%=productDet._id%>','<%= productDet.productImage[i]%>')"
+              id="deleteButton<%= i %>">X</button>
+          </div>
+          <% } %>
+      </div>
+
+      <script>
+        async function deleteFn(productId, imageId) {
+          Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              let response = await fetch(`/admin/editProduct/imageDelete?imageId=${imageId}&productId=${productId}`, {
+                method: 'POST'
+              })
+              let result = await response.json()
+              if (result.success) {
+                await Swal.fire({
+                  icon: "success",
+                  title: "Image Deleted",
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+                window.location.reload()
+              }
+            }
+          });
+
+        }
+
+      </script>
       <div class="form-group">
         <label for="images">Add image</label>
         <input accept="image/*" type="file" name="images" class="form-control-file" id="images" multiple>
@@ -185,12 +225,12 @@
     });
 
     // Image preview
-    $('#images').on('change', function() {
+    $('#images').on('change', function () {
       $('#preview-container').empty();
       const files = Array.from(this.files);
       files.forEach(file => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           $('#preview-container').append(`
             <div class="image-box">
               <img src="${e.target.result}" class="product-image">

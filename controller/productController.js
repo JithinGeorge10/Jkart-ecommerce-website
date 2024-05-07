@@ -166,8 +166,23 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+const imageDelete = async (req, res) => {
+    try {
+        
+        await productCollection.updateOne(
+            { _id: req.query.productId },
+            { $pull: { productImage: req.query.imageId } }
+        )
+        res.send({success:true})
+
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 
 module.exports = {
     productManagement, productList, addProductGet, addProducts,
-    editProduct, editProducts, searchProducts, deleteProduct
+    editProduct, editProducts, searchProducts, deleteProduct, imageDelete
 }
