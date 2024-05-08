@@ -34,7 +34,7 @@
                             <h2>Welcome, <%= userLogged.name %></h2>
                             <h5>Email: <%= userLogged.email %></h5>
                             <div class="walletBalance">
-                                <h4>Wallet Balance: ₹<%= walletDet?.walletBalance.toFixed(2) %></h4>
+                                <h4>Wallet Balance: $<%= walletDet?.walletBalance.toFixed(2) %></h4>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
@@ -51,7 +51,7 @@
                                             <tr>
                                                 <td><%= i+1 %></td>
                                                 <td><%= walletDet?.walletTransaction[i].transactionDate.toDateString() %></td>
-                                                <td>₹<%= walletDet?.walletTransaction[i].transactionAmount.toFixed(2) %></td>
+                                                <td>$<%= walletDet?.walletTransaction[i].transactionAmount.toFixed(2) %></td>
                                                 <td><%= walletDet?.walletTransaction[i].transactionType %></td>
                                             </tr>
                                         <% } %>

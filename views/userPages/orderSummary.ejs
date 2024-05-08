@@ -113,7 +113,7 @@
               <% const currentDate=new Date(); for (let i=0; i < couponDet.length; i++) { if (currentDate>=
                 couponDet[i].startDate && currentDate <= couponDet[i].expiryDate) { %>
                   <div class="coupon">
-                    <h4>Coupon Code: <%= couponDet[i].couponCode %> for every purchase above ₹ <%=
+                    <h4>Coupon Code: <%= couponDet[i].couponCode %> for every purchase above $ <%=
                           couponDet[i].minimumPurchase %>
                     </h4>
                     <br>
@@ -305,7 +305,7 @@
                   <span class="tag">
                     <%=cartDetails[i].productId.productName%>
                   </span>
-                  <span class="val">₹<%=cartDetails[i].totalCostPerProduct%></span>
+                  <span class="val">$<%=cartDetails[i].totalCostPerProduct%></span>
                 </li>
                 <% } %>
                   <li class="d-flex justify-content-between">
@@ -314,19 +314,19 @@
                   </li>
                   <li class="d-flex justify-content-between">
                     <span class="tag">Estimated Tax</span>
-                    <span class="val">₹0.00 </span>
+                    <span class="val">$0.00 </span>
                   </li>
                   <% if(orderDet.couponApplied==null){ %>
                     <li></li>
                     <% }else{ %>
                       <li class="d-flex justify-content-between total">
                         <span class="tag">Discount Amount</span>
-                        <span class="val">₹<%=couponAmount.couponAmount%> </span>
+                        <span class="val">$<%=couponAmount.couponAmount%> </span>
                       </li>
                       <% } %>
                         <li class="d-flex justify-content-between total">
                           <span class="tag">Total</span>
-                          <span class="val">₹<%=orderDet.grandTotalCost%> </span>
+                          <span class="val">$<%=orderDet.grandTotalCost%> </span>
                         </li>
             </ul>
           </div>

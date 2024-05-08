@@ -340,7 +340,6 @@ const payPal = async (req, res) => {
                 'price': cartDet[i].productId.productPrice,
                 'currency': 'USD',
                 'quantity': cartDet[i].productQuantity
-
             })
         }
 

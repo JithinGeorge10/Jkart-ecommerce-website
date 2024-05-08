@@ -54,7 +54,7 @@
                         <td class="">
                           <%=cartDetails[i].productId.productName%>
                         </td>
-                        <td class="">₹ <%=cartDetails[i].productId.offerPrice%>
+                        <td class="">$ <%=cartDetails[i].productId.offerPrice%>
                         </td>
                         <td class="count-input">
 
@@ -73,7 +73,7 @@
 
                         </td>
                         <td>
-                          <h4 id="totalCostPerProduct<%=i%>"> ₹<%=cartDetails[i].totalCostPerProduct%>
+                          <h4 id="totalCostPerProduct<%=i%>"> $<%=cartDetails[i].totalCostPerProduct%>
                           </h4>
 
                         </td>
@@ -100,8 +100,8 @@
                               let result = await response.json()
                               if (result.success) {
                                 document.getElementById('productQuantity' + index).innerHTML = result.updatedPrice.productQuantity
-                                document.getElementById('totalCostPerProduct' + index).innerHTML = '₹' + result.updatedPrice.totalCostPerProduct
-                                document.getElementById('total-price').innerHTML = 'Grand Total : ₹'+result.grandTotal
+                                document.getElementById('totalCostPerProduct' + index).innerHTML = '$' + result.updatedPrice.totalCostPerProduct
+                                document.getElementById('total-price').innerHTML = 'Grand Total : $'+result.grandTotal
                                
                               }
                             } else {
@@ -128,8 +128,8 @@
                               let result = await response.json()
                               if (result.success) {
                                 document.getElementById('productQuantity' + index).innerHTML = result.updatedPrice.productQuantity
-                                document.getElementById('totalCostPerProduct' + index).innerHTML = '₹' + result.updatedPrice.totalCostPerProduct
-                                document.getElementById('total-price').innerHTML ='Grand Total : ₹'+result.grandTotal
+                                document.getElementById('totalCostPerProduct' + index).innerHTML = '$' + result.updatedPrice.totalCostPerProduct
+                                document.getElementById('total-price').innerHTML ='Grand Total : $'+result.grandTotal
                               }
                           } else {
                             await Swal.fire({
@@ -190,7 +190,7 @@
                 <div class="col-sm-5 ms-sm-auto">
                   <ul class="list-unstyled">
 
-                    <li id="total-price"> Grand Total   :   ₹<%=grandTotal%> </li>
+                    <li id="total-price"> Grand Total   :   $<%=grandTotal%> </li>
                   </ul>
                 </div>
               </div>

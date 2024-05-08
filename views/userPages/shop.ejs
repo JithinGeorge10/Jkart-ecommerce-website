@@ -79,19 +79,19 @@
                           <form action="/shop/filter/byPrice">
                             <label>
                               <input type="radio" name="priceRange" value="0" />
-                              Less than ₹500</label>
+                              Less than $500</label>
                             <br />
                             <label>
                               <input type="radio" name="priceRange" value="1" />
-                              ₹500 - ₹1000</label>
+                              $500 - $1000</label>
                             <br />
                             <label>
                               <input type="radio" name="priceRange" value="2" />
-                              ₹1000 - ₹1500</label>
+                              $1000 - $1500</label>
                             <br />
                             <label>
                               <input type="radio" name="priceRange" value="3" />
-                              ₹1500 above</label>
+                              $1500 above</label>
                             <br />
                             <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
                               check <i class="fas fa-search"></i>
@@ -244,9 +244,9 @@
                             <%=productDet[i].productName%>
                           </h5>
                           <% if(productDet[i].productPrice != productDet[i].offerPrice) { %>
-                            <h3>&#8377 <%= productDet[i].offerPrice %> <span class="red-text"><s>&#8377 <%= productDet[i].productPrice %></s></span></h3>
+                            <h3>$ <%= productDet[i].offerPrice %> <span class="red-text"><s>$ <%= productDet[i].productPrice %></s></span></h3>
                         <% } else { %>
-                            <h3>&#8377 <%= productDet[i].productPrice %></h3>
+                            <h3>$ <%= productDet[i].productPrice %></h3>
                         <% } %>
                         
 
