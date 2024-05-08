@@ -249,6 +249,9 @@
 
                       <input id="paymentMethod3" type="radio" name="paymentMethod" value="phone pe">
                       <label for="paymentMethod3"><span></span>Online Payment(PhonePe)</label>
+
+                      <input id="paymentMethod2" type="radio" name="paymentMethod" value="paypal">
+                      <label for="paymentMethod2"><span></span>Online Payment(PayPal)</label>
                     </div>
                   </div>
                 </div>
@@ -279,14 +282,16 @@
   <script>
     async function checkoutReview() {
       let paymentMethod1 = document.getElementById('paymentMethod1');
-
       let paymentMethod3 = document.getElementById('paymentMethod3');
+      let paymentMethod2 = document.getElementById('paymentMethod2');
       let paymentMethodValue;
 
       if (paymentMethod1.checked) {
         paymentMethodValue = paymentMethod1.value;
       } else if (paymentMethod3.checked) {
         paymentMethodValue = paymentMethod3.value;
+      }else if (paymentMethod2.checked) {
+        paymentMethodValue = paymentMethod2.value;
       }
       else {
         paymentMethodValue = null;

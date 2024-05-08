@@ -8,12 +8,12 @@ const couponCollection = require('../model/couponModel')
 const axios = require('axios');
 const uniqid = require('uniqid')
 const sha256 = require('sha256')
-
-// paypal.configure({
-//     'mode': process.env.PAYPAL_MODE, //sandbox or live
-//     'client_id': process.env.PAYPAL_CLIENT_KEY,
-//     'client_secret': process.env.PAYPAL_SECRET_KEY
-// });
+const paypal = require('paypal-rest-sdk')
+paypal.configure({
+    'mode': process.env.PAYPAL_MODE, //sandbox or live
+    'client_id': process.env.PAYPAL_CLIENT_KEY,
+    'client_secret': process.env.PAYPAL_SECRET_KEY
+});
 
 const addToCart = async (req, res) => {
     try {
@@ -223,6 +223,8 @@ const orderPlace = async (req, res) => {
             res.send({ success: true })
         } else if (orderDet.paymentType === 'phone pe') {
             res.send({ phonepe: true })
+        } else if (orderDet.paymentType === 'paypal') {
+            res.send({ paypal: true })
         }
 
     } catch (err) {
@@ -235,6 +237,7 @@ const orderPlaceComleted = async (req, res) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
         console.log(req.query.tranId);
+
         if (req.query.tranId) {
             await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'PhonePe' } })
             for (let cart of cartDet) {
@@ -319,7 +322,98 @@ const phonePay = async (req, res) => {
 }
 
 
+const payPal = async (req, res) => {
+    try {
+
+        const cartDet = await cartCollection.find({ userId: req.session.logged._id }).populate('productId');
+        console.log('cartDetails1' + cartDet);
+        const address = await addressCollection.find({ _id: req.session.selectedAddress })
+        console.log('address' + address)
+        // Check if the cartDet is empty
+        if (cartDet.length === 0) {
+            return res.status(400).send('Cart is empty');
+        }
+        var items = []
+        for (let i = 0; i < cartDet.length; i++) {
+            items.push({
+                'name': cartDet[i].productId.productName,
+                'price': cartDet[i].productId.productPrice,
+                'currency': 'USD',
+                'quantity': cartDet[i].productQuantity
+
+            })
+        }
+
+        console.log('items' + items)
+        console.log('cart' + cartDet)
+        const totalAmount = cartDet.reduce((acc, item) => acc + item.totalCostPerProduct, 0);
+        console.log(totalAmount);
+        var create_payment_json = {
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "redirect_urls": {
+                "return_url": `http://localhost:` + process.env.PORT + `/orderPlaceComleted`,
+                "cancel_url": `http://localhost:` + process.env.PORT + `/orderSummary`
+            },
+            "transactions": [{
+                "item_list": {
+                    "items": items
+                },
+                "amount": {
+                    "currency": "USD",
+                    "total": totalAmount.toFixed(2) // Fix the total amount to 2 decimal places
+                },
+                "description": "This is the payment description.",
+                "shipping": {
+                    name: {
+                        full_name: address.username
+                    },
+                    type: 'SHIPPING',
+                    address: {
+                        address_line_1: address.address1 + ' ' + address.address2,
+                        postal_code: address.zip_code,
+                        admin_area_2: address.city,
+                        admin_area_1: address.state
+                    }
+                }
+            }]
+        };
+
+        // Create payment
+        paypal.payment.create(create_payment_json, async function (error, payment) {
+            if (error) {
+                console.error("Error in creating payment:", error);
+                return res.status(500).send('Error in creating payment');
+            } else {
+                console.log("Create Payment Response");
+                console.log(payment);
+                await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: payment.id } })
+                for (let cart of cartDet) {
+                    await productCollection.updateOne(
+                        { _id: cart.productId },
+                        { $inc: { productStock: -cart.productQuantity } }
+                    );
+                }
+
+                await cartCollection.deleteMany({ userId: req.session.logged._id })
+                for (let i = 0; i < payment.links.length; i++) {
+                    if (payment.links[i].rel === 'approval_url') {
+                        return res.redirect(payment.links[i].href);
+                    }
+                }
+
+                res.status(500).send('Approval URL not found.');
+            }
+        });
+    } catch (err) {
+        console.error("Error in onlinePayment:", err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 module.exports = {
     addToCart, cart, qtyInc, qtyDec, removeCart, cartCheckout, cartCheckoutAddress,
-    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, phonePay, changeAddressGet
+    cartCheckoutPayment, cartCheckoutreview, orderSummary, orderPlace, orderPlaceComleted, phonePay, changeAddressGet, payPal
 }

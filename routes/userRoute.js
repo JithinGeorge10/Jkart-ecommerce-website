@@ -74,7 +74,7 @@ router.get('/orderPlace',userAuth,cartController.orderPlace)
 router.get('/orderPlaceComleted',userAuth,cartController.orderPlaceComleted)
 // router.get('/onlinePayment',userAuth,cartController.onlinePayment)
 router.get('/phonePay',userAuth,cartController.phonePay)
-
+router.get('/paypal',userAuth,cartController.payPal)
 
 router.get('/wishlist',userAuth,wishlistController.wishlist)
 router.post('/addToWishlist',userAuthFetch,wishlistController.addToWishlist)

@@ -3,7 +3,7 @@ const orderCollection = require('../model/ordersModel')
 const salesReport = async (req, res) => {
     try {
         const salesDet = await orderCollection
-            .find({ paymentId: { $exists: true } })
+            .find({ paymentId: { $exists: true },orderStatus:'Delivered' })
             .sort({ _id: -1 })
             .populate({
                 path: 'userId',

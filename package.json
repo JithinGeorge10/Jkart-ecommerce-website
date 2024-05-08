@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.4",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@stripe/stripe-js": "^3.3.0",
     "axios": "^1.6.8",

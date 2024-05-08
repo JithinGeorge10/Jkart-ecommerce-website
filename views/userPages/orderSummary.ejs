@@ -110,226 +110,230 @@
             </div>
             <hr>
             <div class="coupon-container">
-              <%
-const currentDate = new Date();
-for (let i = 0; i < couponDet.length; i++) {
-  if (currentDate >= couponDet[i].startDate && currentDate <= couponDet[i].expiryDate) {
-%>
-<div class="coupon">
-  <h4>Coupon Code: <%= couponDet[i].couponCode %> for every purchase above ₹ <%= couponDet[i].minimumPurchase %></h4>
-  <br>
-  <h5>Discount Price : <%= couponDet[i].couponAmount %></h5>
-  <p>Coupon Valid until <%= couponDet[i].expiryDate.toDateString() %></p>
-</div>
-<% } %>
-<% } %>
-
-<div class="coupon-form">
-  <input id="couponCode" type="text" class="form-control" placeholder="Enter Coupon Code">
-  <% if (orderDet.couponApplied == null) { %>
-  <button id="applyBtn" onclick="couponFn()" class="btn btn-primary">Apply</button>
-  <% } else { %>
-  <button id="removeBtn" onclick="couponRemoveFn()" class="btn btn-primary">Remove Coupon</button>
-  <% } %>
-</div>
-
-
-                          <!-- <button onclick="removeCoupon()" id="removeBtn" style="display: none;" class="btn btn-danger">Remove</button> -->
+              <% const currentDate=new Date(); for (let i=0; i < couponDet.length; i++) { if (currentDate>=
+                couponDet[i].startDate && currentDate <= couponDet[i].expiryDate) { %>
+                  <div class="coupon">
+                    <h4>Coupon Code: <%= couponDet[i].couponCode %> for every purchase above ₹ <%=
+                          couponDet[i].minimumPurchase %>
+                    </h4>
+                    <br>
+                    <h5>Discount Price : <%= couponDet[i].couponAmount %>
+                    </h5>
+                    <p>Coupon Valid until <%= couponDet[i].expiryDate.toDateString() %>
+                    </p>
                   </div>
-            </div>
-            <script>
-              async function couponFn() {
-
-                let couponCode = document.getElementById('couponCode').value;
-                let response = await fetch(`/user/applyCoupon?code=${couponCode}`, {
-                  method: 'POST'
-                })
-                let result = await response.json()
-                if (result.noValue) {
-                  await Swal.fire({
-                    icon: "error",
-                    title: "Enter Coupon Code"
-                  });
-                } if (result.noCoupon) {
-                  await Swal.fire({
-                    icon: "error",
-                    title: "Enter Valid Coupon Code"
-                  });
-                } if (result.success) {
-                  await Swal.fire({
-                    icon: "success",
-                    title: "Coupon Applied",
-                    showConfirmButton: false,
-                    timer: 1500
-                  });
-                  window.location.reload()
-
-
-                } if (result.couponNotValid) {
-                  await Swal.fire({
-                    icon: "error",
-                    title: "Not applicable for this amount of purchase"
-                  });
-                }
-              }
-
-
-              async function couponRemoveFn() {
-                let response = await fetch(`/user/removeCoupon`, {
-                  method: 'POST'
-                })
-                let result = await response.json()
-                if (result.success) {
-                  await Swal.fire({
-                    icon: "success",
-                    title: "Coupon Removed",
-                    showConfirmButton: false,
-                    timer: 1500
-                  });
-                }
-                window.location.reload()
-              }
-            </script>
-            <br>
-            <hr>
-
-
-            <div class="page-header mb-4">
-              <h4>Order Review</h4>
-            </div>
-
-            <div class="cartListInner review-inner row">
-              <form action="#" class="col-sm-12">
-                <div class="table-responsive">
-                  <table class="table">
-                    <thead>
-                      <tr class="text-nowrap">
-                        <th></th>
-                        <th>Product Name</th>
-                        <th></th>
-                        <th>Quantity</th>
-                        <th>Sub Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-
-                      <% for(let i=0;i<cartDetails.length;i++){ %>
-                        <tr>
-                          <td class="">
-
-                            <span class="cartImage"><img
-                                src="assets/img/uploads/<%=cartDetails[i].productId.productImage[0]%>"
-                                style="height: 60px; width: 60px; border-radius: 0;" alt="image"></span>
-                          </td>
-                          <td class="">
-                            <%=cartDetails[i].productId.productName%>
-                          </td>
-                          <td class=""></td>
-                          <td class="count-input">
-
-                            <input class="quantity" type="text" value="<%=cartDetails[i].productQuantity%>" disabled>
-
-                          </td>
-                          <td class="">
-                            <%=cartDetails[i].totalCostPerProduct%>
-                          </td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                  </table>
-                </div>
-              </form>
-            </div>
-            <div class="row shipping-info">
-              <div class="col-md-4">
-                <h5>Shipping Address</h5>
-                <address>
-                  <%=shippingAddress.username%> <br>
-                    <%=shippingAddress.phone%> <br>
-                      <%=shippingAddress.address1%> <br>
-                        <%=shippingAddress.address2%> <br>
-                          <%=shippingAddress.city%>-<%=shippingAddress.pincode%> <br>
-
-                </address>
-              </div>
-              <div class="col-md-4">
-                <h5>Shipping Method</h5>
-                <p>
-                  Delivered in 8-12 business days.
-                </p>
-              </div>
-              <div class="col-md-4">
-                <h5>Payment Method</h5>
-                <p>
-                  <%=paymentMethod%>
-                </p>
-              </div>
-            </div>
-            <div class="well well-lg clearfix">
-              <ul class="pager">
-                <li class="next"><a class='btn btn-primary btn-default float-end' onclick="fnPlaceOrder()">Continue
-                    <i class="fa fa-angle-right"></i></a></li>
-              </ul>
-            </div>
-            <script>
-              async function fnPlaceOrder() {
-
-
-                let response = await fetch('/orderPlace', {
-                  method: 'GET'
-                })
-                let result = await response.json()
-                if (result.success) {
-                  window.location.href = '/orderPlaceComleted'
-                } if (result.phonepe) {
-                  window.location.href = '/phonePay'
-
-                }
-
-              }
-            </script>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="summery-box">
-
-            <div class="order-summary">
-              <h4>Order Summary</h4>
-              <ul class="list-unstyled">
-                <% for(let i=0;i<cartDetails.length;i++){ %>
-                  <li class="d-flex justify-content-between">
-                    <span class="tag">
-                      <%=cartDetails[i].productId.productName%>
-                    </span>
-                    <span class="val">₹<%=cartDetails[i].totalCostPerProduct%></span>
-                  </li>
                   <% } %>
-                    <li class="d-flex justify-content-between">
-                      <span class="tag">Shipping & Handling</span>
-                      <span class="val">Free Delivery</span>
-                    </li>
-                    <li class="d-flex justify-content-between">
-                      <span class="tag">Estimated Tax</span>
-                      <span class="val">₹0.00 </span>
-                    </li>
-                    <% if(orderDet.couponApplied==null){ %>
-                      <li></li>
-                      <% }else{ %>
-                        <li class="d-flex justify-content-between total">
+                    <% } %>
+
+                      <div class="coupon-form">
+                        <input id="couponCode" type="text" class="form-control" placeholder="Enter Coupon Code">
+                        <% if (orderDet.couponApplied==null) { %>
+                          <button id="applyBtn" onclick="couponFn()" class="btn btn-primary">Apply</button>
+                          <% } else { %>
+                            <button id="removeBtn" onclick="couponRemoveFn()" class="btn btn-primary">Remove
+                              Coupon</button>
+                            <% } %>
+                      </div>
+
+
+                      <!-- <button onclick="removeCoupon()" id="removeBtn" style="display: none;" class="btn btn-danger">Remove</button> -->
+            </div>
+          </div>
+          <script>
+            async function couponFn() {
+
+              let couponCode = document.getElementById('couponCode').value;
+              let response = await fetch(`/user/applyCoupon?code=${couponCode}`, {
+                method: 'POST'
+              })
+              let result = await response.json()
+              if (result.noValue) {
+                await Swal.fire({
+                  icon: "error",
+                  title: "Enter Coupon Code"
+                });
+              } if (result.noCoupon) {
+                await Swal.fire({
+                  icon: "error",
+                  title: "Enter Valid Coupon Code"
+                });
+              } if (result.success) {
+                await Swal.fire({
+                  icon: "success",
+                  title: "Coupon Applied",
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+                window.location.reload()
+
+
+              } if (result.couponNotValid) {
+                await Swal.fire({
+                  icon: "error",
+                  title: "Not applicable for this amount of purchase"
+                });
+              }
+            }
+
+
+            async function couponRemoveFn() {
+              let response = await fetch(`/user/removeCoupon`, {
+                method: 'POST'
+              })
+              let result = await response.json()
+              if (result.success) {
+                await Swal.fire({
+                  icon: "success",
+                  title: "Coupon Removed",
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+              }
+              window.location.reload()
+            }
+          </script>
+          <br>
+          <hr>
+
+
+          <div class="page-header mb-4">
+            <h4>Order Review</h4>
+          </div>
+
+          <div class="cartListInner review-inner row">
+            <form action="#" class="col-sm-12">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr class="text-nowrap">
+                      <th></th>
+                      <th>Product Name</th>
+                      <th></th>
+                      <th>Quantity</th>
+                      <th>Sub Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <% for(let i=0;i<cartDetails.length;i++){ %>
+                      <tr>
+                        <td class="">
+
+                          <span class="cartImage"><img
+                              src="assets/img/uploads/<%=cartDetails[i].productId.productImage[0]%>"
+                              style="height: 60px; width: 60px; border-radius: 0;" alt="image"></span>
+                        </td>
+                        <td class="">
+                          <%=cartDetails[i].productId.productName%>
+                        </td>
+                        <td class=""></td>
+                        <td class="count-input">
+
+                          <input class="quantity" type="text" value="<%=cartDetails[i].productQuantity%>" disabled>
+
+                        </td>
+                        <td class="">
+                          <%=cartDetails[i].totalCostPerProduct%>
+                        </td>
+                      </tr>
+                      <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+          <div class="row shipping-info">
+            <div class="col-md-4">
+              <h5>Shipping Address</h5>
+              <address>
+                <%=shippingAddress.username%> <br>
+                  <%=shippingAddress.phone%> <br>
+                    <%=shippingAddress.address1%> <br>
+                      <%=shippingAddress.address2%> <br>
+                        <%=shippingAddress.city%>-<%=shippingAddress.pincode%> <br>
+
+              </address>
+            </div>
+            <div class="col-md-4">
+              <h5>Shipping Method</h5>
+              <p>
+                Delivered in 8-12 business days.
+              </p>
+            </div>
+            <div class="col-md-4">
+              <h5>Payment Method</h5>
+              <p>
+                <%=paymentMethod%>
+              </p>
+            </div>
+          </div>
+          <div class="well well-lg clearfix">
+            <ul class="pager">
+              <li class="next"><a class='btn btn-primary btn-default float-end' onclick="fnPlaceOrder()">Continue
+                  <i class="fa fa-angle-right"></i></a></li>
+            </ul>
+          </div>
+          <script>
+            async function fnPlaceOrder() {
+
+
+              let response = await fetch('/orderPlace', {
+                method: 'GET'
+              })
+              let result = await response.json()
+              if (result.success) {
+                window.location.href = '/orderPlaceComleted'
+              } if (result.phonepe) {
+                window.location.href = '/phonePay'
+
+              } if (result.paypal) {
+                window.location.href = '/paypal'
+              }
+
+            }
+          </script>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="summery-box">
+
+          <div class="order-summary">
+            <h4>Order Summary</h4>
+            <ul class="list-unstyled">
+              <% for(let i=0;i<cartDetails.length;i++){ %>
+                <li class="d-flex justify-content-between">
+                  <span class="tag">
+                    <%=cartDetails[i].productId.productName%>
+                  </span>
+                  <span class="val">₹<%=cartDetails[i].totalCostPerProduct%></span>
+                </li>
+                <% } %>
+                  <li class="d-flex justify-content-between">
+                    <span class="tag">Shipping & Handling</span>
+                    <span class="val">Free Delivery</span>
+                  </li>
+                  <li class="d-flex justify-content-between">
+                    <span class="tag">Estimated Tax</span>
+                    <span class="val">₹0.00 </span>
+                  </li>
+                  <% if(orderDet.couponApplied==null){ %>
+                    <li></li>
+                    <% }else{ %>
+                      <li class="d-flex justify-content-between total">
                         <span class="tag">Discount Amount</span>
                         <span class="val">₹<%=couponAmount.couponAmount%> </span>
                       </li>
-                        <% } %>
-                          <li class="d-flex justify-content-between total">
-                            <span class="tag">Total</span>
-                            <span class="val">₹<%=orderDet.grandTotalCost%> </span>
-                          </li>
-              </ul>
-            </div>
+                      <% } %>
+                        <li class="d-flex justify-content-between total">
+                          <span class="tag">Total</span>
+                          <span class="val">₹<%=orderDet.grandTotalCost%> </span>
+                        </li>
+            </ul>
           </div>
         </div>
-
       </div>
+
+    </div>
     </div>
   </section>
 

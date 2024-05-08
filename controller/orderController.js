@@ -6,7 +6,7 @@ const { productList } = require('./productController');
 
 const orderManagement = async (req, res) => {
     try {
-        let orderDet =  req.session.searchOrder||await orderCollection.find().populate('userId').sort({ _id: -1 })
+        let orderDet = req.session.searchOrder || await orderCollection.find({paymentId: {$ne: null}}).populate('userId').sort({ _id: -1 });
         const ordersPerPage = 10
         const totalPages = orderDet.length / ordersPerPage
         const pageNo = req.query.pageNo || 1
