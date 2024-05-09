@@ -71,12 +71,14 @@ const qtyInc = async (req, res) => {
             }
         )
         req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
-        req.session.grandTotal = req.session.grandTotal + productDet.
+        req.session.grandTotal = req.session.grandTotal + productDet.offerPrice
             res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
     }
 }
+
+
 const qtyDec = async (req, res) => {
     try {
 
