@@ -76,34 +76,51 @@
                                                                 <% } %>
                                                 </tr>
                                                 <script>
-                                                    async function cancelOrder(orderId) {
-                                                        Swal.fire({
-                                                            title: "Are you sure?",
-                                                            text: "You won't be able to revert this!",
-                                                            icon: "warning",
-                                                            showCancelButton: true,
-                                                            confirmButtonColor: "#3085d6",
-                                                            cancelButtonColor: "#d33",
-                                                            confirmButtonText: "Yes, Cancel this order!"
-                                                        }).then(async (result) => {
-                                                            if (result.isConfirmed) {
-                                                                let response = await fetch(`user/cancelOrder?id=${orderId}`, {
-                                                                    method: 'POST'
-                                                                })
-                                                                let result = await response.json()
-                                                                await Swal.fire({
+                                                  async function cancelOrder(orderId) {
+    // Open a modal to input cancel reason
+    const { value: cancelReason } = await Swal.fire({
+        title: 'Cancel Reason',
+        input: 'text',
+        inputLabel: 'Please provide a reason for cancellation',
+        inputPlaceholder: 'Enter your reason here...',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Submit'
+    });
 
-                                                                    icon: "success",
-                                                                    title: "Order Cancelled",
-                                                                    showConfirmButton: false,
-                                                                    timer: 1500
-                                                                });
-                                                                if (result.success) {
-                                                                    window.location.reload()
-                                                                }
-                                                            }
-                                                        });
-                                                    }
+    if (cancelReason) {
+        // Proceed with cancellation
+        await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: 'Ignore',
+            confirmButtonText: "Yes, Cancel this order!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let response = await fetch(`user/cancelOrder?id=${orderId}&reason=${cancelReason}`, {
+                    method: 'POST'
+                });
+                let result = await response.json();
+                await Swal.fire({
+                    icon: "success",
+                    title: "Order Cancelled",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                if (result.success) {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+}
+
                                                     async function returnOrder(orderId) {
                                                         Swal.fire({
                                                             title: "Are you sure?",

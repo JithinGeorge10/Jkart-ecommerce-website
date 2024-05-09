@@ -10,6 +10,7 @@ const orderSchema = new mongoose.Schema({
     grandTotalCost: { type: Number, required: true  },
     paymentId: { type: String,default: null },
     couponApplied: { type: mongoose.Types.ObjectId , default: null, ref: 'coupons' },
+    cancelReason:{type:String,default: null}
   
 } , { timestamps: true,strictPopulate: false }
 )

@@ -133,8 +133,8 @@ const allOrders = async (req, res) => {
 }
 const cancelOrder = async (req, res) => {
     try {
-
-        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled' } })
+        console.log('reason'+req.query.reason)
+        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled',cancelReason:req.query.reason } })
         const orderDet = await orderCollection.findOne({ _id: req.query.id })
         for (let i = 0; i < orderDet.cartData.length; i++) {
             await productCollection.updateOne(
