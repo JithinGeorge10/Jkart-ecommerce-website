@@ -142,23 +142,27 @@ const cancelOrder = async (req, res) => {
                 { $inc: { productStock: orderDet.cartData[i].productQuantity } }
             );
         }
-        console.log('user and order' + req.session.logged._id + orderDet.grandTotalCost)
-        await walletCollection.updateOne(
-            { userId: req.session.logged._id },
-            {
-                $inc: {
-                    walletBalance: orderDet.grandTotalCost
-                },
-                $push: {
-                    walletTransaction: {
-                        transactionDate: new Date(),
-                        transactionAmount: orderDet.grandTotalCost,
-                        transactionType: 'credit on cancel'
+        console.log('payment' + orderDet);
+        if (orderDet.paymentType == 'paypal') {
+            console.log('user and order' + req.session.logged._id + orderDet.grandTotalCost)
+            await walletCollection.updateOne(
+                { userId: req.session.logged._id },
+                {
+                    $inc: {
+                        walletBalance: orderDet.grandTotalCost
+                    },
+                    $push: {
+                        walletTransaction: {
+                            transactionDate: new Date(),
+                            transactionAmount: orderDet.grandTotalCost,
+                            transactionType: 'credit on cancel'
+                        }
                     }
-                }
-            },
-            { upsert: true }
-        );
+                },
+                { upsert: true }
+            );
+        }
+
 
         res.send({ success: true })
     } catch (err) {

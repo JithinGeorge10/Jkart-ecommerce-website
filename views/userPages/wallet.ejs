@@ -40,7 +40,7 @@
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th scope="col">#</th>
+                                            <th scope="col">*</th>
                                             <th scope="col">Transaction Date</th>
                                             <th scope="col">Transaction Amount</th>
                                             <th scope="col">Transaction Type</th>
@@ -49,7 +49,7 @@
                                     <tbody>
                                         <% for(let i=walletDet?.walletTransaction.length - 1; i >= 0; i--){ %>
                                             <tr>
-                                                <td><%= i+1 %></td>
+                                                <td>*</td>
                                                 <td><%= walletDet?.walletTransaction[i].transactionDate.toDateString() %></td>
                                                 <td>$<%= walletDet?.walletTransaction[i].transactionAmount.toFixed(2) %></td>
                                                 <td><%= walletDet?.walletTransaction[i].transactionType %></td>
