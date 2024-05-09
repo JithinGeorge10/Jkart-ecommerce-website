@@ -129,6 +129,12 @@
                                                                         timer: 1500
                                                                     });
                                                                     window.location.href='/cart'
+                                                                }if(result.cartExists){
+                                                                    await Swal.fire({
+                                                                        icon: "warning",
+                                                                        title: "Already Exists in cart",
+                                                                        timer: 1500
+                                                                    });
                                                                 }
                                                             }
                                                         });
