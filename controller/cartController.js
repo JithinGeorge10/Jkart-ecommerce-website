@@ -236,19 +236,19 @@ const orderPlace = async (req, res) => {
 const orderPlaceComleted = async (req, res) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
-        console.log(req.query.tranId);
+      
 
-        if (req.query.tranId) {
-            await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'PhonePe' } })
-            for (let cart of cartDet) {
-                await productCollection.updateOne(
-                    { _id: cart.productId },
-                    { $inc: { productStock: -cart.productQuantity } }
-                );
-            }
-
-            await cartCollection.deleteMany({ userId: req.session.logged._id })
+       
+        await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId:req.session.paymentId  } })
+        for (let cart of cartDet) {
+            await productCollection.updateOne(
+                { _id: cart.productId },
+                { $inc: { productStock: -cart.productQuantity } }
+            );
         }
+
+        await cartCollection.deleteMany({ userId: req.session.logged._id })
+        
 
         const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 }).limit(1)
 
@@ -388,15 +388,7 @@ const payPal = async (req, res) => {
             } else {
                 console.log("Create Payment Response");
                 console.log(payment);
-                await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: payment.id } })
-                for (let cart of cartDet) {
-                    await productCollection.updateOne(
-                        { _id: cart.productId },
-                        { $inc: { productStock: -cart.productQuantity } }
-                    );
-                }
-
-                await cartCollection.deleteMany({ userId: req.session.logged._id })
+                req.session.paymentId=payment.id
                 for (let i = 0; i < payment.links.length; i++) {
                     if (payment.links[i].rel === 'approval_url') {
                         return res.redirect(payment.links[i].href);
