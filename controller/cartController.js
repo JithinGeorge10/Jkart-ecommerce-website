@@ -4,7 +4,7 @@ const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel')
 const couponCollection = require('../model/couponModel')
-
+const walletCollection = require('../model/walletModel')
 const axios = require('axios');
 const uniqid = require('uniqid')
 const sha256 = require('sha256')
@@ -72,7 +72,7 @@ const qtyInc = async (req, res) => {
         )
         req.session.updatedPrice = await cartCollection.findOne({ productId: req.query.id })
         req.session.grandTotal = req.session.grandTotal + productDet.offerPrice
-            res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
+        res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
         console.log(err);
     }
@@ -227,6 +227,23 @@ const orderPlace = async (req, res) => {
             res.send({ phonepe: true })
         } else if (orderDet.paymentType === 'paypal') {
             res.send({ paypal: true })
+        } else if (orderDet.paymentType === 'wallet') {
+            await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'Wallet' } })
+            for (let cart of cartDet) {
+                await productCollection.updateOne(
+                    { _id: cart.productId },
+                    { $inc: { productStock: -cart.productQuantity } }
+                );
+            }
+            await cartCollection.deleteMany({ userId: req.session.logged._id })
+            ////
+        
+            await walletCollection.updateOne(
+                { userId: req.session.logged._id },
+                { $inc: { walletBalance: -orderDet.grandTotalCost } }
+            );
+
+            res.send({ success: true })
         }
 
     } catch (err) {
@@ -238,10 +255,10 @@ const orderPlace = async (req, res) => {
 const orderPlaceComleted = async (req, res) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
-      
 
-       
-        await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId:req.session.paymentId  } })
+
+
+        await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: req.session.paymentId } })
         for (let cart of cartDet) {
             await productCollection.updateOne(
                 { _id: cart.productId },
@@ -250,7 +267,7 @@ const orderPlaceComleted = async (req, res) => {
         }
 
         await cartCollection.deleteMany({ userId: req.session.logged._id })
-        
+
 
         const orderDet = await orderCollection.find({ userId: req.session.logged._id }).sort({ _id: -1 }).limit(1)
 
@@ -390,7 +407,7 @@ const payPal = async (req, res) => {
             } else {
                 console.log("Create Payment Response");
                 console.log(payment);
-                req.session.paymentId=payment.id
+                req.session.paymentId = payment.id
                 for (let i = 0; i < payment.links.length; i++) {
                     if (payment.links[i].rel === 'approval_url') {
                         return res.redirect(payment.links[i].href);
