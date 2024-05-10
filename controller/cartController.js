@@ -240,8 +240,21 @@ const orderPlace = async (req, res) => {
         
             await walletCollection.updateOne(
                 { userId: req.session.logged._id },
-                { $inc: { walletBalance: -orderDet.grandTotalCost } }
+                {
+                    $inc: {
+                        walletBalance: -orderDet.grandTotalCost
+                    },
+                    $push: {
+                        walletTransaction: {
+                            transactionDate: new Date(),
+                            transactionAmount: orderDet.grandTotalCost,
+                            transactionType: 'Debit on online payment'
+                        }
+                    }
+                },
+                { upsert: true }
             );
+            
 
             res.send({ success: true })
         }

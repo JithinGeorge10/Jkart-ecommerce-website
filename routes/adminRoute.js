@@ -54,6 +54,12 @@ router.post('/addProductOffer',adminAuth,offerController.addProductOffer)
 router.get('/editProductOfferGet',adminAuth,offerController.editProductOfferGet)
 router.post('/admin/editProductOffer',adminAuth,offerController.editProductOffer)
 
+router.get('/categoryOfferManagement',adminAuth,offerController.categoryOfferManagement)
+router.post('/addCategoryOffer',adminAuth,offerController.addCategoryOffer)
+router.get('/editCategoryOfferGet',adminAuth,offerController.editCategoryOfferGet)
+router.post('/admin/editCategoryOffer',adminAuth,offerController.editCategoryOffer)
+
+
 
 router.get('/salesReport',adminAuth,salesReportController.salesReport)
 
