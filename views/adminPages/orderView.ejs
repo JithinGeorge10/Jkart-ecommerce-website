@@ -88,6 +88,7 @@
                         <th scope="col">Quantity</th>
                         <th scope="col">Product Status</th>
                         <th scope="col">Change Status</th>
+                        <th scope="col">Return reason</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,9 +121,10 @@
                                             <option value="Cancelled">Cancelled</option>
                                         </select></td>
                                     <% } %>
-
+                                    <td> <%= orderDet.cartData[i].returnReason %></td>
                         </tr>
                         <% } %>
+                       
                 </tbody>
             </table>
         </div>
