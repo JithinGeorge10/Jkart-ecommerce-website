@@ -57,6 +57,7 @@ router.post('/setDefault',userAuth,accountController.setDefault)
 
 router.post('/viewOrder',userAuth,accountController.viewOrder)
 router.get('/allOrder/viewOrder',userAuth,accountController.accountViewOrder)
+router.post('/singleProductCancel',userAuth,accountController.singleProductCancel)
 
 
 router.post('/addToCart',userAuthFetch,cartController.addToCart)

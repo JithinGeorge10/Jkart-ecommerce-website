@@ -133,13 +133,14 @@ const register = async (req, res) => {
 
 const saveUser = async (req, res) => {
     try {
-
+        let referralCode= Math.floor(1000 + Math.random() * 9000);
         const bycryptpassword = bcrypt.hashSync(req.body.password, 10)
         const newUser = new userCollection({
             name: req.body.name,
             email: req.body.email,
             password: bycryptpassword,
-            phone: req.body.phone
+            phone: req.body.phone,
+            referralCode
         })
         await newUser.save()
 
@@ -173,7 +174,7 @@ const verifyOtp = async (req, res) => {
         const notExpired = usersOTP.expiryDate.toISOString() > new Date().toISOString()
         if (otpmatch && notExpired) {
             await userCollection.updateOne({ _id: req.session.logged._id }, { $set: { isVerified: true } })
-
+            
             res.status(200).send({ otpverified: true })
         } else {
             res.status(200).send({ otpinvalid: true })

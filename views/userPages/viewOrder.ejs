@@ -79,13 +79,15 @@
                                                                                 <%=addressDet?.username%>,<br>
                                                                                     <%=addressDet?.address1%>,<br>
                                                                                         <%=addressDet?.address2%>,<br>
-                                                                                        <%=addressDet?.city%>,<br>
-                                                                                        <%=addressDet?.pincode%>
+                                                                                            <%=addressDet?.city%>,<br>
+                                                                                                <%=addressDet?.pincode%>
                                                                             </td>
                                                                             <td>
-                                                                               
-                                                                                <h5><%=orderDet.orderStatus%></h5>
-                                                                               
+
+                                                                                <h5>
+                                                                                    <%=orderDet.orderStatus%>
+                                                                                </h5>
+
                                                                             </td>
                                                                         </tr>
 
@@ -95,7 +97,7 @@
                                                             </div>
                                                         </div>
 
-                                                       
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -114,31 +116,81 @@
                                                         <th>Price</th>
                                                         <th>Quantity</th>
                                                         <th>Sub Total</th>
+                                                        <th>Cancel</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
 
 
-                                                  <%  for(let i=0;i<productDet.length;i++){  %>
-                                                    <tr class="alert alert-dismissible fade show p-0 mb-0" role="alert">
-                                                        <td class="">
-                                                        
-                                                            <span class="cartImage"><img
-                                                                    src="/assets/img/uploads/<%=productDet[i].productImage[0]%>"style="height: 60px; width: 60px; border-radius: 0;"
-                                                                    alt="image"></span>
-                                                        </td>
-                                                        <td class=""><%=productDet[i].productName%></td>
-                                                        <td class=""><%=productDet[i].productPrice%></td>
-                                                        <td class=""><%=orderDet.cartData[i].productQuantity%></td>
-                                                        <td class="">$<%=orderDet.cartData[i].totalCostPerProduct%></td>
-                                                    </tr>
-                                                  <%  }  %>
+                                                    <% for(let i=0;i<productDet.length;i++){ %>
+                                                        <tr class="alert alert-dismissible fade show p-0 mb-0"
+                                                            role="alert">
+                                                            <td class="">
 
-                                                    
+                                                                <span class="cartImage"><img
+                                                                        src="/assets/img/uploads/<%=productDet[i].productImage[0]%>"
+                                                                        style="height: 60px; width: 60px; border-radius: 0;"
+                                                                        alt="image"></span>
+                                                            </td>
+                                                            <td class="">
+                                                                <%=productDet[i].productName%>
+                                                            </td>
+                                                            <td class="">
+                                                                <%=productDet[i].productPrice%>
+                                                            </td>
+                                                            <td class="">
+                                                                <%=orderDet.cartData[i].productQuantity%>
+                                                            </td>
+                                                            <td class="">$<%=orderDet.cartData[i].totalCostPerProduct%>
+                                                            </td>
+                                                            <%if(orderDet.cartData[i].status=='Cancelled'){%>
+                                                                <td><button class="btn btn-dark">cancelled</button></td>
+                                                                <% }else{ %>
+                                                                    <td><button
+                                                                            onclick="singleProductCancel(' <%=orderDet._id%>',' <%=orderDet.cartData[i]._id%>')"
+                                                                            class="btn btn-danger">Cancel</button>
+                                                                    </td>
+                                                                    <%} %>
 
-                                                    
+                                                        </tr>
+                                                        <% } %>
 
-                                                    
+
+                                                            <script>
+                                                                async function singleProductCancel(orderId, cartId) {
+                                                                    await Swal.fire({
+                                                                        title: "Are you sure?",
+                                                                        text: "You won't be able to revert this!",
+                                                                        icon: "warning",
+                                                                        showCancelButton: true,
+                                                                        confirmButtonColor: "#3085d6",
+                                                                        cancelButtonColor: "#d33",
+                                                                        confirmButtonText: "Yes, cancel it!",
+                                                                        cancelButtonText: "Ignore"
+                                                                    }).then(async (result) => {
+                                                                        if (result.isConfirmed) {
+                                                                            let response = await fetch(`/singleProductCancel?cartId=${cartId}&orderId=${orderId}`, {
+                                                                                method: 'POST'
+                                                                            })
+                                                                            let result = await response.json()
+                                                                            if (result.success) {
+                                                                                await Swal.fire({
+
+                                                                                    icon: "success",
+                                                                                    title: "Procuct Cancelled",
+                                                                                    showConfirmButton: false,
+                                                                                    timer: 1500
+                                                                                });
+                                                                                window.location.reload()
+                                                                            }
+                                                                        }
+                                                                    });
+
+                                                                }
+                                                            </script>
+
+
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -146,8 +198,10 @@
                                         <div class="row totalAmountArea">
                                             <div class="col-sm-5 ms-sm-auto">
                                                 <ul class="list-unstyled">
-                                                  
-                                                    <li>Grand Total <span class="grandTotal">$<%=orderDet.grandTotalCost%></span></li>
+
+                                                    <li>Grand Total <span class="grandTotal">$
+                                                            <%=orderDet.grandTotalCost%>
+                                                        </span></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -161,11 +215,13 @@
                                         </div>
                                         <div class="panel-body">
                                             <address>
-                                                <strong><%=addressDet?.username%>,</strong><br>
+                                                <strong>
+                                                    <%=addressDet?.username%>,
+                                                </strong><br>
                                                 <%=addressDet?.address1%>, <br>
-                                                <%=addressDet?.address2%>,<br>
-                                                <%=addressDet?.city%>,<br>
-                                               Pincode: <%=addressDet?.pincode%>
+                                                    <%=addressDet?.address2%>,<br>
+                                                        <%=addressDet?.city%>,<br>
+                                                            Pincode: <%=addressDet?.pincode%>
                                             </address>
                                         </div>
                                     </div>
@@ -178,10 +234,10 @@
                                         <div class="panel-body">
                                             <address>
                                                 <strong>Jkart</strong><br>
-                                               Beta Space, <br>
-                                               35/4,4th floor,Ram Nagar, <br>
-                                               Gandhipuram,<br>
-                                               Coimbatore-641009
+                                                Beta Space, <br>
+                                                35/4,4th floor,Ram Nagar, <br>
+                                                Gandhipuram,<br>
+                                                Coimbatore-641009
 
                                             </address>
                                         </div>
@@ -194,7 +250,9 @@
                                         </div>
                                         <div class="panel-body">
                                             <address>
-                                                <span><%=orderDet.paymentType%></span>
+                                                <span>
+                                                    <%=orderDet.paymentType%>
+                                                </span>
                                             </address>
                                         </div>
                                     </div>

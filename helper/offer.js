@@ -1,6 +1,6 @@
 const ProductModel = require("../model/productModel");
 const ProductOfferModel = require("../model/productOfferModel");
-
+const CategoryOfferModel = require("../model/categoryOfferModel");
 const applyProductOffer = async () => {
     try {
         const today = Date.now();
@@ -32,5 +32,40 @@ const applyProductOffer = async () => {
     }
 };
 
+const applyCategoryOffer = async () => {
+    try {
+        const today = new Date();
 
-module.exports = applyProductOffer;
+        const offers = await CategoryOfferModel.find({ currentStatus: true });
+        console.log('offers123'+offers);
+        const allProducts = await ProductModel.find();
+
+        for (const prod of allProducts) {
+            const currentOffer = offers.find(
+                (offer) => String(offer.categoryId) === String(prod.parentCategory)
+            );
+
+            if (
+                currentOffer &&
+                currentOffer.startDate <= today &&
+                currentOffer.endDate >= today
+            ) {
+                await ProductModel.findByIdAndUpdate(prod._id, {
+                    offerPrice: Math.floor(
+                        prod.productPrice - (prod.productPrice * currentOffer.productOfferPercentage) / 100
+                    ),
+                });
+            } else {
+                await ProductModel.findByIdAndUpdate(prod._id, {
+                    offerPrice: prod.price,
+                });
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
+
+module.exports = { applyProductOffer, applyCategoryOffer };

@@ -77,6 +77,7 @@
                     <th scope="col">Product Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
+                    <th scope="col">Product Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,8 +86,9 @@
                         <td><img src="assets/img/uploads/<%= productdet[i].productImage[0] %>" alt="Product Image"
                                 style="height: 100px; width: 100px; border-radius: 0;"></td>
                         <td><%= productdet[i].productName %></td>
-                        <td>₹ <%= productdet[i].productPrice %></td>
+                        <td>₹ <%= productdet[i].offerPrice %></td>
                         <td><%= orderDet.cartData[i].productQuantity %></td>
+                        <td><%= orderDet.cartData[i].status %></td>
                     </tr>
                 <% } %>
             </tbody>

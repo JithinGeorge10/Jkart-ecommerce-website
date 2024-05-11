@@ -5,7 +5,7 @@ const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel');
 const productCollection = require('../model/productModel');
 const walletCollection = require('../model/walletModel');
-
+const mongoose = require("mongoose");
 const { productList } = require('./productController');
 const account = async (req, res) => {
     try {
@@ -133,8 +133,8 @@ const allOrders = async (req, res) => {
 }
 const cancelOrder = async (req, res) => {
     try {
-        console.log('reason'+req.query.reason)
-        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled',cancelReason:req.query.reason } })
+        console.log('reason' + req.query.reason)
+        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled', cancelReason: req.query.reason } })
         const orderDet = await orderCollection.findOne({ _id: req.query.id })
         for (let i = 0; i < orderDet.cartData.length; i++) {
             await productCollection.updateOne(
@@ -215,7 +215,39 @@ const setDefault = async (req, res) => {
         console.log(err);
     }
 }
+
+const singleProductCancel = async (req, res) => {
+    try {
+        const orderId = req.query.orderId.trim();
+        const cartId = req.query.cartId.trim()
+        await orderCollection.updateOne(
+            { _id: new mongoose.Types.ObjectId(orderId), 'cartData._id': new mongoose.Types.ObjectId(cartId) },
+            { $set: { 'cartData.$.status': 'Cancelled' } }
+        );
+
+        const order = await orderCollection.findOne({ _id: new mongoose.Types.ObjectId(orderId) });
+        const allCancelled = order.cartData.every(item => item.status === 'Cancelled');
+
+        if (allCancelled) {
+            await orderCollection.updateOne(
+                { _id: new mongoose.Types.ObjectId(orderId) },
+                { $set: { orderStatus: 'Cancelled' } }
+            );
+        }
+
+
+        res.send({ success: true })
+
+
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
 module.exports = {
     account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
-    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder, setDefault
+    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder, setDefault, singleProductCancel
 }
