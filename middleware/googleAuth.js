@@ -7,7 +7,6 @@ passport.use(new GoogleStrategy({
     passReqToCallback: true
 },
     async function (request, accessToken, refreshToken, profile, done) {
-        console.log("Google Profile:", profile);
       
         return done (null,profile)
     }

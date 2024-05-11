@@ -1,113 +1,184 @@
 <%- include('../adminPartials/header') %>
-<head>
-    <title>Admin viewOrder</title>
-    <style>
-        .order-details {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-        }
 
-        .product-details-table th {
-            vertical-align: middle;
-        }
+    <head>
+        <title>Admin viewOrder</title>
+        <style>
+            .order-details {
+                margin-top: 20px;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 10px;
+            }
 
-        .payment-card {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #6c757d;
-            border-radius: 10px;
-        }
+            .product-details-table th {
+                vertical-align: middle;
+            }
 
-        .payment-card .card-title {
-            font-size: 24px;
-        }
+            .payment-card {
+                margin-top: 20px;
+                padding: 20px;
+                background-color: #6c757d;
+                border-radius: 10px;
+            }
 
-        .payment-card .card-text {
-            font-size: 18px;
-        }
-        .footer {
-            background-color: #343a40;
-            color: white;
-            text-align: center;
-            padding: 20px 0; /* Adjust padding as needed */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-        }
-    </style>
-</head>
-<h1 class="mt-5 mb-4 text-center">ORDER STATUS</h1>
+            .payment-card .card-title {
+                font-size: 24px;
+            }
 
-<div class="container order-details">
-    <h4>Order Number: <%= orderDet._id %></h4>
-    <div class="row">
-        <div class="col-md-6">
-            <h2>Status: <%= orderDet.orderStatus %></h2>
-            <h4>Order Date: <%= new Date(orderDet.orderDate).toDateString() %></h4>
-        </div>
-        <div class="col-md-6">
-            <div class="card border-info mb-3">
-                <div class="card-header">Address</div>
-                <div class="card-body">
-                    <h5 class="card-title"><%= addressDet?.addressTitle %></h5>
-                    <p class="card-text">
-                        <%= addressDet?.username %><br>
-                        Phone: <%= addressDet?.phone %><br>
-                        <%= addressDet?.address1 %><br>
-                        <%= addressDet?.address2 %><br>
-                        <%= addressDet?.city %>, <%= addressDet?.state %>, Pincode: <%= addressDet?.pincode %>
-                    </p>
+            .payment-card .card-text {
+                font-size: 18px;
+            }
+
+            .footer {
+                background-color: #343a40;
+                color: white;
+                text-align: center;
+                padding: 20px 0;
+                /* Adjust padding as needed */
+                bottom: 0;
+                left: 0;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <h1 class="mt-5 mb-4 text-center">ORDER STATUS</h1>
+
+    <div class="container order-details">
+        <h4>Order Number: <%= orderDet._id %>
+        </h4>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Status: <%= orderDet.orderStatus %>
+                </h2>
+                <h4>Order Date: <%= new Date(orderDet.orderDate).toDateString() %>
+                </h4>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-info mb-3">
+                    <div class="card-header">Address</div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <%= addressDet?.addressTitle %>
+                        </h5>
+                        <p class="card-text">
+                            <%= addressDet?.username %><br>
+                                Phone: <%= addressDet?.phone %><br>
+                                    <%= addressDet?.address1 %><br>
+                                        <%= addressDet?.address2 %><br>
+                                            <%= addressDet?.city %>, <%= addressDet?.state %>, Pincode: <%=
+                                                        addressDet?.pincode %>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<hr>
+    <hr>
 
-<div class="container">
-    <h1 class="mb-4">Product Details:</h1>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped product-details-table">
-            <thead>
-                <tr>
-                    <th scope="col">Product Image</th>
-                    <th scope="col">Product Name</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Product Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(let i=0; i<productdet.length; i++) { %>
+    <div class="container">
+        <h1 class="mb-4">Product Details:</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped product-details-table">
+                <thead>
                     <tr>
-                        <td><img src="assets/img/uploads/<%= productdet[i].productImage[0] %>" alt="Product Image"
-                                style="height: 100px; width: 100px; border-radius: 0;"></td>
-                        <td><%= productdet[i].productName %></td>
-                        <td>₹ <%= productdet[i].offerPrice %></td>
-                        <td><%= orderDet.cartData[i].productQuantity %></td>
-                        <td><%= orderDet.cartData[i].status %></td>
+                        <th scope="col">Product Image</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Product Status</th>
+                        <th scope="col">Change Status</th>
                     </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-</div>
+                </thead>
+                <tbody>
+                    <% for(let i=0; i<productdet.length; i++) { %>
+                        <tr>
+                            <td><img src="assets/img/uploads/<%= productdet[i].productImage[0] %>" alt="Product Image"
+                                    style="height: 100px; width: 100px; border-radius: 0;"></td>
+                            <td>
+                                <%= productdet[i].productName %>
+                            </td>
+                            <td>₹<%= productdet[i].offerPrice %>
+                            </td>
+                            <td>
+                                <%= orderDet.cartData[i].productQuantity %>
+                            </td>
+                            <td>
+                                <%= orderDet.cartData[i].status %>
+                            </td>
+                            <% if(orderDet.cartData[i].status=='Cancelled' ){ %>
+                                <td></td>
+                                <% }else{ %>
+                                    <td> <select id="changeStatus<%= i %>"
+                                            onchange="orderStatusChange('<%= i %>','<%= orderDet.cartData[i]._id %>','<%= orderDet._id %>')"
+                                            name="changeStatus" class="form control">
+                                            <option value="0" disabled selected>Change Status</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Shipped">Shipped</option>
+                                            <option value="Delivered">Delivered</option>
+                                            <option value="Return">Return</option>
+                                            <option value="Cancelled">Cancelled</option>
+                                        </select></td>
+                                    <% } %>
 
-<hr>
-
-<div class="container payment-card">
-    <div class="card text-white">
-        <div class="card-header">Payment</div>
-        <div class="card-body">
-            <h5 style="color: black;" class="card-title">Grand Total: ₹ <%= orderDet.grandTotalCost %></h5>
-            <p style="color: black;" class="card-text">Payment Method: <%= orderDet.paymentType %></p>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
+    <script>
+        async function orderStatusChange(index, cartId, orderId) {
+    await Swal.fire({
+        title: "Are you sure?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            let status = document.getElementById('changeStatus' + index).value;
 
-<footer class="footer">
-    <p>jkart &copy; 2024</p>
-</footer>
+            let response = await fetch(`/cartStatusChange?status=${status}&cartId=${cartId}&orderId=${orderId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                let result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "Product Status changed",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    // Reload the page after the status is updated
+                    window.location.reload();
+                }
+            } else {
+                console.error('Failed to update status');
+            }
+        }
+    });
+}
+
+    </script>
+    <hr>
+
+    <div class="container payment-card">
+        <div class="card text-white">
+            <div class="card-header">Payment</div>
+            <div class="card-body">
+                <h5 style="color: black;" class="card-title">Grand Total: ₹ <%= orderDet.grandTotalCost %>
+                </h5>
+                <p style="color: black;" class="card-text">Payment Method: <%= orderDet.paymentType %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>jkart &copy; 2024</p>
+    </footer>

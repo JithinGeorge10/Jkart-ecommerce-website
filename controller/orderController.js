@@ -2,6 +2,7 @@ const { trusted } = require('mongoose');
 const orderCollection = require('../model/ordersModel')
 const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel');
+const mongoose = require("mongoose")
 const { productList } = require('./productController');
 
 const orderManagement = async (req, res) => {
@@ -77,6 +78,34 @@ const searchOrder = async (req, res) => {
     }
 }
 
+const cartStatusChange = async (req, res) => {
+    try {
+        const orderId = req.query.orderId.trim();
+        const cartId = req.query.cartId.trim()
+       
+
+        await orderCollection.updateOne(
+            { _id: new mongoose.Types.ObjectId(orderId), 'cartData._id': new mongoose.Types.ObjectId(cartId) },
+            { $set: { 'cartData.$.status': req.query.status } }
+        );
+        const order = await orderCollection.findOne({ _id: new mongoose.Types.ObjectId(orderId) });
+
+        const sameStatus = order.cartData.every(item => item.status === req.query.status);
+
+        if (sameStatus) {
+            await orderCollection.updateOne(
+                { _id: new mongoose.Types.ObjectId(orderId) },
+                { $set: { orderStatus: req.query.status } }
+            );
+        }
+        res.send({success:true})
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
 module.exports = {
-    orderManagement, orderStatusChange, adminViewOrder, orderView,searchOrder
+    orderManagement, orderStatusChange, adminViewOrder, orderView,searchOrder,cartStatusChange
 }

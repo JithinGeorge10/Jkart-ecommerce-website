@@ -28,8 +28,6 @@ router.post('/searchProduct',adminAuth,productController.searchProducts)
 router.get('/deleteProduct',adminAuth,productController.deleteProduct)
 router.post('/admin/editProduct/imageDelete',adminAuth,productController.imageDelete)
 
-
-
 router.get('/categoryManagement',adminAuth,categoryController.categoryManagement)
 router.post('/addCategory',adminAuth,categoryController.addCategory)
 router.get('/categoryList',adminAuth,categoryController.categoryList)
@@ -41,6 +39,8 @@ router.post('/orderStatusChange',adminAuth,orderController.orderStatusChange)
 router.post('/admin/viewOrder',adminAuth,orderController.adminViewOrder)
 router.get('/orderView',adminAuth,orderController.orderView)
 router.post('/searchOrder',adminAuth,orderController.searchOrder)
+router.post('/cartStatusChange',adminAuth,orderController.cartStatusChange)
+
 
 router.get('/couponManagement',adminAuth,couponController.couponManagement)
 router.post('/admin/addCoupon',adminAuth,couponController.addCoupon)

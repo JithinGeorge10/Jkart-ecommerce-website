@@ -116,6 +116,7 @@
                                                         <th>Price</th>
                                                         <th>Quantity</th>
                                                         <th>Sub Total</th>
+                                                        <th>Product Status</th>
                                                         <th>Cancel</th>
                                                     </tr>
                                                 </thead>
@@ -143,14 +144,22 @@
                                                             </td>
                                                             <td class="">$<%=orderDet.cartData[i].totalCostPerProduct%>
                                                             </td>
+                                                            <td>
+                                                                <%=orderDet.cartData[i].status%>
+                                                            </td>
                                                             <%if(orderDet.cartData[i].status=='Cancelled'){%>
-                                                                <td><button class="btn btn-dark">cancelled</button></td>
-                                                                <% }else{ %>
+                                                                <td><button class="btn btn-dark">Cancelled</button></td>
+                                                                <% }else if(orderDet.cartData[i].status=='Delivered'
+                                                                    ){%>
                                                                     <td><button
-                                                                            onclick="singleProductCancel(' <%=orderDet._id%>',' <%=orderDet.cartData[i]._id%>')"
-                                                                            class="btn btn-danger">Cancel</button>
-                                                                    </td>
-                                                                    <%} %>
+                                                                            onclick="returnProduct(' <%=orderDet._id%>',' <%=orderDet.cartData[i]._id%>')"
+                                                                            class="btn btn-primary">Return</button></td>
+                                                                    <% }else{ %>
+                                                                        <td><button
+                                                                                onclick="singleProductCancel(' <%=orderDet._id%>',' <%=orderDet.cartData[i]._id%>')"
+                                                                                class="btn btn-danger">Cancel</button>
+                                                                        </td>
+                                                                        <%} %>
 
                                                         </tr>
                                                         <% } %>
@@ -186,6 +195,49 @@
                                                                         }
                                                                     });
 
+                                                                }
+
+                                                                async function returnProduct(orderId, cartId) {
+                                                                    const { value: returnReason } = await Swal.fire({
+                                                                        title: 'Return Reason',
+                                                                        input: 'text',
+                                                                        inputLabel: 'Please provide a reason for Returning the product',
+                                                                        inputPlaceholder: 'Enter your reason here...',
+                                                                        showCancelButton: true,
+                                                                        confirmButtonColor: '#3085d6',
+                                                                        cancelButtonColor: '#d33',
+                                                                        cancelButtonText: 'Cancel',
+                                                                        confirmButtonText: 'Submit'
+                                                                    });
+                                                                    if (returnReason) {
+                                                                        await Swal.fire({
+                                                                            title: "Are you sure?",
+                                                                            text: "You won't be able to revert this!",
+                                                                            icon: "warning",
+                                                                            showCancelButton: true,
+                                                                            confirmButtonColor: "#3085d6",
+                                                                            cancelButtonColor: "#d33",
+                                                                            cancelButtonText: 'Ignore',
+                                                                            confirmButtonText: "Yes, Return this order!"
+                                                                        }).then(async (result) => {
+                                                                            if (result.isConfirmed) {
+                                                                                let response = await fetch(`/user/singleReturnOrder?id=${orderId}&cartId=${cartId}&reason=${returnReason}`, {
+                                                                                    method: 'POST'
+                                                                                });
+                                                                                let result = await response.json();
+
+                                                                                if (result.success) {
+                                                                                    await Swal.fire({
+                                                                                        icon: "success",
+                                                                                        title: "Product Returned",
+                                                                                        showConfirmButton: false,
+                                                                                        timer: 1500
+                                                                                    });
+                                                                                    window.location.reload();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
                                                                 }
                                                             </script>
 

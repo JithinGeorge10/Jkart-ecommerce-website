@@ -235,7 +235,32 @@ const singleProductCancel = async (req, res) => {
             );
         }
 
-
+        for (let i = 0; i < order.cartData.length; i++) {
+            await productCollection.updateOne(
+                { _id: order.cartData[i].productId },
+                { $inc: { productStock: order.cartData[i].productQuantity } }
+            );
+        }
+        console.log('payment' + order);
+        if (order.paymentType == 'paypal') {
+            console.log('user and order' + req.session.logged._id + order.grandTotalCost)
+            await walletCollection.updateOne(
+                { userId: req.session.logged._id },
+                {
+                    $inc: {
+                        walletBalance: order.grandTotalCost
+                    },
+                    $push: {
+                        walletTransaction: {
+                            transactionDate: new Date(),
+                            transactionAmount: order.grandTotalCost,
+                            transactionType: 'credit on cancel'
+                        }
+                    }
+                },
+                { upsert: true }
+            );
+        }
         res.send({ success: true })
 
 
@@ -247,7 +272,30 @@ const singleProductCancel = async (req, res) => {
 
 
 
+
+
+const singleReturnOrder = async (req, res) => {
+    try {
+        console.log(req.query.id)
+        console.log(req.query.cartId)
+        console.log(req.query.reason)
+        const id = req.query.id.trim();
+        const cartId = req.query.cartId.trim()
+
+        const order=await orderCollection.find({_id:new mongoose.Types.ObjectId(id),'cartData._id': new mongoose.Types.ObjectId(cartId)})
+        console.log(order)
+
+        await orderCollection.findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) },
+            { $set: { 'cartData.$.status': 'Pending', 'cartData.$.returnReason': req.query.reason } }
+        );
+        res.send({ success: true })
+    } catch (err) {
+        console.log(err);
+    }
+}
 module.exports = {
     account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
-    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder, setDefault, singleProductCancel
+    editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder, setDefault,
+    singleProductCancel, singleReturnOrder
 }
