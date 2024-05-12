@@ -247,12 +247,12 @@
                       <input id="paymentMethod1" type="radio" name="paymentMethod" value="Cash On Delivery">
                       <label for="paymentMethod1" style="margin-right: 20px;"><span></span>Cash on delivery</label>
 
-                      <!-- <input id="paymentMethod3" type="radio" name="paymentMethod" value="phone pe">
-                      <label for="paymentMethod3"><span></span>Online Payment(PhonePe)</label> -->
+                      <!-- <input id="paymentMethod4" type="radio" name="paymentMethod" value="phone pe">
+                      <label for="paymentMethod4"><span></span>Online Payment(PhonePe)</label> -->
 
                       <input id="paymentMethod2" type="radio" name="paymentMethod" value="paypal">
                       <label for="paymentMethod2"><span></span>Online Payment(PayPal)</label>
-<br>
+                      <br>
                       <input id="paymentMethod3" type="radio" name="paymentMethod" value="wallet">
                       <label for="paymentMethod3"><span></span>Wallet</label>
                     </div>
@@ -287,13 +287,14 @@
       let paymentMethod1 = document.getElementById('paymentMethod1');
       let paymentMethod3 = document.getElementById('paymentMethod3');
       let paymentMethod2 = document.getElementById('paymentMethod2');
+      // let paymentMethod4 = document.getElementById('paymentMethod4');
       let paymentMethodValue;
 
       if (paymentMethod1.checked) {
         paymentMethodValue = paymentMethod1.value;
       } else if (paymentMethod3.checked) {
         paymentMethodValue = paymentMethod3.value;
-      }else if (paymentMethod2.checked) {
+      } else if (paymentMethod2.checked) {
         paymentMethodValue = paymentMethod2.value;
       }
       else {

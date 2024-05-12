@@ -166,7 +166,7 @@ const cartCheckoutreview = async (req, res) => {
                         paymentType: req.query.id,
                         addressChosen: req.session.selectedAddress,
                         cartData: cartDet,
-                        grandTotalCost: order.grandTotalCost
+                        grandTotalCost:  req.session.grandTotal
                     }
                 });
 

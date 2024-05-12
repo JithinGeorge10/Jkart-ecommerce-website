@@ -50,6 +50,8 @@
             <div class="col-md-6">
                 <h2>Status: <%= orderDet.orderStatus %>
                 </h2>
+                <h2><%= orderDet?.paymentId %>
+                </h2>
                 <h4>Order Date: <%= new Date(orderDet.orderDate).toDateString() %>
                 </h4>
             </div>
