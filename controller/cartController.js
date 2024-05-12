@@ -166,7 +166,7 @@ const cartCheckoutreview = async (req, res) => {
                         paymentType: req.query.id,
                         addressChosen: req.session.selectedAddress,
                         cartData: cartDet,
-                        grandTotalCost:  req.session.grandTotal
+                        grandTotalCost: req.session.grandTotal
                     }
                 });
 
@@ -237,7 +237,7 @@ const orderPlace = async (req, res) => {
             }
             await cartCollection.deleteMany({ userId: req.session.logged._id })
             ////
-        
+
             await walletCollection.updateOne(
                 { userId: req.session.logged._id },
                 {
@@ -254,7 +254,7 @@ const orderPlace = async (req, res) => {
                 },
                 { upsert: true }
             );
-            
+
 
             res.send({ success: true })
         }
@@ -357,28 +357,9 @@ const phonePay = async (req, res) => {
 const payPal = async (req, res) => {
     try {
 
-        const cartDet = await cartCollection.find({ userId: req.session.logged._id }).populate('productId');
-        console.log('cartDetails1' + cartDet);
-        const address = await addressCollection.find({ _id: req.session.selectedAddress })
-        console.log('address' + address)
-        // Check if the cartDet is empty
-        if (cartDet.length === 0) {
-            return res.status(400).send('Cart is empty');
-        }
-        var items = []
-        for (let i = 0; i < cartDet.length; i++) {
-            items.push({
-                'name': cartDet[i].productId.productName,
-                'price': cartDet[i].productId.productPrice,
-                'currency': 'USD',
-                'quantity': cartDet[i].productQuantity
-            })
-        }
-
-        console.log('items' + items)
-        console.log('cart' + cartDet)
-        const totalAmount = cartDet.reduce((acc, item) => acc + item.totalCostPerProduct, 0);
-        console.log(totalAmount);
+        const orderDet = await orderCollection.findOne({ userId:req.session.logged._id }).sort({_id:-1}).limit(1)
+        console.log('grandtotoal'+orderDet.grandTotalCost)
+        var amount = orderDet.grandTotalCost.toFixed(2);
         var create_payment_json = {
             "intent": "sale",
             "payer": {
@@ -390,25 +371,20 @@ const payPal = async (req, res) => {
             },
             "transactions": [{
                 "item_list": {
-                    "items": items
+                    "items": [{
+                        "name": "book",
+                        "sku": "001",
+                        "price":amount ,
+                        "currency": "USD",
+                        "quantity": 1
+                    }]
                 },
                 "amount": {
                     "currency": "USD",
-                    "total": totalAmount.toFixed(2) // Fix the total amount to 2 decimal places
+                    "total": amount // Fix the total amount to 2 decimal places
                 },
                 "description": "This is the payment description.",
-                "shipping": {
-                    name: {
-                        full_name: address.username
-                    },
-                    type: 'SHIPPING',
-                    address: {
-                        address_line_1: address.address1 + ' ' + address.address2,
-                        postal_code: address.zip_code,
-                        admin_area_2: address.city,
-                        admin_area_1: address.state
-                    }
-                }
+
             }]
         };
 
@@ -426,7 +402,6 @@ const payPal = async (req, res) => {
                         return res.redirect(payment.links[i].href);
                     }
                 }
-
                 res.status(500).send('Approval URL not found.');
             }
         });

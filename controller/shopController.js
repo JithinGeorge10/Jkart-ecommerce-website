@@ -72,12 +72,26 @@ const singleProduct = async (req, res) => {
 
 const searchProducts = async (req, res) => {
     try {
+        let productDetail = req.session.productDetail || await productCollection.find({ isListed: true, isDeleted: false })
         const searchedProduct = await productCollection.find({
             productName: { $regex: req.body.searchElement, $options: 'i' }, isDeleted: false
         })
+        
         if (searchedProduct.length > 0) {
-            req.session.productDetail = searchedProduct
-            res.send({ searchProduct: true })
+            let filteredSearchResults = searchedProduct
+
+            if (productDetail) {
+                // Filter searched products based on existing filter
+                filteredSearchResults = searchedProduct.filter(product => productDetail.some(filtered => filtered._id.toString() === product._id.toString()))
+            }
+            
+            if (filteredSearchResults.length > 0) {
+                productDetail = filteredSearchResults
+                req.session.productDetail = productDetail
+                res.send({ searchProduct: true })
+            } else {
+                res.send({ searchProduct: false })
+            }
         } else {
             req.session.productDetail = null
             res.send({ searchProduct: false })
@@ -88,6 +102,8 @@ const searchProducts = async (req, res) => {
     }
 }
 
+
+
 const filter = async (req, res) => {
     try {
         let productDetail = req.session.productDetail || await productCollection.find({ isListed: true, isDeleted: false })
@@ -96,19 +112,19 @@ const filter = async (req, res) => {
 
             switch (req.query.priceRange) {
                 case '0': {
-                    start = 0; end = 500
+                    start = 0; end = 50
                     break
                 }
                 case '1': {
-                    start = 500; end = 1000
+                    start = 50; end = 100
                     break
                 }
                 case '2': {
-                    start = 1000; end = 1500
+                    start = 100; end = 150
                     break
                 }
                 case '3': {
-                    start = 1500; end = Infinity
+                    start = 150; end = Infinity
                     break
                 }
             }
@@ -118,7 +134,7 @@ const filter = async (req, res) => {
 
         productDetail = productDetail.filter((val) => {
             console.log(start, end)
-            return val.productPrice > start && val.productPrice < end
+            return val.offerPrice > start && val.offerPrice < end
         })
 
         req.session.productDetail = productDetail
