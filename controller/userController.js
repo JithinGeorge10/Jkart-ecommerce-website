@@ -3,6 +3,8 @@ const otpCollection = require('../model/otpModel')
 const productCollection = require('../model/productModel')
 const sendotp = require('../helper/sendOtp')
 const bcrypt = require('bcrypt')
+const applyReferralOffer = require("../helper/referralOffer.js");
+
 
 
 const landingPage = async (req, res) => {
@@ -68,10 +70,11 @@ const landingPage = async (req, res) => {
 
 const signUp = (req, res) => {
     try {
+        const referral = req.query.referral
         if (req.session.logged) {
             res.redirect('/')
         } else {
-            res.render('userPages/signUp')
+            res.render('userPages/signUp',{referral})
         }
     } catch (err) {
         console.log(err);
@@ -116,13 +119,14 @@ const otpPage = (req, res) => {
 
 const register = async (req, res) => {
     try {
-
+       
         const { email, phone } = req.body;
         const checkSignin = await userCollection.findOne({ $or: [{ email }, { phone }] });
         
         if (checkSignin) {
             res.status(208).send({ userExists: true })
         } else {
+            req.session.tempUserReferralCode = req.body?.referralCode;
             res.status(200).send({ userExists: false })
         }
 
@@ -134,6 +138,7 @@ const register = async (req, res) => {
 const saveUser = async (req, res) => {
     try {
         let referralCode= Math.floor(1000 + Math.random() * 9000);
+        req.session.referralCode = referralCode;
         const bycryptpassword = bcrypt.hashSync(req.body.password, 10)
         const newUser = new userCollection({
             name: req.body.name,
@@ -173,6 +178,10 @@ const verifyOtp = async (req, res) => {
         const otpmatch = await bcrypt.compare(req.body.otp, usersOTP.otp)
         const notExpired = usersOTP.expiryDate.toISOString() > new Date().toISOString()
         if (otpmatch && notExpired) {
+            let tempUserReferralCode = req.session?.tempUserReferralCode;
+            if (tempUserReferralCode) {
+              await applyReferralOffer(tempUserReferralCode);
+            }
             await userCollection.updateOne({ _id: req.session.logged._id }, { $set: { isVerified: true } })
             
             res.status(200).send({ otpverified: true })

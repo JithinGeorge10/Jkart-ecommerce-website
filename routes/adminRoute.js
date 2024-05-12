@@ -63,5 +63,7 @@ router.post('/admin/editCategoryOffer',adminAuth,offerController.editCategoryOff
 
 router.get('/salesReport',adminAuth,salesReportController.salesReport)
 
+router.post('/salesReportFilter',adminAuth,salesReportController.salesReportFilter)
+
 
 module.exports=router
