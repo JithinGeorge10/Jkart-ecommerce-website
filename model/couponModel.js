@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 const couponSchema = new mongoose.Schema({
     couponCode: { type: String, required: true },
+    isListed:{default:true,required:true,type:Boolean},
     couponAmount: {
         type: Number,
         required: true

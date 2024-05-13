@@ -3,7 +3,7 @@ const couponCollection = require('../model/couponModel')
 const orderCollection = require('../model/ordersModel')
 const couponManagement = async (req, res) => {
     try {
-        const couponDet = await couponCollection.find().sort({_id:-1})
+        const couponDet = await couponCollection.find({isListed:true}).sort({_id:-1})
         res.render('adminPages/couponManagement', { couponDet })
     } catch (err) {
         console.log(err);
@@ -33,7 +33,7 @@ const addCoupon = async (req, res) => {
 const editCouponGet = async (req, res) => {
     try {
         console.log('edit' + req.query.couponId)
-        const couponDet = await couponCollection.findOne({ _id: req.query.couponId })
+        const couponDet = await couponCollection.findOne({ _id: req.query.couponId ,isListed:true})
         console.log(couponDet);
         res.render('adminPages/couponEdit', { couponDet })
     } catch (err) {
@@ -135,7 +135,7 @@ const removeCoupon = async (req, res) => {
 
 const deleteCoupon = async (req, res) => {
     try {     
-        await couponCollection.deleteOne({_id:req.query.id})
+        await couponCollection.updateOne({_id:req.query.id},{$set:{isListed:false}})
         res.send({success:true})
     } catch (err) {
         console.log(err);
