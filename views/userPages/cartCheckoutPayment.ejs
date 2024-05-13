@@ -312,6 +312,11 @@
           icon: "error",
           title: "Kindly select payment method"
         })
+      }if(result.codLimit){
+        await Swal.fire({
+          icon: "error",
+          title: "COD not available for purchases above $1000"
+        })
       }
     }
   </script>

@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Product</title>
@@ -37,6 +38,17 @@
 
     .error {
       color: red;
+    }
+    #image-preview {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .preview-image {
+      max-width: 150px; /* Set the maximum width of preview images */
+      max-height: 150px; /* Set the maximum height of preview images */
+      margin-right: 10px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -79,10 +91,35 @@
       <div class="form-group">
         <label for="images">Add image</label>
         <input type="file" accept="image/*" name="images" class="form-control-file" id="images" multiple>
+        <!-- Image preview container -->
+        <div id="image-preview"></div>
       </div>
-
       <br>
-
+      <script>
+        // Function to handle file input change event and display image previews
+        function previewImages() {
+          var preview = document.getElementById('image-preview');
+          preview.innerHTML = ''; // Clear previous preview
+  
+          var files = document.getElementById('images').files;
+          for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+  
+            reader.onload = function (event) {
+              var img = document.createElement('img');
+              img.className = 'preview-image';
+              img.src = event.target.result;
+              preview.appendChild(img);
+            }
+  
+            reader.readAsDataURL(file);
+          }
+        }
+  
+        // Attach the previewImages function to the change event of the file input
+        document.getElementById('images').addEventListener('change', previewImages);
+      </script>
       <br>
       <div class="form-group">
         <label for="exampleFormControlInput1">Product Price</label>

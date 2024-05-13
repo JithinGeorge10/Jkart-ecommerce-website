@@ -154,6 +154,8 @@ const cartCheckoutreview = async (req, res) => {
     try {
         if (req.query.id === 'null') {
             res.send({ noPaymentMethod: true })
+        }else if(req.query.id=='Cash On Delivery' &&  req.session.grandTotal>1000){
+            res.send({codLimit:true})
         } else {
 
             const cartDet = await cartCollection.find({ userId: req.session.logged._id })

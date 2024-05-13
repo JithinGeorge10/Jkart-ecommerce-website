@@ -34,7 +34,7 @@
                             <h2>Welcome, <%= userLogged.name %></h2>
                             <h5>Email: <%= userLogged.email %></h5>
                             <div class="walletBalance">
-                                <h4>Wallet Balance: $<%= walletDet?.walletBalance.toFixed(2) %></h4>
+                               <h4>Wallet Balance:  $<%= walletBal.walletBalance %></h4>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
@@ -47,17 +47,34 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% for(let i=walletDet?.walletTransaction.length - 1; i >= 0; i--){ %>
+                                        <% for(let i=walletDet?.length - 1; i >= 0; i--){ %>
                                             <tr>
                                                 <td>*</td>
-                                                <td><%= walletDet?.walletTransaction[i].transactionDate.toDateString() %></td>
-                                                <td>$<%= walletDet?.walletTransaction[i].transactionAmount.toFixed(2) %></td>
-                                                <td><%= walletDet?.walletTransaction[i].transactionType %></td>
+                                                <td><%= walletDet?.[i].transactionDate.toDateString() %></td>
+                                                <td>$<%= walletDet?.[i].transactionAmount.toFixed(2) %></td>
+                                                <td><%= walletDet?.[i].transactionType %></td>
                                             </tr>
                                         <% } %>
                                     </tbody>
                                     
                                 </table>
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                      <li class="page-item"><a class="page-link">Pages</a></li>
+                        
+                                      <% for(let i=0;i<totalPages;i++){ %>
+                                        <li class="page-item"><a class="page-link" href="/wallet?pageNo=<%=i+1%>">
+                                            <%=i+1%>
+                                          </a></li>
+                                        <% } %>
+                        
+                                          <!-- <li class="page-item"><a class="page-link" href="/shop?pageId=2">2</a></li>
+                                      <li class="page-item"><a class="page-link" href="/shop?pageId=3">3</a></li> -->
+                        
+                        
+                                          <!-- <li class="page-item"><a class="page-link">Next</a></li> -->
+                                    </ul>
+                                  </nav>
                             </div>
                             
                         </div>

@@ -2,8 +2,17 @@
 const walletCollection = require('../model/walletModel')
 const wallet = async (req, res) => {
     try {
-        const walletDet=await walletCollection.findOne({userId:req.session.logged._id})
-      res.render('userPages/wallet',{userLogged:req.session.logged,walletDet})
+        let walletBal=await walletCollection.findOne({ userId: req.session.logged._id })
+        let walletDet = await walletCollection.findOne({ userId: req.session.logged._id })
+        console.log(walletDet)
+        const walletPerPage = 10
+        const totalPages = walletDet.walletTransaction.length / walletPerPage
+        const pageNo = req.query.pageNo || 1
+        const start = (pageNo - 1) * walletPerPage
+        const end = start + walletPerPage
+        walletDet = walletDet.walletTransaction.slice(start, end)
+        
+        res.render('userPages/wallet', { userLogged: req.session.logged, walletDet,totalPages ,walletBal})
     } catch (err) {
         console.log(err);
     }
