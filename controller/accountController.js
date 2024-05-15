@@ -7,6 +7,8 @@ const productCollection = require('../model/productModel');
 const walletCollection = require('../model/walletModel');
 const mongoose = require("mongoose");
 const { productList } = require('./productController');
+const { generateInvoice } = require("../services/generatePDF.js");
+
 const account = async (req, res) => {
     try {
         const userDet = await userCollection.findOne({ email: req.session.logged.email })
@@ -282,7 +284,7 @@ const singleReturnOrder = async (req, res) => {
         const id = req.query.id.trim();
         const cartId = req.query.cartId.trim()
 
-        const order=await orderCollection.find({_id:new mongoose.Types.ObjectId(id),'cartData._id': new mongoose.Types.ObjectId(cartId)})
+        const order = await orderCollection.find({ _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) })
         console.log(order)
 
         await orderCollection.findOneAndUpdate(
@@ -294,8 +296,40 @@ const singleReturnOrder = async (req, res) => {
         console.log(err);
     }
 }
+
+
+const downloadInvoice = async (req, res) => {
+    try {
+        console.log(req.query.id)
+        let orderData = await orderCollection
+            .findOne({ _id: req.query.id })
+            .populate("addressChosen");
+            
+        console.log('orderData'+orderData)
+        // Extract order number
+        const orderNumber = orderData._id;
+
+        // Construct filename with order number
+        const filename = `invoice_order_${orderNumber}.pdf`;
+
+        const stream = res.writeHead(200, {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${filename}`,
+        });
+
+        generateInvoice(
+            (chunk) => stream.write(chunk),
+            () => stream.end(),
+            orderData
+        );
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 module.exports = {
     account, editProfile, addAddress, addAddressPost, myAddressget, addressDelete,
     editAddressGet, editAddressPost, allOrders, cancelOrder, viewOrder, accountViewOrder, returnOrder, setDefault,
-    singleProductCancel, singleReturnOrder
+    singleProductCancel, singleReturnOrder, downloadInvoice
 }

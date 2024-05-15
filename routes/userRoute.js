@@ -59,6 +59,7 @@ router.post('/viewOrder',userAuth,accountController.viewOrder)
 router.get('/allOrder/viewOrder',userAuth,accountController.accountViewOrder)
 router.post('/singleProductCancel',userAuth,accountController.singleProductCancel)
 router.post('/user/singleReturnOrder',userAuth,accountController.singleReturnOrder)
+router.get('/account/orderList/orderStatus/downloadInvoice',userAuth,accountController.downloadInvoice)
 
 
 router.post('/addToCart',userAuthFetch,cartController.addToCart)

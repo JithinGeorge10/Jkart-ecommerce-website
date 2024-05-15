@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema({
     orderDate: { type: Date, default: Date.now },
     paymentType: { type: String, required: true},
     orderStatus: { type: String, required: true, default: 'Pending' },
-    addressChosen: { type: mongoose.Types.ObjectId, required: true, ref: 'addresses' },
+    addressChosen: { type: mongoose.Types.ObjectId, required: true, ref: 'address' },
     cartData: { type: Array, required: true  },
     grandTotalCost: { type: Number, required: true  },
     paymentId: { type: String,default: null },

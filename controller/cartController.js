@@ -34,6 +34,7 @@ const addToCart = async (req, res) => {
             await cartCollection.create({
                 userId: req.session.logged._id,
                 productId: req.query.pid,
+                productName:productDet.productName,
                 productQuantity: req.query.qty,
                 totalCostPerProduct: req.query.qty * productDet.offerPrice
             });
