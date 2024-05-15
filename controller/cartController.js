@@ -5,6 +5,8 @@ const addressCollection = require('../model/addressModel')
 const orderCollection = require('../model/ordersModel')
 const couponCollection = require('../model/couponModel')
 const walletCollection = require('../model/walletModel')
+const categoryCollection = require('../model/categoryModel')
+
 const axios = require('axios');
 const uniqid = require('uniqid')
 const sha256 = require('sha256')
@@ -18,6 +20,8 @@ paypal.configure({
 const addToCart = async (req, res) => {
     try {
         const productDet = await productCollection.findOne({ _id: req.query.pid });
+        const categoryDet = await categoryCollection.findOne({ _id:productDet.parentCategory });
+        console.log('catdettt'+categoryDet)
         const existingCartItem = await cartCollection.findOne({ userId: req.session.logged._id, productId: req.query.pid });
 
         if (existingCartItem) {
@@ -35,6 +39,7 @@ const addToCart = async (req, res) => {
                 userId: req.session.logged._id,
                 productId: req.query.pid,
                 productName:productDet.productName,
+                categoryName:categoryDet.categoryName,
                 productQuantity: req.query.qty,
                 totalCostPerProduct: req.query.qty * productDet.offerPrice
             });
@@ -202,7 +207,7 @@ const orderSummary = async (req, res) => {
         const orderDet = await orderCollection.findOne({ _id: req.session.orderDetails })
         const shippingAddress = await addressCollection.findOne({ _id: orderDet.addressChosen })
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
-        const couponDet = await couponCollection.find()
+        const couponDet = await couponCollection.find({isListed:true})
         const couponAmount = await couponCollection.findOne({ _id: orderDet.couponApplied })
         res.render('userPages/orderSummary', { couponDet, orderDet, couponAmount, userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: orderDet.paymentType, grandTotal: orderDet.grandTotalCost })
     } catch (err) {

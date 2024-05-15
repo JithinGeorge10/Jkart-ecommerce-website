@@ -4,6 +4,7 @@ const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel');
 const mongoose = require("mongoose")
 const { productList } = require('./productController');
+const { createCollection } = require('../model/userModel');
 
 const orderManagement = async (req, res) => {
     try {
@@ -23,7 +24,15 @@ const orderManagement = async (req, res) => {
 const orderStatusChange = async (req, res) => {
     try {
         if (req.query.status) {
-            await orderCollection.updateOne({ _id: req.query.orderId }, { $set: { orderStatus: req.query.status } })
+            await orderCollection.updateOne(
+                { _id: req.query.orderId },
+                { 
+                  $set: { orderStatus: req.query.status },
+                  $set: { "cartData.$[].status": req.query.status } // Update all elements in the cartData array
+                }
+              );
+              
+          
         }
         res.send({ success: true })
     } catch (err) {
