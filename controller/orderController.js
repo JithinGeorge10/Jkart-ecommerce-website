@@ -26,14 +26,17 @@ const orderStatusChange = async (req, res) => {
         if (req.query.status) {
             await orderCollection.updateOne(
                 { _id: req.query.orderId },
-                { 
-                  $set: { orderStatus: req.query.status },
-                  $set: { "cartData.$[].status": req.query.status } // Update all elements in the cartData array
+                {
+                  $set: { 
+                    orderStatus: req.query.status,
+                    "cartData.$[element].status": req.query.status
+                  }
+                },
+                {
+                  arrayFilters: [{ "element.status": { $exists: true } }]
                 }
               );
-              
-          
-        }
+                      }
         res.send({ success: true })
     } catch (err) {
         console.log(err);

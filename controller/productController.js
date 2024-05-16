@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 
 const categoryCollection = require('../model/categoryModel')
 const productCollection = require('../model/productModel')
@@ -165,22 +167,35 @@ const deleteProduct = async (req, res) => {
         console.log(err);
     }
 }
-
 const imageDelete = async (req, res) => {
     try {
-        
-        await productCollection.updateOne(
-            { _id: req.query.productId },
-            { $pull: { productImage: req.query.imageId } }
-        )
-        res.send({success:true})
-
-
-    } catch (err) {
-        console.log(err);
+      const { productId, imageId } = req.query;
+  
+      // Delete image from database
+      await productCollection.updateOne(
+        { _id: productId },
+        { $pull: { productImage: imageId } }
+      );
+  
+      // Delete image from public folder
+      const publicFolderPath = path.resolve('public', 'assets', 'img', 'uploads');
+      const imagePath = path.join(publicFolderPath, imageId);
+  
+      console.log(`Attempting to delete file at path: ${imagePath}`);
+  
+      try {
+        await fs.promises.unlink(imagePath);
+        console.log('Image file deleted successfully');
+        res.send({ success: true });
+      } catch (error) {
+        console.error(`Error deleting image file: ${error.message}`);
+        res.status(500).send({ success: false, error: 'Failed to delete image file' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ success: false, error: 'Internal Server Error' });
     }
-}
-
+  };
 
 module.exports = {
     productManagement, productList, addProductGet, addProducts,
