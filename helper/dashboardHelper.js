@@ -89,18 +89,37 @@ module.exports = {
     categoryWiseRevenue: async () => {
         try {
             const result = await orderCollection.aggregate([
+                { $match: { orderStatus: "Delivered" } }, // Filter by orderStatus "delivered"
                 { $unwind: "$cartData" },
                 {
-                    $group: {
-                        _id: "$cartData.productId.category",
-                        revenuePerCategory: { $sum: "$cartData.totalCostPerProduct" },
-                    },
+                    $lookup: {
+                        from: "products",
+                        localField: "cartData.productId",
+                        foreignField: "_id",
+                        as: "productDetails"
+                    }
                 },
+                { $unwind: "$productDetails" },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "productDetails.parentCategory",
+                        foreignField: "_id",
+                        as: "categoryDetails"
+                    }
+                },
+                { $unwind: "$categoryDetails" },
+                {
+                    $group: {
+                        _id: "$categoryDetails.categoryName",
+                        revenuePerCategory: { $sum: "$cartData.totalCostPerProduct" }
+                    }
+                }
             ]);
-            
+            console.log('result111' + result)
             return {
                 categoryName: result.map((v) => v._id),
-                revenuePerCategory: result.map((v) => v.revenuePerCategory),
+                revenuePerCategory: result.map((v) => v.revenuePerCategory)
             };
         } catch (error) {
             console.error(error);
