@@ -1,0 +1,40 @@
+<%- include('../adminPartials/header') %>
+
+    <body>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            <%    for(let i=0;i<topProducts.length;i++){ %>
+                    <tr>
+                    <th scope="row">
+                        <%=i+1%>
+                    </th>
+                    <td>
+                        <%=topProducts[i].productName%>
+                    </td>
+                    <td>
+                        <%=topProducts[i].count%>
+                    </td>
+                    <td>
+                        <%=topProducts[i].productPrice%>
+                    </td>
+                    
+                    </tr>
+                 <%   } %>
+
+
+
+
+            </tbody>
+        </table>
+    </body>
+
+    </html>

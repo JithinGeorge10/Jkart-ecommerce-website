@@ -65,6 +65,7 @@ router.get('/salesReport',adminAuth,salesReportController.salesReport)
 router.post('/salesReportFilter',adminAuth,salesReportController.salesReportFilter)
 
 router.get('/dashboardData',adminAuth,dashboardController.dashboardData)
+router.get('/topProducts',adminAuth,dashboardController.topProduct)
 
 module.exports=router
 

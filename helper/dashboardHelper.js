@@ -49,9 +49,15 @@ module.exports = {
             const today = new Date();
             const yesterday = new Date();
             yesterday.setDate(today.getDate() - 1);
-
+    
             const result = await orderCollection.aggregate([
-                { $match: { orderDate: { $gte: yesterday, $lt: today }, paymentId: { $ne: null } } },
+                { 
+                    $match: { 
+                        orderDate: { $gte: yesterday, $lt: today }, 
+                        paymentId: { $ne: null },
+                        orderStatus: 'Delivered' 
+                    } 
+                },
                 { $group: { _id: "", totalRevenue: { $sum: "$grandTotalCost" } } },
             ]);
             return result.length > 0 ? result[0].totalRevenue : 0;
@@ -161,6 +167,9 @@ module.exports = {
             console.error(error);
         }
     }
+    
+
+
 
     // const order = await OrderModel.find();
     //   const orderCount = order.length;

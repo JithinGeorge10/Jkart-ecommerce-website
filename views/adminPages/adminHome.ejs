@@ -167,6 +167,24 @@
             </div>
           </div>
         </div>
+
+       
+
+        <a href="/topProducts" type="button" class="btn btn-secondary">Top 10 selling products</a>
+        <hr>
+        <button type="button" class="btn btn-secondary">Top 10 selling Catgeory</button>
+        <hr>
+        <button type="button" class="btn btn-secondary">Top 10 selling Brand</button>
+
+          <script>
+            async function topProduct() {
+              let response = await fetch('/topProduct', {
+                method: 'GET'
+              })
+              let result = await response.json()
+              
+            }
+          </script>
       </div>
       <!-- <div class="row">
             <div class="col-lg-6 grid-margin stretch-card">
@@ -228,7 +246,8 @@
           categoryWiseRevenue,
           TotalRevenue,
           MonthlyRevenue,
-          Activeuser
+          Activeuser,
+
         } = data
 
 
@@ -268,10 +287,12 @@
                 'rgb(255, 205, 86)',
                 'rgb(255, 99, 132)',
                 'rgb(54, 162, 235)',
+                'rgb(75, 192, 192)',
               ]
             }]
           }
         }
+
 
         new Chart(twoWeeksSalesChartElement, twoWeeksSalesChartOptions);
         new Chart(categoryWiseRevenueChartElement, categoryWiseRevenueChartOptions);
