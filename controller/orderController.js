@@ -2,14 +2,18 @@ const { trusted } = require('mongoose');
 const orderCollection = require('../model/ordersModel')
 const productCollection = require('../model/productModel')
 const addressCollection = require('../model/addressModel');
+const walletCollection = require('../model/walletModel');
 const mongoose = require("mongoose")
 const { productList } = require('./productController');
 const { createCollection } = require('../model/userModel');
 
 const orderManagement = async (req, res) => {
     try {
-        let orderDet = req.session.searchOrder || await orderCollection.find({paymentId: {$ne: null}}).populate('userId').sort({ _id: -1 });
-        const ordersPerPage = 10
+        let orderDet = req.session.searchOrder || await orderCollection.find({
+            paymentId: { $ne: null },
+            orderStatus: { $nin: ['Return Request', 'Approved','Returned'] }
+        }).populate('userId').sort({ _id: -1 });
+                const ordersPerPage = 10
         const totalPages = orderDet.length / ordersPerPage
         const pageNo = req.query.pageNo || 1
         const start = (pageNo - 1) * ordersPerPage
@@ -23,7 +27,64 @@ const orderManagement = async (req, res) => {
 }
 const orderStatusChange = async (req, res) => {
     try {
-        if (req.query.status) {
+        if (req.query.status === 'Approved') {
+            await orderCollection.updateOne(
+                { _id: req.query.orderId },
+                {
+                    $set: { 
+                        orderStatus: 'Returned',
+                        "cartData.$[element].status": 'Returned'
+                    }
+                },
+                {
+                    arrayFilters: [{ "element.status": { $exists: true } }]
+                }
+            );
+        
+            const orderData = await orderCollection.findOne({ _id: req.query.orderId });
+            // Check if cartData exists and is an array
+            if (orderData && orderData.cartData && Array.isArray(orderData.cartData)) {
+                // Update product stock quantity for each item in cartData
+                for (const item of orderData.cartData) {
+                    await productCollection.updateMany(
+                        { _id: item.productId },
+                        { $inc: { productStock: item.productQuantity } }
+                    );
+                } 
+                await walletCollection.updateOne(
+                    { userId: req.session.logged._id },
+                    {
+                        $inc: {
+                            walletBalance: orderData.grandTotalCost
+                        },
+                        $push: {
+                            walletTransaction: {
+                                transactionDate: new Date(),
+                                transactionAmount: orderData.grandTotalCost,
+                                transactionType: 'credit on return'
+                            }
+                        }
+                    },
+                    { upsert: true }
+                );
+            } else {
+                console.error('Order data or cart data is missing or not in the correct format.');
+            }
+        }else if(req.query.status === 'Rejected'){
+            await orderCollection.updateOne(
+                { _id: req.query.orderId },
+                {
+                    $set: { 
+                        orderStatus: 'Return Rejected',
+                        "cartData.$[element].status": 'Return Rejected'
+                    }
+                },
+                {
+                    arrayFilters: [{ "element.status": { $exists: true } }]
+                }
+            );
+            }
+        else {
             await orderCollection.updateOne(
                 { _id: req.query.orderId },
                 {

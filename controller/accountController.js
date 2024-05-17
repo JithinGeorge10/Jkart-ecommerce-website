@@ -174,7 +174,7 @@ const cancelOrder = async (req, res) => {
 const returnOrder = async (req, res) => {
     try {
 
-        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Return' } })
+        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Return Request' ,returnReason: req.query.reason} })
         res.send({ success: true })
     } catch (err) {
         console.log(err);

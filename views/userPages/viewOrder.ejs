@@ -160,7 +160,9 @@
                                                                     <td><button
                                                                             onclick="returnProduct(' <%=orderDet._id%>',' <%=orderDet.cartData[i]._id%>')"
                                                                             class="btn btn-primary">Return</button></td>
-                                                                    <% }else{ %>
+                                                                    <% }else if(orderDet.cartData[i].status=='Returned' || orderDet.cartData[i].status=='Return Rejected' || orderDet.cartData[i].status=='Approved' || orderDet.cartData[i].status=='Return Request'){ %>
+<td></td>
+                                                                 <%   }else{ %>
                                                                         <td><button
                                                                                 onclick="singleProductCancel(' <%=orderDet._id%>',' <%=orderDet.cartData[i]._id%>')"
                                                                                 class="btn btn-danger">Cancel</button>

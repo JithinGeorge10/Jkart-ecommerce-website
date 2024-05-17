@@ -69,7 +69,9 @@
                                                                     onclick="returnOrder('<%=orderDet[i]._id%>')"
                                                                     class='btn btn-sm btn-info-outlined'>Return</button>
                                                             </td>
-                                                            <% } else{%>
+                                                            <% }else if(orderDet[i].orderStatus==='Returned' || orderDet[i].orderStatus==='Return Rejected' || orderDet[i].orderStatus==='Return Request'){%>
+                                                                <td></td>
+                                                        <% } else{%>
                                                                 <td><button id="cancel<%=i%>"
                                                                         onclick="cancelOrder('<%=orderDet[i]._id%>')"
                                                                         class='btn btn-sm btn-danger-outlined'>Cancel</button>
@@ -123,6 +125,20 @@
 }
 
                                                     async function returnOrder(orderId) {
+                                                        const { value: returnReason } = await Swal.fire({
+        title: 'Return Reason',
+        input: 'text',
+        inputLabel: 'Please provide a reason for returning',
+        inputPlaceholder: 'Enter your reason here...',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Submit'
+    });
+
+    if (returnReason) {
+
                                                         Swal.fire({
                                                             title: "Are you sure?",
                                                             icon: "warning",
@@ -132,7 +148,7 @@
                                                             confirmButtonText: "Yes, Return this order!"
                                                         }).then(async (result) => {
                                                             if (result.isConfirmed) {
-                                                                let response = await fetch(`user/returnOrder?id=${orderId}`, {
+                                                                let response = await fetch(`user/returnOrder?id=${orderId}&reason=${returnReason}`, {
                                                                     method: 'POST'
                                                                 })
                                                                 let result = await response.json()
@@ -149,6 +165,7 @@
                                                                 }
                                                             }
                                                         });
+                                                    }
                                                     }
 
 

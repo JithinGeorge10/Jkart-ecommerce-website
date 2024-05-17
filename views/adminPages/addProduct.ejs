@@ -222,7 +222,14 @@
           //     formData.append('images', files[i]);
           //   }
           // });
-        
+          const images = document.querySelectorAll('.preview-image');
+  images.forEach((img, index) => {
+    const cropper = img.cropper;
+    const canvas = cropper.getCroppedCanvas();
+    canvas.toBlob((blob) => {
+      formData.append(`images[${index}]`, blob, `image_${index}.jpg`);
+    });
+  });
 
           let response = await fetch('/addProducts', {
             method: 'POST',

@@ -1,0 +1,217 @@
+<%- include('../adminPartials/header') %>
+
+    <head>
+        <title>Admin-return</title>
+        <style>
+            /* Table styles */
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+                background-color: #f8f9fa;
+            }
+
+            .table th,
+            .table td {
+                padding: 8px;
+                border: 1px solid #dee2e6;
+                text-align: left;
+            }
+
+            .table th {
+                background-color: #343a40;
+                color: #fff;
+            }
+
+            .table tbody tr:nth-child(even) {
+                background-color: #e2e3e5;
+            }
+
+            .table tbody tr:hover {
+                background-color: #d1d2d4;
+            }
+
+            /* Button styles */
+            .btn-group {
+                display: flex;
+                align-items: center;
+            }
+
+            .btn-group select {
+                height: 50px;
+                margin-right: 10px;
+            }
+
+            /* View button styles */
+            .btn-info {
+                background-color: #17a2b8;
+                border-color: #17a2b8;
+            }
+
+            /* Confirmation modal styles */
+            .swal2-popup {
+                font-size: 16px;
+            }
+
+            .swal2-title {
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            .swal2-content {
+                font-size: 18px;
+            }
+        </style>
+    </head>
+
+    <body>
+        
+        <form id="searchOrder" class="form-inline my-2 my-lg-0">
+            <div class="row">
+                <div class="col-auto">
+                    <input name="search" class="form-control mr-sm-1" type="search" placeholder="Search"
+                        aria-label="Search" style="width: 150px;">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Order</button>
+                </div>
+            </div>
+        </form>
+        <script>
+            $('#searchOrder').validate({
+                rules: {
+                    search: {
+                        required: true
+                    }
+                },
+                submitHandler: async (form, event) => {
+                    event.preventDefault()
+                    let formData = {
+                        search: form.search.value
+                    }
+                    let response = await fetch('/searchOrder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    })
+                    let result = await response.json()
+                    if (result.noValue) {
+                        await Swal.fire({
+                            icon: "error",
+                            title: "No Value in search bar"
+                        })
+                    } if (result.orderExists) {
+                        window.location.reload()
+                    } if (result.noOrder) {
+                        await Swal.fire({
+                            icon: "error",
+                            title: "No results"
+                        })
+                    }
+                }
+            });
+
+        </script>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Order No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">View</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i=0; i < orderDet.length; i++) { %>
+                    <tr>
+                        <th scope="row">
+                            <%= orderDet[i]._id %>
+                        </th>
+                        <td>
+                            <%= orderDet[i]?.userId.name %>
+                        </td>
+                        <td>₹<%= orderDet[i]?.grandTotalCost %>
+                        </td>
+                        <td>
+                            <%= orderDet[i]?.paymentType %>
+                        </td>
+                        <td>
+                            <%= orderDet[i]?.orderStatus %>
+                        </td>
+                        <td>
+                            <% if (orderDet[i].orderStatus !=='Cancelled' ) { %>
+                                <div class="btn-group">
+                                    <select id="changeStatus<%= i %>" name="changeStatus" class="form control"
+                                        onchange="orderStatusChange('<%= i %>','<%= orderDet[i]._id %>')">
+                                        <option value="0" disabled selected>Change Status</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Rejected">Rejected</option>
+                                       
+                                    </select>
+                                </div>
+                                <% }else{ %>
+              
+                           Cancel Reason: <%= orderDet[i]?.cancelReason %>
+                  
+                        <%}%>
+                            </td>
+                            <td> <%= orderDet[i]?.returnReason %></td>
+                            <td><button onclick="viewOrder('<%= orderDet[i]._id %>')" type="button"
+                                    class="btn btn-info">View</button></td>
+                    </tr>
+                    <% } %>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link">Pages</a></li>
+                <% for(let i=0;i<totalPages;i++){ %>
+                    <li class="page-item"><a class="page-link" href="/orderManagement?pageNo=<%=i+1%>">
+                            <%=i+1%>
+                        </a></li>
+                    <% } %>
+            </ul>
+        </nav>
+        <!-- Confirmation modal script -->
+        <script>
+            async function orderStatusChange(index, orderId) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        let status = document.getElementById('changeStatus' + index).value
+
+                        let response = await fetch(`/orderStatusChange?status=${status}&orderId=${orderId}`, {
+                            method: 'POST'
+                        })
+                        let result = await response.json()
+
+                        if (result.success) {
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+            async function viewOrder(orderId) {
+                let response = await fetch(`/admin/viewOrder?orderId=${orderId}`, {
+                    method: 'POST'
+                })
+                let result = await response.json()
+                if (result.success) {
+                    window.location.href = `/orderView?order=${result.orderDet}&address=${result.addressDet}`
+                }
+            }
+        </script>
+    </body>
+
+    </html>
