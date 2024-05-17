@@ -7,7 +7,7 @@ const userCollection = require('../model/userModel.js');
 module.exports = {
     productsCount: async () => {
         try {
-            return await productCollection.countDocuments();
+            return await productCollection.countDocuments({isDeleted:false});
         } catch (error) {
             console.error(error);
         }

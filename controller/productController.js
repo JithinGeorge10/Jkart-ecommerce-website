@@ -46,40 +46,35 @@ const addProductGet = async (req, res) => {
         console.log(err);
     }
 }
-
 const addProducts = async (req, res) => {
     try {
-        let imgFiles = []
-        if (req.files.length < 3) {
-            res.send({ minImage: true })
-        } else {
-            for (let i = 0; i < req.files.length; i++) {
-                imgFiles[i] = req.files[i].filename
-            }
-        }
+      if (req.files.length < 3) {
+        res.send({ minImage: true })
+      } else {
+        const images = req.files.map((file) => file.filename);
         const addproduct = new productCollection({
-            productName: req.body.productName,
-            parentCategory: req.body.parentCategory,
-            productImage: imgFiles,
-            productPrice: req.body.productPrice,
-            productStock: req.body.productStock,
-            offerPrice: req.body.productPrice
+          productName: req.body.productName,
+          parentCategory: req.body.parentCategory,
+          productImage: images,
+          productPrice: req.body.productPrice,
+          productStock: req.body.productStock,
+          offerPrice: req.body.productPrice
         })
         const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
-            res.send({ noValue: true })
+          res.send({ noValue: true })
         }
         else if (productDetails.length > 0) {
-            res.send({ exists: true })
+          res.send({ exists: true })
         } else {
-            res.send({ success: true })
-            addproduct.save()
+          res.send({ success: true })
+          addproduct.save()
         }
-
+      }
     } catch (err) {
-        console.log(err);
+      console.log(err);
     }
-}
+  }
 
 const editProduct = async (req, res) => {
     try {

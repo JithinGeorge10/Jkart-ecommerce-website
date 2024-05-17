@@ -26,6 +26,8 @@
     integrity="sha512-TiQST7x/0aMjgVTcep29gi+q5Lk5gVTUPE9XgN0g96rwtjEjLpod4mlBRKWHeBcvGBAEvJBmfDqh2hfMMmg+5A=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
 
 
   <style>
@@ -95,6 +97,56 @@
         <div id="image-preview"></div>
       </div>
       <br>
+
+
+      <div id="image-preview">
+        <!-- Image preview will be rendered here -->
+      </div>
+
+      <script>
+        // Function to handle file input change event and display image previews
+        function previewImages() {
+          var preview = document.getElementById('image-preview');
+          preview.innerHTML = ''; // Clear previous preview
+      
+          var files = document.getElementById('images').files;
+          for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+      
+            reader.onload = function (event) {
+              var img = document.createElement('img');
+              img.className = 'preview-image';
+              img.src = event.target.result;
+              preview.appendChild(img);
+      
+              // Initialize Cropper.js for each image
+              var cropper = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                crop: function (event) {
+                  console.log(event.detail.x, event.detail.y, event.detail.width, event.detail.height);
+                }
+              });
+            }
+      
+            reader.readAsDataURL(file);
+          }
+        }
+      
+        // Attach the previewImages function to the change event of the file input
+        document.getElementById('images').addEventListener('change', previewImages);
+      </script>
+
+
+
+
+
+
+
+
+
       <script>
         // Function to handle file input change event and display image previews
         function previewImages() {

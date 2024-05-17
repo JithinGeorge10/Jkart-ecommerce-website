@@ -92,7 +92,7 @@ const topProduct = async (req, res) => {
       }
     ]);
 
- res.render('adminPages/topProducts',{topProducts})
+    res.render('adminPages/topProducts', { topProducts })
   } catch (err) {
     console.error(err);
     res.status(500).send({ success: false, message: 'Internal Server Error' });
@@ -100,6 +100,112 @@ const topProduct = async (req, res) => {
 };
 
 
+
+
+const topCategory = async (req, res) => {
+  try {
+    const topCategories = await orderCollection.aggregate([
+      {
+        $match: { orderStatus: 'Delivered' }
+      },
+      {
+        $unwind: '$cartData'
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'cartData.productId',
+          foreignField: '_id',
+          as: 'product'
+        }
+      },
+      {
+        $unwind: '$product'
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'product.parentCategory',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      {
+        $unwind: '$category'
+      },
+      {
+        $group: {
+          _id: '$category.categoryName',
+          quantity: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { quantity: -1 }
+      },
+      {
+        $limit: 10
+      }
+    ]);
+
+    res.render('adminPages/topCategory', { topCategories });
+  } catch (err) {
+    // Consider using a centralized error handler
+    console.error(err);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
+
+
+
+const topSellingBrands = async (req, res) => {
+  try {
+    const topBrands = await orderCollection.aggregate([
+      {
+        $match: { orderStatus: 'Delivered' }
+      },
+      {
+        $unwind: '$cartData'
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'cartData.productId',
+          foreignField: '_id',
+          as: 'product'
+        }
+      },
+      {
+        $unwind: '$product'
+      },
+      {
+        $addFields: {
+          brand: { $arrayElemAt: [{ $split: ['$product.productName', ' '] }, 0] }
+        }
+      },
+      {
+        $group: {
+          _id: '$brand',
+          quantity: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { quantity: -1 }
+      },
+      {
+        $limit: 10
+      }
+    ]);
+
+    res.render('adminPages/topBrand', { topBrands });
+  } catch (err) {
+    // Consider using a centralized error handler
+    console.error(err);
+    res.status(500).send({ success: false, message: 'Internal Server Error' });
+  }
+};
+
 module.exports = {
-  dashboardData, topProduct
+  dashboardData, topProduct,topCategory,topSellingBrands
 }

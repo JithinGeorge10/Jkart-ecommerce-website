@@ -168,23 +168,23 @@
           </div>
         </div>
 
-       
+
 
         <a href="/topProducts" type="button" class="btn btn-secondary">Top 10 selling products</a>
         <hr>
-        <button type="button" class="btn btn-secondary">Top 10 selling Catgeory</button>
+        <a href="/topCategory" type="button" class="btn btn-secondary">Top 10 selling Catgeory</a>
         <hr>
-        <button type="button" class="btn btn-secondary">Top 10 selling Brand</button>
+        <a href="/topBrand" type="button" class="btn btn-secondary">Top 10 selling Brand</a>
 
-          <script>
-            async function topProduct() {
-              let response = await fetch('/topProduct', {
-                method: 'GET'
-              })
-              let result = await response.json()
-              
-            }
-          </script>
+        <script>
+          async function topProduct() {
+            let response = await fetch('/topProduct', {
+              method: 'GET'
+            })
+            let result = await response.json()
+
+          }
+        </script>
       </div>
       <!-- <div class="row">
             <div class="col-lg-6 grid-margin stretch-card">
