@@ -289,16 +289,16 @@ const singleReturnOrder = async (req, res) => {
 
         await orderCollection.findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) },
-            { $set: { 'cartData.$.status': 'Pending', 'cartData.$.returnReason': req.query.reason } }
+            { $set: { 'cartData.$.status': 'Request Return', 'cartData.$.returnReason': req.query.reason } }
         );
         const orderData = await orderCollection.findOne({ _id: new mongoose.Types.ObjectId(id) });
-        const allReturned = orderData.cartData.every(item => item.status === 'Returned');
+        const allReturned = orderData.cartData.every(item => item.status === 'Request Return');
 
         // If all products have been returned, update orderStatus to 'Returned'
         if (allReturned) {
             await orderCollection.findOneAndUpdate(
                 { _id: new mongoose.Types.ObjectId(id) },
-                { $set: { orderStatus: 'Returned' } }
+                { $set: { orderStatus: 'Request Return' } }
             );
         }
         res.send({ success: true })

@@ -116,9 +116,25 @@
         </ul>
     </nav>
     <script>
-        let downloadPDF = document.getElementById('downloadPDF')
-        downloadPDF.addEventListener('click', () => window.print())
-    </script>
+        document.getElementById('downloadPDF').addEventListener('click', async () => {
+          try {
+            const response = await fetch('/salesReport/download/pdf', {
+              method: 'GET'
+            });
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'salesReport.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a); 
+          } catch (error) {
+            console.error('Error downloading PDF:', error);
+          }
+        });
+      </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Function to generate and download Excel file

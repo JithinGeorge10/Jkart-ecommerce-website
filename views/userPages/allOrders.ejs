@@ -69,7 +69,7 @@
                                                                     onclick="returnOrder('<%=orderDet[i]._id%>')"
                                                                     class='btn btn-sm btn-info-outlined'>Return</button>
                                                             </td>
-                                                            <% }else if(orderDet[i].orderStatus==='Returned' || orderDet[i].orderStatus==='Return Rejected' || orderDet[i].orderStatus==='Return Request'){%>
+                                                            <% }else if(orderDet[i].orderStatus==='Returned' || orderDet[i].orderStatus==='Return Rejected' || orderDet[i].orderStatus==='Request Return'){%>
                                                                 <td></td>
                                                         <% } else{%>
                                                                 <td><button id="cancel<%=i%>"
