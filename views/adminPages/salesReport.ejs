@@ -8,10 +8,11 @@
             <div class="btn btn-info" id="downloadPDF">Download (PDF)</div>
         </div>
         <div class="col-2">
-            <a id="downloadExcel" class="btn btn-info">Download (xlsx)</a>
+            <a href="/admin/salesReport/download/xlsx" class="btn btn-info">Download (xlsx)</a>
         </div>
-
     </div>
+    
+    
     <div class="row">
         <div class="col-3">
             <label for="fromDate">From:</label>
@@ -117,43 +118,42 @@
     </nav>
     <script>
         document.getElementById('downloadPDF').addEventListener('click', async () => {
-          try {
-            const response = await fetch('/salesReport/download/pdf', {
-              method: 'GET'
-            });
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'salesReport.pdf';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a); 
-          } catch (error) {
-            console.error('Error downloading PDF:', error);
-          }
+            try {
+                const response = await fetch('/salesReport/download/pdf', {
+                    method: 'GET'
+                });
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'salesReport.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+            }
         });
-      </script>
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Function to generate and download Excel file
             function downloadExcel() {
                 /* Generate Excel data */
                 var data = [
-                    ['Name', 'Order Date', 'Total Cost in Dollars', 'Payment Method', 'Status'],
-                    ['<%= salesDetails[0]?.userId.name %>', '<%= salesDetails[0]?.orderDate.toDateString() %>', '<%= salesDetails[0]?.grandTotalCost %>', '<%= salesDetails[0]?.paymentType %>', '<%= salesDetails[0]?.orderStatus %>'],
-
-                    ['<%= salesDetails[1]?.userId.name %>', '<%= salesDetails[1]?.orderDate.toDateString() %>', '<%= salesDetails[1]?.grandTotalCost %>', '<%= salesDetails[1]?.paymentType %>', '<%= salesDetails[1]?.orderStatus %>'],
-                    ['<%= salesDetails[2]?.userId.name %>', '<%= salesDetails[2]?.orderDate.toDateString() %>', '<%= salesDetails[2]?.grandTotalCost %>', '<%= salesDetails[2]?.paymentType %>', '<%= salesDetails[2]?.orderStatus %>'],
-                    ['<%= salesDetails[3]?.userId.name %>', '<%= salesDetails[3]?.orderDate.toDateString() %>', '<%= salesDetails[3]?.grandTotalCost %>', '<%= salesDetails[3]?.paymentType %>', '<%= salesDetails[3]?.orderStatus %>'],
-                    ['<%= salesDetails[4]?.userId.name %>', '<%= salesDetails[4]?.orderDate.toDateString() %>', '<%= salesDetails[4]?.grandTotalCost %>', '<%= salesDetails[4]?.paymentType %>', '<%= salesDetails[4]?.orderStatus %>'],
-                    ['<%= salesDetails[5]?.userId.name %>', '<%= salesDetails[5]?.orderDate.toDateString() %>', '<%= salesDetails[5]?.grandTotalCost %>', '<%= salesDetails[5]?.paymentType %>', '<%= salesDetails[5]?.orderStatus %>'],
-                    ['<%= salesDetails[6]?.userId.name %>', '<%= salesDetails[6]?.orderDate.toDateString() %>', '<%= salesDetails[6]?.grandTotalCost %>', '<%= salesDetails[6]?.paymentType %>', '<%= salesDetails[6]?.orderStatus %>'],
-                    ['<%= salesDetails[7]?.userId.name %>', '<%= salesDetails[7]?.orderDate.toDateString() %>', '<%= salesDetails[7]?.grandTotalCost %>', '<%= salesDetails[7]?.paymentType %>', '<%= salesDetails[7]?.orderStatus %>'],
-                    ['<%= salesDetails[8]?.userId.name %>', '<%= salesDetails[8]?.orderDate.toDateString() %>', '<%= salesDetails[8]?.grandTotalCost %>', '<%= salesDetails[8]?.paymentType %>', '<%= salesDetails[8]?.orderStatus %>'],
-                    ['<%= salesDetails[9]?.userId.name %>', '<%= salesDetails[9]?.orderDate.toDateString() %>', '<%= salesDetails[9]?.grandTotalCost %>', '<%= salesDetails[9]?.paymentType %>', '<%= salesDetails[9]?.orderStatus %>'],
-                    ['<%= salesDetails[10]?.userId.name %>', '<%= salesDetails[10]?.orderDate.toDateString() %>', '<%= salesDetails[10]?.grandTotalCost %>', '<%= salesDetails[10]?.paymentType %>', '<%= salesDetails[10]?.orderStatus %>'],
+                    ['Name', 'Order Date', 'Product Name', 'Total Cost in Dollars', 'Payment Method', 'Status'],
+                    ['<%= salesDetails[0]?.userId.name %>', '<%= salesDetails[0]?.orderDate.toDateString() %>', '<%= salesDetails[0]?.cartData[0].productName %>', '<%= salesDetails[0]?.grandTotalCost %>', '<%= salesDetails[0]?.paymentType %>', '<%= salesDetails[0]?.orderStatus %>'],
+                    ['<%= salesDetails[1]?.userId.name %>', '<%= salesDetails[1]?.orderDate.toDateString() %>', '<%= salesDetails[1]?.cartData[0].productName %>', '<%= salesDetails[1]?.grandTotalCost %>', '<%= salesDetails[1]?.paymentType %>', '<%= salesDetails[1]?.orderStatus %>'],
+                    ['<%= salesDetails[2]?.userId.name %>', '<%= salesDetails[2]?.orderDate.toDateString() %>', '<%= salesDetails[2]?.cartData[0].productName %>', '<%= salesDetails[2]?.grandTotalCost %>', '<%= salesDetails[2]?.paymentType %>', '<%= salesDetails[2]?.orderStatus %>'],
+                    ['<%= salesDetails[3]?.userId.name %>', '<%= salesDetails[3]?.orderDate.toDateString() %>', '<%= salesDetails[3]?.cartData[0].productName %>', '<%= salesDetails[3]?.grandTotalCost %>', '<%= salesDetails[3]?.paymentType %>', '<%= salesDetails[3]?.orderStatus %>'],
+                    ['<%= salesDetails[4]?.userId.name %>', '<%= salesDetails[4]?.orderDate.toDateString() %>', '<%= salesDetails[4]?.cartData[0].productName %>', '<%= salesDetails[4]?.grandTotalCost %>', '<%= salesDetails[4]?.paymentType %>', '<%= salesDetails[4]?.orderStatus %>'],
+                    ['<%= salesDetails[5]?.userId.name %>', '<%= salesDetails[5]?.orderDate.toDateString() %>', '<%= salesDetails[5]?.cartData[0].productName %>', '<%= salesDetails[5]?.grandTotalCost %>', '<%= salesDetails[5]?.paymentType %>', '<%= salesDetails[5]?.orderStatus %>'],
+                    ['<%= salesDetails[6]?.userId.name %>', '<%= salesDetails[6]?.orderDate.toDateString() %>', '<%= salesDetails[6]?.cartData[0].productName %>', '<%= salesDetails[6]?.grandTotalCost %>', '<%= salesDetails[6]?.paymentType %>', '<%= salesDetails[6]?.orderStatus %>'],
+                    ['<%= salesDetails[7]?.userId.name %>', '<%= salesDetails[7]?.orderDate.toDateString() %>', '<%= salesDetails[7]?.cartData[0].productName %>', '<%= salesDetails[7]?.grandTotalCost %>', '<%= salesDetails[7]?.paymentType %>', '<%= salesDetails[7]?.orderStatus %>'],
+                    ['<%= salesDetails[8]?.userId.name %>', '<%= salesDetails[8]?.orderDate.toDateString() %>', '<%= salesDetails[8]?.cartData[0].productName %>', '<%= salesDetails[8]?.grandTotalCost %>', '<%= salesDetails[8]?.paymentType %>', '<%= salesDetails[8]?.orderStatus %>'],
+                    ['<%= salesDetails[9]?.userId.name %>', '<%= salesDetails[9]?.orderDate.toDateString() %>', '<%= salesDetails[9]?.cartData[0].productName %>', '<%= salesDetails[9]?.grandTotalCost %>', '<%= salesDetails[9]?.paymentType %>', '<%= salesDetails[9]?.orderStatus %>'],
+                    ['<%= salesDetails[10]?.userId.name %>', '<%= salesDetails[10]?.orderDate.toDateString() %>', '<%= salesDetails[10]?.cartData[0].productName %>', '<%= salesDetails[10]?.grandTotalCost %>', '<%= salesDetails[10]?.paymentType %>', '<%= salesDetails[10]?.orderStatus %>'],
 
 
 

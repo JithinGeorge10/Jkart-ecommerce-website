@@ -68,6 +68,7 @@ router.get('/returnManagement',adminAuth,returnController.returnManagement)
 router.get('/salesReport',adminAuth,salesReportController.salesReport)
 router.post('/salesReportFilter',adminAuth,salesReportController.salesReportFilter)
 router.get('/salesReport/download/pdf',adminAuth,salesReportController.salesReportDownloadPDF)
+router.get('/admin/salesReport/download/xlsx',adminAuth,salesReportController.salesReportDownload)
 
 
 router.get('/dashboardData',adminAuth,dashboardController.dashboardData)

@@ -1,6 +1,7 @@
 
 const orderCollection = require('../model/ordersModel')
 const puppeteer = require('puppeteer-core');
+const exceljs = require("exceljs");
 
 const salesReport = async (req, res) => {
     try {
@@ -17,6 +18,7 @@ const salesReport = async (req, res) => {
                 select: 'productName' // Select the 'name' field from the 'Product' collection
             })
             .exec();
+       
         let salesDetails = salesDet.filter((val) => {
             return val.userId != null
         })
@@ -130,7 +132,82 @@ const formatDate = (date) => {
     return date.toISOString().split('T')[0]; // Example implementation
 };
 
+const salesReportDownload = async (req, res) => {
+    try {
+      const workBook = new exceljs.Workbook();
+      const sheet = workBook.addWorksheet("book");
+      sheet.columns = [
+        { header: "Order No", key: "no", width: 25 },
+        { header: "Name", key: "username", width: 25 },
+        { header: "Order Date", key: "orderDate", width: 25 },
+        { header: "Products", key: "products", width: 35 },
+        { header: "No of items", key: "noOfItems", width: 35 },
+        { header: "Total Cost", key: "totalCost", width: 25 },
+        { header: "Payment Method", key: "paymentMethod", width: 25 },
+        { header: "Status", key: "status", width: 20 },
+      ];
+  
+      let salesData = req.session?.admin?.dateValues
+        ? req.session.admin.salesData
+        : await orderCollection.find({ orderStatus: 'Delivered', paymentId: { $ne: null } }).populate('userId');
+
+  console.log('saless'+salesData);
+    
+  
+      salesData.forEach((v) => {
+        sheet.addRow({
+          no: v._id,
+          username: v.userId.name,
+          orderDate: v.orderDate,
+          products: v.cartData.map((v) => v.productName).join(", "),
+          noOfItems: v.cartData.map((v) => v.productQuantity).join(", "),
+          totalCost: "₹" + v.grandTotalCost,
+          paymentMethod: v.paymentType,
+          status: v.orderStatus,
+        });
+      });
+  
+      const totalOrders = salesData.length;
+      const totalSales = salesData.reduce(
+        (total, sale) => total + sale.grandTotalCost,
+        0
+      );
+      const totalDiscount = salesData.reduce((total, sale) => {
+        let discountAmount = sale.cartData.reduce((discount, cartItem) => {
+          let productPrice = cartItem.productId.productPrice;
+          let priceBeforeOffer = cartItem.productId.priceBeforeOffer;
+          let discountPercentage = cartItem.productId.productOfferPercentage || 0;
+          let actualAmount = productPrice * cartItem.productQuantity;
+          let paidAmount =
+            actualAmount - (actualAmount * discountPercentage) / 100;
+          return discount + (actualAmount - paidAmount);
+        }, 0);
+        return total + discountAmount;
+      }, 0);
+  
+      sheet.addRow({});
+      sheet.addRow({ "Total Orders": totalOrders });
+      sheet.addRow({ "Total Sales": "₹" + totalSales });
+      sheet.addRow({ "Total Discount": "₹" + totalDiscount });
+  
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=salesReport.xlsx"
+      );
+  
+      await workBook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Error generating sales report");
+    }
+  };
+
 
 module.exports = {
-    salesReport, salesReportFilter,salesReportDownloadPDF
+    salesReport, salesReportFilter,salesReportDownloadPDF,salesReportDownload
 }
