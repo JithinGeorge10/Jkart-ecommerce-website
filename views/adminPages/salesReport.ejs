@@ -12,38 +12,59 @@
         </div>
     </div>
     <br>
-    
+
     <div class="row">
         <% if (dateValues) { %>
             <div class="col-md-2">
-                <label for="startDate" class="form-label"><h4>From:</h4></label>
+                <label for="startDate" class="form-label">
+                    <h4>From:</h4>
+                </label>
                 <input id="startDate" type="date" class="form-control" value="<%= dateValues.startDate %>">
             </div>
-    
+
             <div class="col-md-2">
-                <label for="endDate" class="form-label"><h4>To:</h4></label>
+                <label for="endDate" class="form-label">
+                    <h4>To:</h4>
+                </label>
                 <input id="endDate" type="date" class="form-control" value="<%= dateValues.endDate %>">
             </div>
-    
+
             <% } else { %>
-    
+
                 <div class="col-md-2">
                     <label for="startDate" class="form-label">From:</label>
                     <input id="startDate" type="date" class="form-control">
                 </div>
-    
+
                 <div class="col-md-2">
                     <label for="endDate" class="form-label">To:</label>
                     <input id="endDate" type="date" class="form-control">
                 </div>
-    
+
                 <% } %>
-                <div class="col-md-2">
-                    <button id="filterBtnCustom" class="btn btn-success" style="margin-top: 30px;"><h4>Filter</h4></button>
-                </div>
-                <div class="col-md-2">
-                    <a href="/admin/salesReport/clearFilter" id="clearFilter" class="btn btn-success" style="margin-top: 30px;"><h4>Clear Filter</h4></a>
-                </div>
+                    <div class="col-md-2">
+                        <button id="filterBtnCustom" class="btn btn-success" style="margin-top: 30px;">
+                            <h4>Date Filter</h4>
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/admin/salesReport/clearFilter" id="clearFilter" class="btn btn-success"
+                            style="margin-top: 30px;">
+                            <h4>Clear Filter</h4>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <select id="filterOption"
+                            style="width: 100%; height: 100%; padding: 5px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px;">
+                            <option value="month">Month</option>
+                            <option value="week">Week</option>
+                            <option value="year">Year</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="filterBtn" class="btn btn-success"
+                            style="height: 100%; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer;">Filter</button>
+                    </div>
     </div>
 
     <script>
@@ -53,7 +74,7 @@
             let startDate = document.getElementById('startDate').value
             let endDate = document.getElementById('endDate').value
             let formData = { startDate, endDate }
-      
+
             let response = await fetch('/admin/salesReport/filterCustom',
                 {
                     method: 'POST',
@@ -61,12 +82,46 @@
                     body: JSON.stringify(formData)
                 })
             let result = await response.json()
-      
+
             if (result.success) {
                 location.reload()
             }
         })
-      </script>
+    </script>
+    <script>
+        let startDate = document.getElementById("startDate");
+        let endDate = document.getElementById("endDate");
+
+        startDate.addEventListener("change", function () {
+            let startDateValue = startDate.value;
+            endDate.setAttribute("min", startDateValue);
+        });
+
+        endDate.addEventListener("change", function () {
+            let endDateValue = endDate.value;
+            startDate.setAttribute("max", endDateValue);
+        });
+    </script>
+
+    <script>
+        let filterBtn = document.getElementById('filterBtn')
+        filterBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            let filterOption = document.getElementById('filterOption').value;
+            let formData = { filterOption };
+
+            let response = await fetch('/admin/salesReport/filter', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+            let result = await response.json();
+
+            if (result.success) {
+                location.reload();
+            }
+        });
+    </script>
 
     <table class="table">
         <thead>
@@ -90,7 +145,8 @@
                         <%= salesDetails[i].userId.name %>
                     </td>
                     <td>
-                        <%= new Date(salesDetails[i].orderDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') %>
+                        <%= new Date(salesDetails[i].orderDate).toLocaleDateString('en-GB', { day: '2-digit' ,
+                            month: '2-digit' , year: 'numeric' }).replace(/\//g, '-' ) %>
                     </td>
                     <td colspan="2"> <!-- Span 2 columns for cartData -->
                         <ul> <!-- Use an unordered list to display cartData items -->
@@ -153,4 +209,3 @@
             }
         });
     </script>
-    

@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const categoryCollection = require('../model/categoryModel')
-const productCollection = require('../model/productModel')
+const productCollection = require('../model/productModel');
+const { log } = require('util');
 
 
 
@@ -46,35 +47,45 @@ const addProductGet = async (req, res) => {
         console.log(err);
     }
 }
+
 const addProducts = async (req, res) => {
     try {
-      if (req.files.length < 3) {
-        res.send({ minImage: true })
-      } else {
-        const images = req.files.map((file) => file.filename);
-        const addproduct = new productCollection({
-          productName: req.body.productName,
-          parentCategory: req.body.parentCategory,
-          productImage: images,
-          productPrice: req.body.productPrice,
-          productStock: req.body.productStock,
-          offerPrice: req.body.productPrice
-        })
-        const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
-        if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
-          res.send({ noValue: true })
-        }
-        else if (productDetails.length > 0) {
-          res.send({ exists: true })
+        console.log('hai123')
+        console.log(req.body)
+        console.log(req.files)
+        const croppedImages = req.files.filter(file => file.fieldname.startsWith('croppedImage'));
+        console.log('croppedImages:', croppedImages);
+        if (req.files.length < 3) {
+            res.send({ minImage: true })
         } else {
-          res.send({ success: true })
-          addproduct.save()
+            console.log('addproductelse');
+            const images = croppedImages.map(file => file.filename); // Extract filenames
+            console.log('images:', images);
+            const addproduct = new productCollection({
+                productName: req.body.productName,
+                parentCategory: req.body.parentCategory,
+                productImage: images,
+                productPrice: req.body.productPrice,
+                productStock: req.body.productStock,
+                offerPrice: req.body.productPrice
+            })
+            
+            const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
+            if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
+                res.send({ noValue: true })
+            }
+            else if (productDetails.length > 0) {
+                res.send({ exists: true })
+            } else {
+                await addproduct.save()
+                res.send({ success: true })
+            
+            }
         }
-      }
     } catch (err) {
-      console.log(err);
+        console.log(err);
     }
-  }
+}
 
 const editProduct = async (req, res) => {
     try {
@@ -137,7 +148,7 @@ const editProducts = async (req, res) => {
 const searchProducts = async (req, res) => {
     try {
 
-        const productDet = await productCollection.find({ productName: { $regex: new RegExp(req.body.search, 'i') } });
+        const productDet = await productCollection.find({ productName: { $regex: new RegExp(req.body.search, 'i') },isListed:true,isDeleted:false });
 
 
         if (/^\s*$/.test(req.body.search)) {
@@ -164,33 +175,33 @@ const deleteProduct = async (req, res) => {
 }
 const imageDelete = async (req, res) => {
     try {
-      const { productId, imageId } = req.query;
-  
-      // Delete image from database
-      await productCollection.updateOne(
-        { _id: productId },
-        { $pull: { productImage: imageId } }
-      );
-  
-      // Delete image from public folder
-      const publicFolderPath = path.resolve('public', 'assets', 'img', 'uploads');
-      const imagePath = path.join(publicFolderPath, imageId);
-  
-      console.log(`Attempting to delete file at path: ${imagePath}`);
-  
-      try {
-        await fs.promises.unlink(imagePath);
-        console.log('Image file deleted successfully');
-        res.send({ success: true });
-      } catch (error) {
-        console.error(`Error deleting image file: ${error.message}`);
-        res.status(500).send({ success: false, error: 'Failed to delete image file' });
-      }
+        const { productId, imageId } = req.query;
+
+        // Delete image from database
+        await productCollection.updateOne(
+            { _id: productId },
+            { $pull: { productImage: imageId } }
+        );
+
+        // Delete image from public folder
+        const publicFolderPath = path.resolve('public', 'assets', 'img', 'uploads');
+        const imagePath = path.join(publicFolderPath, imageId);
+
+        console.log(`Attempting to delete file at path: ${imagePath}`);
+
+        try {
+            await fs.promises.unlink(imagePath);
+            console.log('Image file deleted successfully');
+            res.send({ success: true });
+        } catch (error) {
+            console.error(`Error deleting image file: ${error.message}`);
+            res.status(500).send({ success: false, error: 'Failed to delete image file' });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).send({ success: false, error: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).send({ success: false, error: 'Internal Server Error' });
     }
-  };
+};
 
 module.exports = {
     productManagement, productList, addProductGet, addProducts,

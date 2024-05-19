@@ -188,13 +188,26 @@ const salesReportDownload = async (req, res) => {
 
 const salesReportFilterCustom = async (req, res) => {
     try {
-        console.log(req.body.startDate)
-        console.log(req.body.startDate)
+    
+        const startOfDay = (date) => {
+            return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+        };
+
+        const endOfDay = (date) => {
+            return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+        };
+
+
         let { startDate, endDate } = req.body;
+
+        startDate = startOfDay(new Date(startDate));
+        endDate = endOfDay(new Date(endDate));
+
+
         let salesDataFiltered = await orderCollection
             .find({
                 orderStatus: 'Delivered', paymentId: { $ne: null },
-                orderDate: { $gte: new Date(startDate), $lte: new Date(endDate) },
+                orderDate: { $gte: startDate, $lte: endDate },
                 orderStatus: "Delivered",
             }).sort({ _id: -1 })
             .populate({
@@ -228,8 +241,8 @@ const salesReportFilterCustom = async (req, res) => {
 
 const clearFilter = async (req, res) => {
     try {
-        req.session.admin.salesDetails=null
-        req.session.admin.dateValues=null
+        req.session.admin.salesDetails = null
+        req.session.admin.dateValues = null
         res.redirect('/salesReport')
     } catch (error) {
         console.error(error);
@@ -237,7 +250,57 @@ const clearFilter = async (req, res) => {
 };
 
 
+const salesReportFilter = async (req, res) => {
+    try {
+        let { filterOption } = req.body;
+        let startDate, endDate;
+
+        if (filterOption === "month") {
+            startDate = new Date();
+            startDate.setDate(1);
+            endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + 1, 0);
+        } else if (filterOption === "week") {
+            let currentDate = new Date();
+            let currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            let diff = currentDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+            startDate = new Date(currentDate.setDate(diff));
+            endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+        } else if (filterOption === "year") {
+            let currentYear = new Date().getFullYear();
+            startDate = new Date(currentYear, 0, 1);
+            endDate = new Date(currentYear, 11, 31);
+        }
+
+        let salesDataFiltered = await orderCollection
+            .find({
+                orderStatus: 'Delivered', paymentId: { $ne: null },
+                orderDate: { $gte: new Date(startDate), $lte: new Date(endDate) },
+                orderStatus: "Delivered",
+            }).sort({ _id: -1 })
+            .populate({
+                path: 'userId',
+                select: 'name email' // Select fields from the 'users' collection
+            })
+            .populate({
+                path: 'cartData.productId',
+                model: 'products', // Model name of the Product collection
+                select: 'productName' // Select the 'name' field from the 'Product' collection
+            })
+
+        req.session.admin = {};
+        req.session.admin.dateValues = { startDate, endDate };
+        req.session.admin.salesDetails = JSON.parse(JSON.stringify(salesDataFiltered));
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: "Internal server error" });
+    }
+};
+
 
 module.exports = {
-    salesReport, salesReportDownloadPDF, salesReportDownload, salesReportFilterCustom,clearFilter
+    salesReport, salesReportDownloadPDF, salesReportDownload, salesReportFilterCustom, clearFilter, salesReportFilter
 }

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Product</title>
@@ -41,14 +41,17 @@
     .error {
       color: red;
     }
+
     #image-preview {
       display: flex;
       flex-wrap: wrap;
     }
 
-    .preview-image {
-      max-width: 150px; /* Set the maximum width of preview images */
-      max-height: 150px; /* Set the maximum height of preview images */
+    .canvas-image,.preview-image {
+      max-width: 150px;
+      /* Set the maximum width of preview images */
+      max-height: 150px;
+      /* Set the maximum height of preview images */
       margin-right: 10px;
       margin-bottom: 10px;
     }
@@ -99,79 +102,7 @@
       <br>
 
 
-      <div id="image-preview">
-        <!-- Image preview will be rendered here -->
-      </div>
-
-      <script>
-        // Function to handle file input change event and display image previews
-        function previewImages() {
-          var preview = document.getElementById('image-preview');
-          preview.innerHTML = ''; // Clear previous preview
-      
-          var files = document.getElementById('images').files;
-          for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            var reader = new FileReader();
-      
-            reader.onload = function (event) {
-              var img = document.createElement('img');
-              img.className = 'preview-image';
-              img.src = event.target.result;
-              preview.appendChild(img);
-      
-              // Initialize Cropper.js for each image
-              var cropper = new Cropper(img, {
-                aspectRatio: 1,
-                viewMode: 1,
-                dragMode: 'move',
-                crop: function (event) {
-                  console.log(event.detail.x, event.detail.y, event.detail.width, event.detail.height);
-                }
-              });
-            }
-      
-            reader.readAsDataURL(file);
-          }
-        }
-      
-        // Attach the previewImages function to the change event of the file input
-        document.getElementById('images').addEventListener('change', previewImages);
-      </script>
-
-
-
-
-
-
-
-
-
-      <script>
-        // Function to handle file input change event and display image previews
-        function previewImages() {
-          var preview = document.getElementById('image-preview');
-          preview.innerHTML = ''; // Clear previous preview
-  
-          var files = document.getElementById('images').files;
-          for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            var reader = new FileReader();
-  
-            reader.onload = function (event) {
-              var img = document.createElement('img');
-              img.className = 'preview-image';
-              img.src = event.target.result;
-              preview.appendChild(img);
-            }
-  
-            reader.readAsDataURL(file);
-          }
-        }
-  
-        // Attach the previewImages function to the change event of the file input
-        document.getElementById('images').addEventListener('change', previewImages);
-      </script>
+     
       <br>
       <div class="form-group">
         <label for="exampleFormControlInput1">Product Price</label>
@@ -187,8 +118,64 @@
       <br>
       <button type="submit" class="btn btn-success">Add</button>
     </form>
-
     <script>
+
+      const aaaaaaaaaa = []
+      // Function to handle file input change event and display image previews
+      function previewImages() {
+        var preview = document.getElementById('image-preview');
+        preview.innerHTML = ''; // Clear previous preview
+
+        var files = document.getElementById('images').files;
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          var reader = new FileReader();
+
+          reader.onload = function (event) {
+            var img = document.createElement('img');
+            img.className = 'canvas-image';
+            img.src = event.target.result;
+            // console.log(event.target.result);
+            // image.push(event.target.result)
+            preview.appendChild(img);
+
+            // Initialize cropper for the image
+            initializeCropper(img);
+          }
+
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function initializeCropper(image) {
+        var cropper = new Cropper(image, {
+          aspectRatio: NaN,
+          viewMode: 1,
+          autoCropArea: 1,
+          cropBoxResizable: false,
+          preview: '.preview'
+        });
+
+        // Add a button to crop the image
+        var cropButton = document.createElement('button');
+        cropButton.className = 'btn btn-primary';
+        cropButton.innerText = 'Crop';
+        cropButton.addEventListener('click', function () {
+          cropper.getCroppedCanvas().toBlob(function (blob) {
+            // Show the cropped image preview
+            var previewImage = document.createElement('img');
+            previewImage.className = 'preview-image';
+            aaaaaaaaaa.push(blob)
+            previewImage.src = URL.createObjectURL(blob); // Create a URL for the blob
+            document.getElementById('image-preview').appendChild(previewImage);
+          });
+        });
+        image.parentNode.appendChild(cropButton);
+      }
+
+
+      // Attach the previewImages function to the change event of the file input
+      document.getElementById('images').addEventListener('change', previewImages);
 
       $('#addProduct').validate({
         rules: {
@@ -207,61 +194,124 @@
             required: true,
 
           }
-        },  
+        },
 
-        submitHandler: async (form, event) => {
+        submitHandler: async (form, event, blob) => {
+          event.preventDefault();
 
-          event.preventDefault()
           // Create a new FormData object
           const formData = new FormData(form);
 
-          // const fileInputs = form.querySelectorAll('input[type="file"][name="images"]');
-          // fileInputs.forEach(input => {
-          //   const files = input.files;
-          //   for (let i = 0; i < files.length; i++) {
-          //     formData.append('images', files[i]);
-          //   }
-          // });
-          const images = document.querySelectorAll('.preview-image');
-  images.forEach((img, index) => {
-    const cropper = img.cropper;
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob((blob) => {
-      formData.append(`images[${index}]`, blob, `image_${index}.jpg`);
-    });
-  });
+          // Select the preview images
+          var previewImages = document.querySelectorAll('.preview-image');
+          console.log('preview', previewImages);
 
-          let response = await fetch('/addProducts', {
-            method: 'POST',
-            body: formData
-          })
-          let result = await response.json()
-          if (result.exists) {
-            await Swal.fire({
-              icon: "error",
-              title: "Product Already exists"
-            })
-          }
-          if (result.success) {
-            await Swal.fire({
-              icon: "success",
-              title: "Product Added"
-            })
-            window.location.href = '/productManagement'
-          }
-          if (result.noValue) {
-            await Swal.fire({
-              icon: "error",
-              title: "No Value in Product Name"
-            })
-          }if(result.minImage){
-            await Swal.fire({
-              icon: "error",
-              title: "Add atleast 3 images"
-            })
+          // Loop through each preview image
+          aaaaaaaaaa.forEach(function (previewImage, index) {
+
+            console.log("imageeeeee",previewImage);
+            // Get the cropped image data URI
+            // var croppedImageDataURI = previewImage.src;
+
+            // console.log(croppedImageDataURI);
+
+            // // Convert the data URI to Blob
+            // var croppedImageBlob = dataURItoBlob(croppedImageDataURI);
+
+            // console.log("kasjdfklas",croppedImageBlob);
+
+            // Append the cropped image Blob to FormData
+            formData.append('croppedImage' + index, previewImage);
+          });
+
+          // Append the original image Blob to FormData
+          formData.append('originalImage', blob);
+
+          // Send the FormData via POST request
+          try {
+            let response = await fetch('/addProducts', {
+              method: 'POST',
+              body: formData
+            });
+
+            let result = await response.json();
+
+            // Handle response accordingly
+            if (result.exists) {
+              await Swal.fire({
+                icon: "error",
+                title: "Product Already exists"
+              });
+            } else if (result.success) {
+              await Swal.fire({
+                icon: "success",
+                title: "Product Added"
+              });
+              window.location.href = '/productManagement';
+            } else if (result.noValue) {
+              await Swal.fire({
+                icon: "error",
+                title: "No Value in Product Name"
+              });
+            } else if (result.minImage) {
+              await Swal.fire({
+                icon: "error",
+                title: "Add at least 3 images"
+              });
+            }
+          } catch (error) {
+            console.error('Error sending data:', error);
           }
         }
+
       })
+      function dataURItoBlob(dataURI) {
+        console.log("Data URI:", dataURI);
+
+        // Check if dataURI is in the correct format
+        if (!dataURI.startsWith('data:image/png;base64,')) {
+          console.error('Invalid data URI format');
+          return null;
+        }
+
+        // Extract base64 string
+        var base64String = dataURI.split(',')[1];
+
+        // Decode base64 string
+        var byteString;
+        try {
+          byteString = atob(base64String);
+        } catch (error) {
+          console.error('Error decoding base64 string:', error);
+          return null;
+        }
+
+        console.log("Byte String:", byteString);
+
+        // Extract MIME type
+        var mimeString = 'image/png'; // Force PNG format
+        console.log("MIME String:", mimeString);
+
+        // Convert to ArrayBuffer
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        // Create Blob object
+        var blob;
+        try {
+          blob = new Blob([ab], { type: mimeString });
+        } catch (error) {
+          console.error('Error creating Blob:', error);
+          return null;
+        }
+
+        return blob;
+      }
+
+
 
     </script>
 

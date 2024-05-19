@@ -70,6 +70,7 @@ router.post('/admin/salesReport/filterCustom',adminAuth,salesReportController.sa
 router.get('/salesReport/download/pdf',adminAuth,salesReportController.salesReportDownloadPDF)
 router.get('/admin/salesReport/download/xlsx',adminAuth,salesReportController.salesReportDownload)
 router.get('/admin/salesReport/clearFilter',adminAuth,salesReportController.clearFilter)
+router.post('/admin/salesReport/filter',adminAuth,salesReportController.salesReportFilter)
 
 
 router.get('/dashboardData',adminAuth,dashboardController.dashboardData)
