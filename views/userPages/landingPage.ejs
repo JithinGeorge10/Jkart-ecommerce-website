@@ -4,82 +4,90 @@
         ===================================== -->
 
   <!-- BANNER SLIDER -->
+
+  <script>
+    $(document).ready(function () {
+      $('.banner_slider').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 2000
+      })
+    }) // Change the sliding
+  </script>
+
+
   <section class="banner_slider_wrapper clearfix">
-    <div class="banner_slider_inner">
-      <div class="container">
-        <div class="banner_slider mb-0">
-          <div class="item">
-            <div class="row align-items-center">
-              <div class="col-6">
-                <div class="content">
-                  <h6>Limited time offer!</h6>
-
-                  <h1>NIKE AIR</h1>
-
-                  <p class="text-truncate">"Enjoy our limited time offer with huge discounts on Nike shoes! Don't miss
-                    out on this opportunity to grab your favorite styles at unbeatable prices."
-                  </p>
-                  <a href="/shop" class="btn btn-primary-outlined btn-sm">
-                    Buy Now <span><i class="fa fa-chevron-right"></i></span>
-                  </a>
-                </div>
+    <div class="container">
+      <div class="banner_slider">
+        <div>
+          <div class="row align-items-center">
+            <div class="col-6">
+              <div class="content">
+                <h6>Limited time offer!</h6>
+                <h1>NIKE AIR</h1>
+                <p class="text-truncate">
+                  Enjoy our limited time offer with huge discounts on Nike shoes! Don't miss out on this opportunity to
+                  grab your favorite styles at unbeatable prices.
+                </p>
+                <a href="/shop" class="btn btn-primary-outlined btn-sm">
+                  Buy Now <span><i class="fa fa-chevron-right"></i></span>
+                </a>
               </div>
-
-              <div class="col-6">
-                <picture class="image">
-                  <img src="assets/img/home/banner-slider/sl1-sm.png" style="width: 500px;" alt="slider-image">
-                </picture>
+            </div>
+            <div class="col-6">
+              <picture class="image">
+                <img src="assets/img/home/banner-slider/sl1-sm.png" style="width: 500px;" alt="slider-image">
+              </picture>
+            </div>
+          </div>
+        </div>
+        <!-- slider items -->
+        <div>
+          <div class="row align-items-center">
+            <div class="col-6">
+              <picture class="image">
+                <img class="img-fluid" src="assets/img/home/banner-slider/sl2-sm.png" style="width: 500px;"
+                  alt="slider-image">
+              </picture>
+            </div>
+            <div class="col-6">
+              <div class="content">
+                <h6>Limited time offer!</h6>
+                <h1>Running Shoes</h1>
+                <p class="text-truncate">
+                  Nike running shoes are designed to provide a snug and comfortable fit, with options available in
+                  various widths to accommodate different foot shapes.
+                </p>
+                <a href="/shop" class="btn btn-primary-outlined btn-sm">
+                  Buy Now <span><i class="fa fa-chevron-right"></i></span>
+                </a>
               </div>
             </div>
           </div>
-          <div class="item">
-            <div class="row align-items-center">
-              <div class="col-6">
-                <picture class="image">
-                  <img class="img-fluid" src="assets/img/home/banner-slider/sl2-sm.png" style="width: 500px;"
-                    alt="slider-image">
-                </picture>
-              </div>
-
-              <div class="col-6">
-                <div class="content">
-                  <h6>Limited time offer!</h6>
-                  <h1>Running Shoes</h1>
-                  <p class="text-truncate">Nike running shoes are designed to provide a snug and comfortable fit, with
-                    options available in various widths to accommodate different foot shapes. </p>
-
-                  <a href="/shop" class="btn btn-primary-outlined btn-sm">
-                    Buy Now <span><i class="fa fa-chevron-right"></i></span>
-                  </a>
-                </div>
+        </div>
+        <div>
+          <div class="row align-items-center">
+            <div class="col-6">
+              <div class="content">
+                <h6>Limited time offer!</h6>
+                <h1>Sneakers</h1>
+                <p class="text-truncate">
+                  Hey sneakerheads! It's time to lace up and sprint towards savings! For a limited time only, we're
+                  offering jaw-dropping discounts on your favorite Nike sneakers
+                </p>
+                <a href="/shop" class="btn btn-primary-outlined btn-sm">
+                  Buy Now <span><i class="fa fa-chevron-right"></i></span>
+                </a>
               </div>
             </div>
-          </div>
-
-          <div class="item">
-            <div class="row align-items-center">
-              <div class="col-6">
-                <div class="content">
-                  <h6>Limited time offer!</h6>
-                  <h1>Sneakers</h1>
-                  <p class="text-truncate">Hey sneakerheads! It's time to lace up and sprint towards savings! For a
-                    limited time only, we're offering jaw-dropping discounts on your favorite Nike sneakers
-                  </p>
-
-                  <a href="/shop" class="btn btn-primary-outlined btn-sm">
-                    Buy Now <span><i class="fa fa-chevron-right"></i></span>
-                  </a>
-                </div>
-              </div>
-              <div class="col-6">
-                <picture class="image">
-                  <img class="img-fluid" src="assets/img/home/banner-slider/shoe1-sm.png" style="width: 800px;"
-                    alt="slider-image">
-                </picture>
-              </div>
+            <div class="col-6">
+              <picture class="image">
+                <img class="img-fluid" src="assets/img/home/banner-slider/shoe1-sm.png" style="width: 800px;"
+                  alt="slider-image">
+              </picture>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -97,25 +105,28 @@
 
     <div class="container container-inner">
       <div class="featuredCollection  featured_collection_slider slider">
-       
 
-          <% for(let i=0;i<productDetails.length;i++){ %>       
-            <div class="thumbnail" onclick="location.href='/shop?id=<%= productDetails[i].parentCategory %>';">
+
+        <% for(let i=0;i<productDetails.length;i++){ %>
+          <div class="thumbnail" onclick="location.href='/shop?id=<%= productDetails[i].parentCategory %>';">
             <div class="imageWrapper" style="border: solid; color: black; border-radius: 10%;">
               <img src="assets/img/uploads/<%= productDetails[i].productImage[0] %>" alt="feature-collection-image">
               <div class="caption">
-                <h3><%= productDetails[i].categoryName %></h3>
-                <small><span class="d-none d-md-inline-block">Starts from</span>$ <%= productDetails[i].minPrice %></small>
+                <h3>
+                  <%= productDetails[i].categoryName %>
+                </h3>
+                <small><span class="d-none d-md-inline-block">Starts from</span>$ <%= productDetails[i].minPrice %>
+                    </small>
               </div>
               <div class="masking">
                 <a class='btn viewBtn' href='/shop?id=<%= productDetails[i].parentCategory %>'>View Products</a>
               </div>
             </div>
           </div>
-         <% } %>  
-        </div>
+          <% } %>
       </div>
-        <!-- <div class="thumbnail" onclick="location.href='single-product-2.html';">
+    </div>
+    <!-- <div class="thumbnail" onclick="location.href='single-product-2.html';">
           <div class="imageWrapper">
             <img src="assets/img/home/featured-collection/featured-collection-03.jpg" alt="feature-collection-image">
             <div class="caption">
@@ -128,7 +139,7 @@
           </div>
         </div> -->
 
-        <!-- <div class="thumbnail" onclick="location.href='single-product-2.html';">
+    <!-- <div class="thumbnail" onclick="location.href='single-product-2.html';">
           <div class="imageWrapper">
             <img src="assets/img/home/featured-collection/featured-collection-01.jpg" alt="feature-collection-image">
             <div class="caption">
@@ -141,7 +152,7 @@
           </div>
 
         </div> -->
-     
+
   </section>
   <section class="mainContent clearfix featured_collection_slider_area">
     <div class="container">

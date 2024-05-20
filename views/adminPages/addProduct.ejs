@@ -210,17 +210,7 @@
           aaaaaaaaaa.forEach(function (previewImage, index) {
 
             console.log("imageeeeee",previewImage);
-            // Get the cropped image data URI
-            // var croppedImageDataURI = previewImage.src;
-
-            // console.log(croppedImageDataURI);
-
-            // // Convert the data URI to Blob
-            // var croppedImageBlob = dataURItoBlob(croppedImageDataURI);
-
-            // console.log("kasjdfklas",croppedImageBlob);
-
-            // Append the cropped image Blob to FormData
+           
             formData.append('croppedImage' + index, previewImage);
           });
 
