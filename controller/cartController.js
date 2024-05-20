@@ -302,7 +302,8 @@ const orderPlaceComleted = async (req, res) => {
 
 const phonePay = async (req, res) => {
     try {
-
+       
+          
         const order = await orderCollection.findOne({ _id: req.session.orderDetails })
         console.log('orderphonepe' + order);
         const payEndpoint = '/pg/v1/pay'
@@ -364,7 +365,10 @@ const phonePay = async (req, res) => {
 
 const payPal = async (req, res) => {
     try {
-
+        await orderCollection.updateOne(
+            { _id: req.session.orderDetails },
+            { $set: { paymentId: 'payment pending' } }
+          );
         const orderDet = await orderCollection.findOne({ userId:req.session.logged._id }).sort({_id:-1}).limit(1)
         console.log('grandtotoal'+orderDet.grandTotalCost)
         var amount = orderDet.grandTotalCost.toFixed(2);

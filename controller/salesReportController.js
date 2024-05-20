@@ -39,20 +39,23 @@ const salesReport = async (req, res) => {
 const salesReportDownloadPDF = async (req, res) => {
     try {
         let startDate, endDate;
-
-        if (req.body.startDate && req.body.endDate) {
-            startDate = new Date(req.body.startDate);
-            endDate = new Date(req.body.endDate);
+    
+        
+        if (req.query.startDate && req.query.endDate) {
+            startDate = new Date(req.query.startDate);
+            endDate = new Date(req.query.endDate);
         } else {
-            startDate = new Date();
-            startDate.setDate(startDate.getDate() - 7);
-            endDate = new Date();
+            startDate = new Date(0); // Start date set to the beginning of Unix time
+            endDate = new Date();   // End date set to the current date
         }
-
+        endDate.setHours(23, 59, 59, 999);
+        console.log(startDate)
+        console.log(endDate)
         const salesData = await orderCollection.find({
             orderDate: { $gte: startDate, $lte: endDate },
             orderStatus: "Delivered", paymentId: { $ne: null }
         }).sort({ _id: -1 }).populate('userId') // Make sure to use .toArray() if you're using MongoDB
+
 
         const browser = await puppeteer.launch({
             // Specify the correct executablePath if needed
@@ -188,7 +191,7 @@ const salesReportDownload = async (req, res) => {
 
 const salesReportFilterCustom = async (req, res) => {
     try {
-    
+
         const startOfDay = (date) => {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
         };
@@ -243,6 +246,7 @@ const clearFilter = async (req, res) => {
     try {
         req.session.admin.salesDetails = null
         req.session.admin.dateValues = null
+
         res.redirect('/salesReport')
     } catch (error) {
         console.error(error);
@@ -262,8 +266,8 @@ const salesReportFilter = async (req, res) => {
             endDate.setMonth(endDate.getMonth() + 1, 0);
         } else if (filterOption === "week") {
             let currentDate = new Date();
-            let currentDay = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-            let diff = currentDate.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+            let currentDay = currentDate.getDay();
+            let diff = currentDate.getDate() - currentDay - 7;
             startDate = new Date(currentDate.setDate(diff));
             endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + 6);

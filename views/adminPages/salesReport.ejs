@@ -192,7 +192,10 @@
     <script>
         document.getElementById('downloadPDF').addEventListener('click', async () => {
             try {
-                const response = await fetch('/salesReport/download/pdf', {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                const response = await fetch(`/salesReport/download/pdf?startDate=${startDate}&endDate=${endDate}`, {
                     method: 'GET'
                 });
                 const blob = await response.blob();

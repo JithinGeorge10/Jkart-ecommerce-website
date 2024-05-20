@@ -191,6 +191,7 @@ const viewOrder = async (req, res) => {
 }
 const accountViewOrder = async (req, res) => {
     try {
+        
         const orderDet = await orderCollection.findOne({ _id: req.query.id }).populate('userId')
         const addressDet = await addressCollection.findOne({ _id: orderDet.addressChosen })
 
