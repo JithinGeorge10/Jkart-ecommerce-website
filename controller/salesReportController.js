@@ -39,8 +39,8 @@ const salesReport = async (req, res) => {
 const salesReportDownloadPDF = async (req, res) => {
     try {
         let startDate, endDate;
-    
-        
+
+
         if (req.query.startDate && req.query.endDate) {
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
@@ -116,6 +116,8 @@ const formatDate = (date) => {
 
 const salesReportDownload = async (req, res) => {
     try {
+        console.log(req.query.startDate + req.query.endDate)
+
         const workBook = new exceljs.Workbook();
         const sheet = workBook.addWorksheet("book");
         sheet.columns = [
@@ -129,11 +131,24 @@ const salesReportDownload = async (req, res) => {
             { header: "Status", key: "status", width: 20 },
         ];
 
-        let salesData = req.session?.admin?.dateValues
-            ? req.session.admin.salesData
-            : await orderCollection.find({ orderStatus: 'Delivered', paymentId: { $ne: null } }).populate('userId');
+        let startDate, endDate;
 
-        console.log('saless' + salesData);
+
+        if (req.query.startDate && req.query.endDate) {
+            startDate = new Date(req.query.startDate);
+            endDate = new Date(req.query.endDate);
+        } else {
+            startDate = new Date(0); // Start date set to the beginning of Unix time
+            endDate = new Date();   // End date set to the current date
+        }
+        endDate.setHours(23, 59, 59, 999);
+        console.log(startDate)
+        console.log(endDate)
+        const salesData = await orderCollection.find({
+            orderDate: { $gte: startDate, $lte: endDate },
+            orderStatus: "Delivered", paymentId: { $ne: null }
+        }).sort({ _id: -1 }).populate('userId') // Make sure to use .toArray() if you're using MongoDB
+
 
 
         salesData.forEach((v) => {
