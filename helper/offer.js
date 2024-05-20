@@ -6,7 +6,7 @@ const applyProductOffer = async () => {
         const today = Date.now();
 
         const offers = await ProductOfferModel.find().populate("productId");
-        console.log(offers);
+
         for (const offer of offers) {
             if (offer.productId.offerPrice === offer.productId.productPrice) {
                 if (
@@ -14,16 +14,7 @@ const applyProductOffer = async () => {
                     offer.endDate >= today &&
                     offer.currentStatus
                 ) {
-                    await ProductModel.findByIdAndUpdate(offer.productId, {
-                        offerPrice: Math.floor(
-                            offer.productId.productPrice -
-                            (offer.productId.productPrice * offer.productOfferPercentage) / 100
-                        ),
-                    });
-                } else {
-                    await ProductModel.findByIdAndUpdate(offer.productId, {
-                        offerPrice: offer.productId.productPrice,
-                    });
+                    await applyProductOfferToProduct(offer.productId, offer.productOfferPercentage);
                 }
             }
         }
@@ -36,25 +27,27 @@ const applyCategoryOffer = async () => {
     try {
         const today = new Date();
 
-        const offers = await CategoryOfferModel.find({ currentStatus: true });
-        console.log('offers123'+offers);
+        const productOffers = await ProductOfferModel.find({ currentStatus: true }).populate("productId");
+        const categoryOffers = await CategoryOfferModel.find({ currentStatus: true });
+
         const allProducts = await ProductModel.find();
 
         for (const prod of allProducts) {
-            const currentOffer = offers.find(
-                (offer) => String(offer.categoryId) === String(prod.parentCategory)
-            );
+            const currentProductOffer = productOffers.find(offer => String(offer.productId._id) === String(prod._id));
+            const currentCategoryOffer = categoryOffers.find(offer => String(offer.categoryId) === String(prod.parentCategory));
 
-            if (
-                currentOffer &&
-                currentOffer.startDate <= today &&
-                currentOffer.endDate >= today
-            ) {
-                await ProductModel.findByIdAndUpdate(prod._id, {
-                    offerPrice: Math.floor(
-                        prod.productPrice - (prod.productPrice * currentOffer.productOfferPercentage) / 100
-                    ),
-                });
+            let highestOfferPercentage = 0;
+
+            if (currentProductOffer && currentProductOffer.startDate <= today && currentProductOffer.endDate >= today) {
+                highestOfferPercentage = Math.max(highestOfferPercentage, currentProductOffer.productOfferPercentage);
+            }
+
+            if (currentCategoryOffer && currentCategoryOffer.startDate <= today && currentCategoryOffer.endDate >= today) {
+                highestOfferPercentage = Math.max(highestOfferPercentage, currentCategoryOffer.productOfferPercentage);
+            }
+
+            if (highestOfferPercentage > 0) {
+                await applyProductOfferToProduct(prod._id, highestOfferPercentage);
             } else {
                 await ProductModel.findByIdAndUpdate(prod._id, {
                     offerPrice: prod.price,
@@ -65,6 +58,18 @@ const applyCategoryOffer = async () => {
         console.log(error);
     }
 };
+
+const applyProductOfferToProduct = async (productId, offerPercentage) => {
+    const product = await ProductModel.findById(productId);
+    const newOfferPrice = Math.floor(product.productPrice - (product.productPrice * offerPercentage) / 100);
+
+    await ProductModel.findByIdAndUpdate(productId, {
+        offerPrice: newOfferPrice,
+    });
+};
+
+module.exports = { applyProductOffer, applyCategoryOffer };
+
 
 
 

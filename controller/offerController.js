@@ -2,7 +2,7 @@ const productCollection = require('../model/productModel')
 const productOfferCollection = require('../model/productOfferModel')
 const categoryOfferCollection = require('../model/categoryOfferModel')
 const categoryCollection = require('../model/categoryModel')
-
+const { applyProductOffer, applyCategoryOffer } = require("../helper/offer");
 const productOfferManagement = async (req, res) => {
     try {
         const productDet = await productCollection.find({ isListed: true, isDeleted: false })
@@ -14,7 +14,7 @@ const productOfferManagement = async (req, res) => {
 }
 const addProductOffer = async (req, res) => {
     try {
-
+        await applyProductOffer()
         const productDet = await productCollection.findOne({ productName: req.body.productName })
         const offerDet = await productOfferCollection.findOne({ productId: productDet._id })
         if (offerDet) {
@@ -92,7 +92,7 @@ const categoryOfferManagement = async (req, res) => {
 
 const addCategoryOffer = async (req, res) => {
     try {
-
+        await applyCategoryOffer()
         const categoryDet = await categoryCollection.findOne({ categoryName: req.body.categoryName })
         const offerDet = await categoryOfferCollection.findOne({ categoryId: categoryDet._id })
         if (offerDet) {
