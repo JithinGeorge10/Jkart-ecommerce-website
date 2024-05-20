@@ -11,7 +11,7 @@ const orderManagement = async (req, res) => {
     try {
         let orderDet = req.session.searchOrder || await orderCollection.find({
             paymentId: { $ne: null },
-            orderStatus: { $nin: ['Return Request', 'Approved','Returned'] }
+            orderStatus: { $nin: ['Request Return', 'Approved','Returned'] }
         }).populate('userId').sort({ _id: -1 });
                 const ordersPerPage = 10
         const totalPages = orderDet.length / ordersPerPage
