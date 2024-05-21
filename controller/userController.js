@@ -245,11 +245,10 @@ const forgotPassword = (req, res) => {
 const forgotPasswordsendOtp = async (req, res) => {
     try {
         const userDet = await userCollection.findOne({ email: req.body.email })
-        console.log(userDet)
+     
         if (userDet) {
             req.session.forgotPasswordId = userDet._id
-            console.log(req.session.forgotPasswordId)
-            console.log('success')
+           
             res.send({ success: true })
         } else {
             res.send({ emailExists: true })
@@ -261,7 +260,7 @@ const forgotPasswordsendOtp = async (req, res) => {
 
 const forgotPasswordVerifyOtp = async (req, res) => {
     try {
-        console.log('forgotPasswordVerifyOtp' + req.session.forgotPasswordId)
+      
         const user = await userCollection.findOne({ _id: req.session.forgotPasswordId })
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
         await sendotp(user, generatedOtp)
@@ -293,7 +292,7 @@ const forgotPasswordVerifyOtpPost = async (req, res) => {
 
 const forgotPasswordresendOtp = async (req, res) => {
     try {
-        console.log('resend')
+      
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
         const user = await userCollection.findOne({ _id: req.session.forgotPasswordId })
         await sendotp(user, generatedOtp)
@@ -320,7 +319,7 @@ const updatePassword = async (req, res) => {
     try {
 
        const bycryptpassword = bcrypt.hashSync(req.body.password, 10)
-       console.log(req.session.forgotPasswordId)
+      
        await userCollection.updateOne({_id:req.session.forgotPasswordId},{$set:{password:bycryptpassword}})
        res.send({success:true})
     } catch (err) {

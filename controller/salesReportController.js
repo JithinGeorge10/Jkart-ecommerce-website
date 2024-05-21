@@ -49,8 +49,7 @@ const salesReportDownloadPDF = async (req, res) => {
             endDate = new Date();   // End date set to the current date
         }
         endDate.setHours(23, 59, 59, 999);
-        console.log(startDate)
-        console.log(endDate)
+       
         const salesData = await orderCollection.find({
             orderDate: { $gte: startDate, $lte: endDate },
             orderStatus: "Delivered", paymentId: { $ne: null }
@@ -116,7 +115,7 @@ const formatDate = (date) => {
 
 const salesReportDownload = async (req, res) => {
     try {
-        console.log(req.query.startDate + req.query.endDate)
+      
 
         const workBook = new exceljs.Workbook();
         const sheet = workBook.addWorksheet("book");
@@ -142,8 +141,7 @@ const salesReportDownload = async (req, res) => {
             endDate = new Date();   // End date set to the current date
         }
         endDate.setHours(23, 59, 59, 999);
-        console.log(startDate)
-        console.log(endDate)
+      
         const salesData = await orderCollection.find({
             orderDate: { $gte: startDate, $lte: endDate },
             orderStatus: "Delivered", paymentId: { $ne: null }

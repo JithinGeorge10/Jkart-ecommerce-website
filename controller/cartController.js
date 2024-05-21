@@ -21,7 +21,6 @@ const addToCart = async (req, res) => {
     try {
         const productDet = await productCollection.findOne({ _id: req.query.pid });
         const categoryDet = await categoryCollection.findOne({ _id:productDet.parentCategory });
-        console.log('catdettt'+categoryDet)
         const existingCartItem = await cartCollection.findOne({ userId: req.session.logged._id, productId: req.query.pid });
 
         if (existingCartItem) {
@@ -219,9 +218,9 @@ const orderPlace = async (req, res) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
         const orderDet = await orderCollection.findOne({ _id: req.session.orderDetails })
-        console.log('bla' + orderDet)
+      
         if (orderDet.paymentType === 'Cash On Delivery') {
-            console.log('orderplace COD');
+        
             await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'COD' } })
             for (let cart of cartDet) {
                 await productCollection.updateOne(
@@ -305,11 +304,11 @@ const phonePay = async (req, res) => {
        
           
         const order = await orderCollection.findOne({ _id: req.session.orderDetails })
-        console.log('orderphonepe' + order);
+       
         const payEndpoint = '/pg/v1/pay'
         const merchantTransactionId = uniqid()
         const amountInPaise = order.grandTotalCost * 100;
-        console.log('grandtotal' + amountInPaise);
+    
         const payload =
         {
             "merchantId": process.env.MERCHANT_ID,
@@ -346,7 +345,7 @@ const phonePay = async (req, res) => {
         axios
             .request(options)
             .then(function (response) {
-                console.log(response.data);
+              
                 const url = response.data.data.instrumentResponse.redirectInfo.url
                 res.redirect(url)
                 // res.send({url})
@@ -370,7 +369,7 @@ const payPal = async (req, res) => {
             { $set: { paymentId: 'payment pending' } }
           );
         const orderDet = await orderCollection.findOne({ userId:req.session.logged._id }).sort({_id:-1}).limit(1)
-        console.log('grandtotoal'+orderDet.grandTotalCost)
+      
         var amount = orderDet.grandTotalCost.toFixed(2);
         var create_payment_json = {
             "intent": "sale",
@@ -406,8 +405,7 @@ const payPal = async (req, res) => {
                 console.error("Error in creating payment:", error);
                 return res.status(500).send('Error in creating payment');
             } else {
-                console.log("Create Payment Response");
-                console.log(payment);
+               
                 req.session.paymentId = payment.id
                 for (let i = 0; i < payment.links.length; i++) {
                     if (payment.links[i].rel === 'approval_url') {

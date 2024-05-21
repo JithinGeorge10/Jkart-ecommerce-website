@@ -53,8 +53,7 @@ const editProductOfferGet = async (req, res) => {
 const editProductOffer = async (req, res) => {
     try {
 
-        console.log('1' + req.query.id)
-        console.log('2' + req.body.offerPercentage)
+      
 
         if (/^\s*$/.test(req.body.offerPercentage)) {
             res.send({ noValue: true })

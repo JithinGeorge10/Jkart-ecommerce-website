@@ -133,7 +133,7 @@ const filter = async (req, res) => {
         }
 
         productDetail = productDetail.filter((val) => {
-            console.log(start, end)
+           
             return val.offerPrice > start && val.offerPrice < end
         })
 

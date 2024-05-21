@@ -14,7 +14,7 @@ const couponManagement = async (req, res) => {
 
 const addCoupon = async (req, res) => {
     try {
-        console.log(req.body)
+     
         const newCoupon = new couponCollection({
             couponCode: req.body.couponCode,
             couponAmount: req.body.couponAmount,
@@ -32,9 +32,9 @@ const addCoupon = async (req, res) => {
 
 const editCouponGet = async (req, res) => {
     try {
-        console.log('edit' + req.query.couponId)
+       
         const couponDet = await couponCollection.findOne({ _id: req.query.couponId ,isListed:true})
-        console.log(couponDet);
+     
         res.render('adminPages/couponEdit', { couponDet })
     } catch (err) {
         console.log(err);
@@ -78,7 +78,7 @@ const applyCoupon = async (req, res) => {
             const couponDet = await couponCollection.findOne({ couponCode: req.query.code })
             if (couponDet) {
                 const order = await orderCollection.findOne({ _id: req.session.orderDetails })
-                console.log('order123');
+              
                 if (order.grandTotalCost > couponDet.minimumPurchase) {
                     await orderCollection.updateOne(
                         { _id: req.session.orderDetails },
@@ -98,7 +98,7 @@ const applyCoupon = async (req, res) => {
                 res.send({ noCoupon: true })
             }
         }
-        console.log(req.query.code)
+      
     } catch (err) {
         console.log(err);
     }

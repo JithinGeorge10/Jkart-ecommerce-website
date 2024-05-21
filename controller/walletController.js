@@ -4,7 +4,7 @@ const wallet = async (req, res) => {
     try {
         let walletBal=await walletCollection.findOne({ userId: req.session.logged._id })
         let walletDet = await walletCollection.findOne({ userId: req.session.logged._id })
-        console.log(walletDet)
+    
         const walletPerPage = 15
         const totalPages = walletDet.walletTransaction.length / walletPerPage
         const pageNo = req.query.pageNo || 3

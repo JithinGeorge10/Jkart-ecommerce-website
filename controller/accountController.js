@@ -135,7 +135,6 @@ const allOrders = async (req, res) => {
 }
 const cancelOrder = async (req, res) => {
     try {
-        console.log('reason' + req.query.reason)
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled', cancelReason: req.query.reason } })
         const orderDet = await orderCollection.findOne({ _id: req.query.id })
         for (let i = 0; i < orderDet.cartData.length; i++) {
@@ -144,9 +143,7 @@ const cancelOrder = async (req, res) => {
                 { $inc: { productStock: orderDet.cartData[i].productQuantity } }
             );
         }
-        console.log('payment' + orderDet);
         if (orderDet.paymentType == 'paypal') {
-            console.log('user and order' + req.session.logged._id + orderDet.grandTotalCost)
             await walletCollection.updateOne(
                 { userId: req.session.logged._id },
                 {
@@ -244,9 +241,9 @@ const singleProductCancel = async (req, res) => {
                 { $inc: { productStock: order.cartData[i].productQuantity } }
             );
         }
-        console.log('payment' + order);
+      
         if (order.paymentType == 'paypal') {
-            console.log('user and order' + req.session.logged._id + order.grandTotalCost)
+    
             await walletCollection.updateOne(
                 { userId: req.session.logged._id },
                 {
@@ -279,14 +276,12 @@ const singleProductCancel = async (req, res) => {
 
 const singleReturnOrder = async (req, res) => {
     try {
-        console.log(req.query.id)
-        console.log(req.query.cartId)
-        console.log(req.query.reason)
+      
         const id = req.query.id.trim();
         const cartId = req.query.cartId.trim()
 
         const order = await orderCollection.find({ _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) })
-        console.log(order)
+      
 
         await orderCollection.findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) },
@@ -311,12 +306,12 @@ const singleReturnOrder = async (req, res) => {
 
 const downloadInvoice = async (req, res) => {
     try {
-        console.log(req.query.id)
+      
         let orderData = await orderCollection
             .findOne({ _id: req.query.id })
             .populate("addressChosen");
             
-        console.log('orderData'+orderData)
+     
         // Extract order number
         const orderNumber = orderData._id;
 

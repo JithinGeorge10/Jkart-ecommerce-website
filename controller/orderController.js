@@ -112,7 +112,7 @@ const adminViewOrder = async (req, res) => {
         //   req.session.viewOrderProduct=await productCollection.find({_id:req.session.viewOrder.cartData.productId})
     
      
-        //   console.log('product'+req.session.viewOrderProduct)
+       
         res.send({ success: true, orderDet: req.session.viewOrder, addressDet: req.session.viewOrderAddress })
     } catch (err) {
         console.log(err);

@@ -50,17 +50,15 @@ const addProductGet = async (req, res) => {
 
 const addProducts = async (req, res) => {
     try {
-        console.log('hai123')
-        console.log(req.body)
-        console.log(req.files)
+       
         const croppedImages = req.files.filter(file => file.fieldname.startsWith('croppedImage'));
-        console.log('croppedImages:', croppedImages);
+       
         if (req.files.length < 3) {
             res.send({ minImage: true })
         } else {
-            console.log('addproductelse');
+          
             const images = croppedImages.map(file => file.filename); // Extract filenames
-            console.log('images:', images);
+         
             const addproduct = new productCollection({
                 productName: req.body.productName,
                 parentCategory: req.body.parentCategory,
@@ -187,11 +185,11 @@ const imageDelete = async (req, res) => {
         const publicFolderPath = path.resolve('public', 'assets', 'img', 'uploads');
         const imagePath = path.join(publicFolderPath, imageId);
 
-        console.log(`Attempting to delete file at path: ${imagePath}`);
+     
 
         try {
             await fs.promises.unlink(imagePath);
-            console.log('Image file deleted successfully');
+          
             res.send({ success: true });
         } catch (error) {
             console.error(`Error deleting image file: ${error.message}`);
