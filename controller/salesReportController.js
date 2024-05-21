@@ -17,7 +17,7 @@ const salesReport = async (req, res) => {
             .populate({
                 path: 'cartData.productId',
                 model: 'products', // Model name of the Product collection
-                select: 'productName' // Select the 'name' field from the 'Product' collection
+                select: 'productName productPrice offerPrice' // Select the 'name' field from the 'Product' collection
             })
             .exec();
 
@@ -235,7 +235,7 @@ const salesReportFilterCustom = async (req, res) => {
             .populate({
                 path: 'cartData.productId',
                 model: 'products', // Model name of the Product collection
-                select: 'productName' // Select the 'name' field from the 'Product' collection
+                select: 'productName productPrice offerPrice' // Select the 'name' field from the 'Product' collection
             })
 
 
@@ -305,7 +305,7 @@ const salesReportFilter = async (req, res) => {
             .populate({
                 path: 'cartData.productId',
                 model: 'products', // Model name of the Product collection
-                select: 'productName' // Select the 'name' field from the 'Product' collection
+                select: 'productName productPrice offerPrice' // Select the 'name' field from the 'Product' collection
             })
 
         req.session.admin = {};

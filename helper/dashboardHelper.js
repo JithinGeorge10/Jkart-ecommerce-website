@@ -54,7 +54,7 @@ module.exports = {
                 { 
                     $match: { 
                         orderDate: { $gte: yesterday, $lt: today }, 
-                        paymentId: { $ne: null },
+                        paymentId: { $ne: null, $ne: "payment pending" },
                         orderStatus: 'Delivered' 
                     } 
                 },
@@ -135,7 +135,13 @@ module.exports = {
 
     Revenue: async () => {
         try {
-            const result = await orderCollection.find({ paymentId: { $ne: null } });
+            const result = await orderCollection.find({ 
+                paymentId: { 
+                    $ne: null, 
+                    $ne: "payment pending" 
+                } 
+            });
+            
 
             return {
                 revenue: result.reduce((acc, curr) => (acc += curr.grandTotalCost), 0)
@@ -152,7 +158,7 @@ module.exports = {
             lastmonth.setDate(today.getDate() - 28);
 
             const result = await orderCollection.aggregate([
-                { $match: { orderDate: { $gte: lastmonth, $lt: today }, paymentId: { $ne: null } } },
+                { $match: { orderDate: { $gte: lastmonth, $lt: today }, paymentId: { $ne: null, $ne: "payment pending"  } } },
                 { $group: { _id: "", MonthlyRevenue: { $sum: "$grandTotalCost" } } },
             ]);
             return result.length > 0 ? result[0].MonthlyRevenue : 0;
