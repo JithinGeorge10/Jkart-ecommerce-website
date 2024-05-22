@@ -79,7 +79,7 @@ const applyCoupon = async (req, res) => {
             if (couponDet) {
                 const couponDet = await couponCollection.findOne({ couponCode: req.query.code })
                 const orderDetail = await orderCollection.find({ userId: req.session.logged._id, couponApplied: couponDet._id })
-                console.log('couponAppliedOrders' + orderDetail)
+               
 
                 if (orderDetail.length>0) {
                     res.send({ alreadyApplied: true })
