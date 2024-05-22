@@ -120,7 +120,7 @@
     </form>
     <script>
 
-      const aaaaaaaaaa = []
+      const imageArray = []
       // Function to handle file input change event and display image previews
       function previewImages() {
         var preview = document.getElementById('image-preview');
@@ -165,7 +165,7 @@
             // Show the cropped image preview
             var previewImage = document.createElement('img');
             previewImage.className = 'preview-image';
-            aaaaaaaaaa.push(blob)
+            imageArray.push(blob)
             previewImage.src = URL.createObjectURL(blob); // Create a URL for the blob
             document.getElementById('image-preview').appendChild(previewImage);
           });

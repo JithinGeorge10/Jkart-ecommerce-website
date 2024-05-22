@@ -172,6 +172,11 @@
                   icon: "error",
                   title: "Not applicable for this amount of purchase"
                 });
+              }if(result.alreadyApplied){
+                await Swal.fire({
+                  icon: "error",
+                  title: "Coupon Already Applied"
+                });
               }
             }
 
