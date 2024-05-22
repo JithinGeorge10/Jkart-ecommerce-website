@@ -47,13 +47,20 @@
       flex-wrap: wrap;
     }
 
-    .canvas-image,.preview-image {
+    .canvas-image,
+    .preview-image {
       max-width: 150px;
       /* Set the maximum width of preview images */
       max-height: 150px;
       /* Set the maximum height of preview images */
       margin-right: 10px;
       margin-bottom: 10px;
+    }
+
+    .crop-img-conatiner {
+      width: 300px;
+      height: 300px;
+      margin-bottom: 60px;
     }
   </style>
 </head>
@@ -97,12 +104,12 @@
         <label for="images">Add image</label>
         <input type="file" accept="image/*" name="images" class="form-control-file" id="images" multiple>
         <!-- Image preview container -->
-        <div id="image-preview"></div>
+        <div id="image-preview" style="max-width: 400px;"></div>
       </div>
       <br>
 
 
-     
+
       <br>
       <div class="form-group">
         <label for="exampleFormControlInput1">Product Price</label>
@@ -131,13 +138,17 @@
           var file = files[i];
           var reader = new FileReader();
 
+
           reader.onload = function (event) {
             var img = document.createElement('img');
+            var div = document.createElement('div');
+            div.className = "crop-img-conatiner"
             img.className = 'canvas-image';
             img.src = event.target.result;
             // console.log(event.target.result);
             // image.push(event.target.result)
-            preview.appendChild(img);
+            div.appendChild(img)
+            preview.appendChild(div);
 
             // Initialize cropper for the image
             initializeCropper(img);
@@ -164,15 +175,33 @@
           cropper.getCroppedCanvas().toBlob(function (blob) {
             // Show the cropped image preview
             var previewImage = document.createElement('img');
+            var deleteButton = document.createElement('button');
             previewImage.className = 'preview-image';
+
+            deleteButton.textContent = 'Drop';
+            deleteButton.className = 'btn btn-sm btn-danger';
+            deleteButton.style.marginTop = '10px';
+            deleteButton.addEventListener('click', () => {
+              previewImage.parentNode.removeChild(previewImage);
+              deleteButton.parentNode.removeChild(deleteButton);
+              const index = imageArray.indexOf(blob);
+              console.log(index);
+              if (index !== -1) {
+                console.log(index);
+                imageArray.splice(index, 1);
+              }
+            });
+
             imageArray.push(blob)
             previewImage.src = URL.createObjectURL(blob); // Create a URL for the blob
             document.getElementById('image-preview').appendChild(previewImage);
+            document.getElementById('image-preview').appendChild(deleteButton);
           });
         });
         image.parentNode.appendChild(cropButton);
-        
-        
+
+
+
       }
 
 
@@ -209,10 +238,10 @@
           console.log('preview', previewImages);
 
           // Loop through each preview image
-          aaaaaaaaaa.forEach(function (previewImage, index) {
+          imageArray.forEach(function (previewImage, index) {
 
-            console.log("imageeeeee",previewImage);
-           
+            console.log("imageeeeee", previewImage);
+
             formData.append('croppedImage' + index, previewImage);
           });
 

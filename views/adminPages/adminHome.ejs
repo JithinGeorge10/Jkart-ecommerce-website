@@ -91,12 +91,23 @@
       <div class="row">
         <div class="col-md-4 grid-margin stretch-card">
           <div class="card">
-            <div class="card-body">
-              <h4 class="card-title">Category Wise Revenue</h4>
-              <canvas id="categoryWiseRevenueChart" class="transaction-chart"></canvas>
-            </div>
+              <div class="card-body">
+                  <h4 class="card-title">Category Wise Revenue</h4>
+                  <div class="form-group">
+                      <label for="filterYear">Filter</label>
+                      <select class="form-control" id="filterYear">
+                          <!-- Options for years go here -->
+                          <option value="2024">Year</option>
+                          <option value="2024">Month</option>
+                          <option value="2024">Week</option>
+                          <!-- Add more options as needed -->
+                      </select>
+                  </div>
+                  <canvas id="categoryWiseRevenueChart" class="transaction-chart"></canvas>
+              </div>
           </div>
-        </div>
+      </div>
+      
         <!-- Line chart -->
         <div class="col-lg-6 grid-margin stretch-card">
           <div class="card">
@@ -235,7 +246,7 @@
       try {
         const response = await fetch('/dashboardData', { method: 'GET' });
         const data = await response.json();
-        console.log(data);
+      
         const {
           productsCount,
           categoryCount,
@@ -277,6 +288,7 @@
         }
 
         const categoryWiseRevenueChartElement = document.getElementById('categoryWiseRevenueChart');
+        
         const categoryWiseRevenueChartOptions = {
           type: 'doughnut',
           data: {
@@ -301,6 +313,7 @@
       }
     })();
   </script>
+  
   </div>
 
   </body>

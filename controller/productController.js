@@ -98,21 +98,21 @@ const editProduct = async (req, res) => {
 }
 const editProducts = async (req, res) => {
     try {
-        let imgFiles = [];
-        if (req.files.length === 0) {
-            // No new images uploaded, retain existing images
-            const existingProduct = await productCollection.findOne({ _id: req.params.id });
-            imgFiles = existingProduct.productImage;
-        } else {
+       console.log(req.files)
+      
+        let imgFiles = [];  
+     
+            const croppedImages = req.files.filter(file => file.fieldname.startsWith('croppedImage'));
+            const images = croppedImages.map(file => file.filename); // Extract filenames
             // New images uploaded
             const existingProduct = await productCollection.findOne({ _id: req.params.id });
             imgFiles = existingProduct.productImage || [];
 
             // Append new image filenames to the existing ones
-            for (let i = 0; i < req.files.length; i++) {
-                imgFiles.push(req.files[i].filename);
+            for (let i = 0; i < images.length; i++) {
+                imgFiles.push(images[i]);
             }
-        }
+        
 
         const productDetails = await productCollection.find({ _id: { $ne: req.params.id }, productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
         if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
