@@ -109,35 +109,48 @@
               </div>
             </div>
             <hr>
+            <style>
+              .coupon-card {
+                border: 2px solid #ccc;
+                border-radius: 8px;
+                background-color: #f9f9f9;
+                margin-bottom: 20px;
+              }
+            </style>
+            
             <div class="coupon-container">
-              <% const currentDate=new Date(); for (let i=0; i < couponDet.length; i++) { if (currentDate>=
-                couponDet[i].startDate && currentDate <= couponDet[i].expiryDate) { %>
-                  <div class="coupon">
-                    <h4>Coupon Code: <%= couponDet[i].couponCode %> for every purchase above $ <%=
-                          couponDet[i].minimumPurchase %>
-                    </h4>
-                    <br>
-                    <h5>Discount Price : <%= couponDet[i].couponAmount %>
-                    </h5>
-                    <p>Coupon Valid until <%= couponDet[i].expiryDate.toDateString() %>
-                    </p>
-                  </div>
+              <% const currentDate = new Date(); 
+              for (let i = 0; i < couponDet.length; i++) { 
+                if (currentDate >= couponDet[i].startDate && currentDate <= couponDet[i].expiryDate) { %>
+                  <% if (i % 2 === 0) { %>
+                    <div class="row">
                   <% } %>
-                    <% } %>
-
-                      <div class="coupon-form">
-                        <input id="couponCode" type="text" class="form-control" placeholder="Enter Coupon Code">
-                        <% if (orderDet.couponApplied==null) { %>
-                          <button id="applyBtn" onclick="couponFn()" class="btn btn-primary">Apply</button>
-                          <% } else { %>
-                            <button id="removeBtn" onclick="couponRemoveFn()" class="btn btn-primary">Remove
-                              Coupon</button>
-                            <% } %>
+                  <div class="col-md-6">
+                    <div class="card coupon-card">
+                      <div class="card-body">
+                        <h4 class="card-title">Coupon Code: <%= couponDet[i].couponCode %> for every purchase above $ <%= couponDet[i].minimumPurchase %></h4>
+                        <h5 class="card-subtitle mb-2 text-muted">Discount Price : <%= couponDet[i].couponAmount %></h5>
+                        <p class="card-text">Coupon Valid until <%= couponDet[i].expiryDate.toDateString() %></p>
                       </div>
-
-
-                      <!-- <button onclick="removeCoupon()" id="removeBtn" style="display: none;" class="btn btn-danger">Remove</button> -->
+                    </div>
+                  </div>
+                  <% if ((i + 1) % 2 === 0 || i === couponDet.length - 1) { %>
+                    </div>
+                  <% } %>
+                <% } %>
+              <% } %>
+            
+              <div class="coupon-form">
+                <input id="couponCode" type="text" class="form-control" placeholder="Enter Coupon Code">
+                <% if (orderDet.couponApplied == null) { %>
+                <button id="applyBtn" onclick="couponFn()" class="btn btn-primary">Apply</button>
+                <% } else { %>
+                <button id="removeBtn" onclick="couponRemoveFn()" class="btn btn-primary">Remove Coupon</button>
+                <% } %>
+              </div>
             </div>
+            
+            
           </div>
           <script>
             async function couponFn() {
