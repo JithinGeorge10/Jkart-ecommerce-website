@@ -44,7 +44,7 @@ const editProductOfferGet = async (req, res) => {
     try {
 
         const offer = await productOfferCollection.findOne({ _id: req.query.offerId })
-        console.log(offer)
+      
         res.render('adminPages/editProductOffer', { offer })
     } catch (err) {
         console.log(err);
@@ -122,7 +122,7 @@ const editCategoryOfferGet = async (req, res) => {
     try {
 
         const offer = await categoryOfferCollection.findOne({ _id: req.query.offerId })
-        console.log(offer)
+     
         res.render('adminPages/editCategoryOffer', { offer })
     } catch (err) {
         console.log(err);

@@ -105,8 +105,9 @@ const qtyDec = async (req, res) => {
 
 const removeCart = async (req, res) => {
     try {
-
+        await orderCollection.updateOne({_id:req.session.orderDetails},{$set:{couponApplied:null}})
         await cartCollection.deleteOne({ productId: req.query.pid })
+        req.session.orderDetails=null
         res.send({ success: true })
     } catch (err) {
         console.log(err);
@@ -149,7 +150,7 @@ const cartCheckoutAddress = async (req, res) => {
 const cartCheckoutPayment = async (req, res) => {
     try {
         const shippingAddress = await addressCollection.findOne({ _id: req.session.selectedAddress })
-        res.render('userpages/cartCheckoutPayment', { userLogged: req.session.logged, shippingAddress })
+        res.render('userPages/cartCheckoutPayment', { userLogged: req.session.logged, shippingAddress })
     } catch (err) {
         console.log(err);
     }

@@ -91,23 +91,53 @@
       <div class="row">
         <div class="col-md-4 grid-margin stretch-card">
           <div class="card">
-              <div class="card-body">
-                  <h4 class="card-title">Category Wise Revenue</h4>
-                  <div class="form-group">
-                      <label for="filterYear">Filter</label>
-                      <select class="form-control" id="filterYear">
-                          <!-- Options for years go here -->
-                          <option value="2024">Year</option>
-                          <option value="2024">Month</option>
-                          <option value="2024">Week</option>
-                          <!-- Add more options as needed -->
-                      </select>
-                  </div>
-                  <canvas id="categoryWiseRevenueChart" class="transaction-chart"></canvas>
+            <div class="card-body">
+              <h4 class="card-title">Category Wise Revenue</h4>
+              <div class="row">
+                <div class="col-md-2">
+                  <select id="filterOption"
+                    style=" height: 100%; padding: 5px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px;">
+
+                    <option value="month">Month</option>
+                    <option value="week">Week</option>
+                    <option value="year">Year</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button id="filterBtn" class="btn btn-success"
+                    style="height: 100%; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer;">Filter</button>
+                </div>
               </div>
+
+              <canvas id="categoryWiseRevenueChart" class="transaction-chart"></canvas>
+            </div>
           </div>
-      </div>
-      
+        </div>
+
+        <script>
+          let filterBtn = document.getElementById('filterBtn')
+          filterBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            let filterOption = document.getElementById('filterOption').value;
+            let formData = { filterOption };
+            console.log(formData)
+            let response = await fetch('/admin', {
+              method: 'POST',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData)
+            });
+            let result = await response.json();
+
+            if (result.success) {
+              location.reload();
+            }
+          });
+        </script>
+
+
+
+
+
         <!-- Line chart -->
         <div class="col-lg-6 grid-margin stretch-card">
           <div class="card">
@@ -246,7 +276,7 @@
       try {
         const response = await fetch('/dashboardData', { method: 'GET' });
         const data = await response.json();
-      
+
         const {
           productsCount,
           categoryCount,
@@ -288,7 +318,7 @@
         }
 
         const categoryWiseRevenueChartElement = document.getElementById('categoryWiseRevenueChart');
-        
+
         const categoryWiseRevenueChartOptions = {
           type: 'doughnut',
           data: {
@@ -313,7 +343,7 @@
       }
     })();
   </script>
-  
+
   </div>
 
   </body>

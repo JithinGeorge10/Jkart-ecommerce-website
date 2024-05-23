@@ -98,7 +98,7 @@ const editProduct = async (req, res) => {
 }
 const editProducts = async (req, res) => {
     try {
-       console.log(req.files)
+     
       
         let imgFiles = [];  
      

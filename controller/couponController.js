@@ -32,9 +32,9 @@ const addCoupon = async (req, res) => {
 
 const editCouponGet = async (req, res) => {
     try {
-        console.log('edit' + req.query.couponId)
+      
         const couponDet = await couponCollection.findOne({ _id: req.query.couponId, isListed: true })
-        console.log(couponDet);
+   
         res.render('adminPages/couponEdit', { couponDet })
     } catch (err) {
         console.log(err);
@@ -107,7 +107,7 @@ const applyCoupon = async (req, res) => {
                 res.send({ noCoupon: true })
             }
         }
-        console.log(req.query.code)
+       
     } catch (err) {
         console.log(err);
     }
@@ -121,7 +121,7 @@ const removeCoupon = async (req, res) => {
     try {
         const order = await orderCollection.findOne({ _id: req.session.orderDetails });
         const coupon = await couponCollection.findOne({ _id: order.couponApplied });
-        console.log(order);
+    
         await orderCollection.updateOne(
             { _id: order._id },
             {
