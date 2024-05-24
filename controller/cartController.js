@@ -11,6 +11,7 @@ const axios = require('axios');
 const uniqid = require('uniqid')
 const sha256 = require('sha256')
 const paypal = require('paypal-rest-sdk')
+const { wallet } = require("./walletController")
 paypal.configure({
     'mode': process.env.PAYPAL_MODE, //sandbox or live
     'client_id': process.env.PAYPAL_CLIENT_KEY,
@@ -57,7 +58,7 @@ const cart = async (req, res) => {
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
 
         const cartTotal = cartDetails.reduce((acc, curr) => acc + curr.totalCostPerProduct, 0)
-      
+
         req.session.grandTotal = cartTotal
         res.render('userPages/Cart', { userLogged: req.session.logged, cartDetails, grandTotal: req.session.grandTotal })
     } catch (err) {
@@ -158,10 +159,16 @@ const cartCheckoutPayment = async (req, res) => {
 
 const cartCheckoutreview = async (req, res) => {
     try {
+      
+        const walletDetails =await walletCollection.findOne({userId:req.session.logged._id})
+      
         if (req.query.id === 'null') {
             res.send({ noPaymentMethod: true })
         } else if (req.query.id == 'Cash On Delivery' && req.session.grandTotal > 1000) {
             res.send({ codLimit: true })
+        }else if(walletDetails && walletDetails.walletBalance<=0 && req.query.id == 'wallet'){
+         
+            res.send({walletBalanceZero:true})
         } else {
 
             const cartDet = await cartCollection.find({ userId: req.session.logged._id })
@@ -236,35 +243,38 @@ const orderPlace = async (req, res) => {
         } else if (orderDet.paymentType === 'paypal') {
             res.send({ paypal: true })
         } else if (orderDet.paymentType === 'wallet') {
-            await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'Wallet' } })
-            for (let cart of cartDet) {
-                await productCollection.updateOne(
-                    { _id: cart.productId },
-                    { $inc: { productStock: -cart.productQuantity } }
-                );
-            }
-            await cartCollection.deleteMany({ userId: req.session.logged._id })
-            ////
+         
+         
+                await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'Wallet' } })
+                for (let cart of cartDet) {
+                    await productCollection.updateOne(
+                        { _id: cart.productId },
+                        { $inc: { productStock: -cart.productQuantity } }
+                    );
+                }
+                await cartCollection.deleteMany({ userId: req.session.logged._id })
+                ////
 
-            await walletCollection.updateOne(
-                { userId: req.session.logged._id },
-                {
-                    $inc: {
-                        walletBalance: -orderDet.grandTotalCost
-                    },
-                    $push: {
-                        walletTransaction: {
-                            transactionDate: new Date(),
-                            transactionAmount: orderDet.grandTotalCost,
-                            transactionType: 'Debit on online payment'
+                await walletCollection.updateOne(
+                    { userId: req.session.logged._id },
+                    {
+                        $inc: {
+                            walletBalance: -orderDet.grandTotalCost
+                        },
+                        $push: {
+                            walletTransaction: {
+                                transactionDate: new Date(),
+                                transactionAmount: orderDet.grandTotalCost,
+                                transactionType: 'Debit on online payment'
+                            }
                         }
-                    }
-                },
-                { upsert: true }
-            );
+                    },
+                    { upsert: true }
+                );
+                res.send({ success: true })
+            
 
 
-            res.send({ success: true })
         }
 
     } catch (err) {

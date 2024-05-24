@@ -1,6 +1,7 @@
 const userCollection = require('../model/userModel')
 const otpCollection = require('../model/otpModel')
 const productCollection = require('../model/productModel')
+const walletCollection = require('../model/walletModel');
 const sendotp = require('../helper/sendOtp')
 const bcrypt = require('bcrypt')
 const applyReferralOffer = require("../helper/referralOffer.js");
@@ -151,6 +152,12 @@ const saveUser = async (req, res) => {
 
         req.session.logged = await userCollection.findOne({ email: req.body.email })
 
+        const newWallet = new walletCollection({
+           userId: req.session.logged._id,
+           walletBalance:0,
+           walletTransaction:[]
+        })
+        await newWallet.save()
 
         if (req.query.otp) {
             const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()

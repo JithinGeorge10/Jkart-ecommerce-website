@@ -43,17 +43,14 @@ module.exports = {
             console.error(error);
         }
     },
-
     currentDayRevenue: async () => {
         try {
             const today = new Date();
-            const yesterday = new Date();
-            yesterday.setDate(today.getDate() - 1);
     
             const result = await orderCollection.aggregate([
                 { 
                     $match: { 
-                        orderDate: { $gte: yesterday, $lt: today }, 
+                        orderDate: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) }, 
                         paymentId: { $ne: null, $ne: "payment pending" },
                         orderStatus: 'Delivered' 
                     } 

@@ -7,7 +7,7 @@ const wallet = async (req, res) => {
     
         const walletPerPage = 15
         const totalPages = walletDet.walletTransaction.length / walletPerPage
-        const pageNo = req.query.pageNo || 3
+        const pageNo = req.query.pageNo || 1
         const start = (pageNo - 1) * walletPerPage
         const end = start + walletPerPage
         walletDet = walletDet.walletTransaction.slice(start, end)
