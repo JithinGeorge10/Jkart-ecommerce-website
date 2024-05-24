@@ -208,8 +208,8 @@ const accountViewOrder = async (req, res) => {
 
 const setDefault = async (req, res) => {
     try {
-        await addressCollection.updateMany({}, { $set: { setAsDefault: false } })
-        await addressCollection.updateOne({ _id: req.query.id }, { $set: { setAsDefault: true } })
+        await addressCollection.updateMany({userId:req.session.logged._id}, { $set: { setAsDefault: false } })
+        await addressCollection.updateOne({ _id: req.query.id,userId:req.session.logged._id }, { $set: { setAsDefault: true } })
         res.send({ success: true })
     } catch (err) {
         console.log(err);
