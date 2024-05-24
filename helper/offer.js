@@ -73,4 +73,3 @@ module.exports = { applyProductOffer, applyCategoryOffer };
 
 
 
-module.exports = { applyProductOffer, applyCategoryOffer };
