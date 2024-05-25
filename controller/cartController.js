@@ -388,8 +388,8 @@ const payPal = async (req, res) => {
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": `http://localhost:` + process.env.PORT + `/orderPlaceComleted`,
-                "cancel_url": `http://localhost:` + process.env.PORT + `/orderSummary`
+                "return_url": `https://jkart.online/orderPlaceComleted`,
+                "cancel_url": `https://jkart.online/orderSummary`
             },
             "transactions": [{
                 "item_list": {
