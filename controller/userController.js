@@ -10,64 +10,69 @@ const applyReferralOffer = require("../helper/referralOffer.js");
 
 const landingPage = async (req, res) => {
     try {
-
-        const productDetails = await productCollection.aggregate([
-            {
-                $group: {
-                    _id: '$parentCategory',
-                    minPrice: { $min: '$productPrice' }
+      const productDetails = await productCollection.aggregate([
+        {
+          $match: {
+            isDeleted: false,
+            isListed: true
+          }
+        },
+        {
+          $group: {
+            _id: '$parentCategory',
+            minPrice: { $min: '$productPrice' }
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'category'
+          }
+        },
+        { $unwind: '$category' }, // Unwind the category array
+        {
+          $lookup: {
+            from: 'products',
+            let: { parentCategory: '$_id', minPrice: '$minPrice' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$parentCategory', '$$parentCategory'] },
+                      { $eq: ['$productPrice', '$$minPrice'] }
+                    ]
+                  }
                 }
-            },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'category'
-                }
-            },
-            { $unwind: '$category' }, // Unwind the category array
-            {
-                $lookup: {
-                    from: 'products',
-                    let: { parentCategory: '$_id', minPrice: '$minPrice' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        { $eq: ['$parentCategory', '$$parentCategory'] },
-                                        { $eq: ['$productPrice', '$$minPrice'] }
-                                    ]
-                                }
-                            }
-                        },
-                        { $project: { productImage: 1, _id: 0, parentCategory: 1 } }
-                    ],
-                    as: 'product'
-                }
-            },
-            { $unwind: '$product' }, // Unwind the product array
-            {
-                $project: {
-                    categoryName: '$category.categoryName',
-                    minPrice: 1,
-                    productImage: '$product.productImage',
-                    parentCategory: '$product.parentCategory'
-                }
-            }
-        ])
-      
-        if (req.session.logged) {
-            res.render('userPages/landingPage', { userLogged: req.session.logged, productDetails })
-        } else {
-            res.render('userPages/landingPage', { userLogged: null, productDetails })
+              },
+              { $limit: 1 }, // Limit the results to one document
+              { $project: { productImage: 1, _id: 0, parentCategory: 1 } }
+            ],
+            as: 'product'
+          }
+        },
+        { $unwind: '$product' }, // Unwind the product array
+        {
+          $project: {
+            categoryName: '$category.categoryName',
+            minPrice: 1,
+            productImage: '$product.productImage',
+            parentCategory: '$product.parentCategory'
+          }
         }
+      ]);
+  
+      if (req.session.logged) {
+        res.render('userPages/landingPage', { userLogged: req.session.logged, productDetails });
+      } else {
+        res.render('userPages/landingPage', { userLogged: null, productDetails });
+      }
     } catch (err) {
-        console.log(err);
+      console.log(err);
     }
-
-}
+  };
 
 const signUp = (req, res) => {
     try {
