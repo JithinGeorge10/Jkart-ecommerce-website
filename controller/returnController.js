@@ -5,8 +5,8 @@ const returnManagement = async (req, res) => {
         let orderDet = req.session.searchOrder || await orderCollection.find({
             paymentId: { $ne: null },
             $or: [
-                { orderStatus: 'Return Request' }, // Orders with 'Return Request' status
-                { cartData: { $elemMatch: { status: 'Return Request' } } } // Orders with any product having 'Return Request' status
+                { orderStatus: 'Request Return' }, // Orders with 'Return Request' status
+                { cartData: { $elemMatch: { status: 'Request Return' } } } // Orders with any product having 'Return Request' status
             ]
         }).populate('userId').sort({ _id: -1 });
 
