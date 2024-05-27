@@ -86,7 +86,7 @@
                         <div class="minimumPurchaseInput p-2">
 
                             <div class="input-group">
-                                <input id="percentage" name="percentage" type="text" class="form-control"
+                                <input id="percentage" name="percentage" type="number" class="form-control"
                                     placeholder="Category Offer Percentage">
                             </div>
                             <div class="form-text">Choose a percentage to be discounted.Between 5% and 90%
@@ -147,7 +147,7 @@
                             },
                             percentage: {
                                 required: true,
-
+                                pattern: "[5-90]+"   
                             }
                         },
                         submitHandler: async (form, event) => {

@@ -49,7 +49,7 @@ const salesReportDownloadPDF = async (req, res) => {
             endDate = new Date();   // End date set to the current date
         }
         endDate.setHours(23, 59, 59, 999);
-       
+
         const salesData = await orderCollection.find({
             orderDate: { $gte: startDate, $lte: endDate },
             orderStatus: "Delivered", paymentId: { $ne: null }
@@ -115,7 +115,7 @@ const formatDate = (date) => {
 
 const salesReportDownload = async (req, res) => {
     try {
-      
+
 
         const workBook = new exceljs.Workbook();
         const sheet = workBook.addWorksheet("book");
@@ -125,7 +125,8 @@ const salesReportDownload = async (req, res) => {
             { header: "Order Date", key: "orderDate", width: 25 },
             { header: "Products", key: "products", width: 35 },
             { header: "No of items", key: "noOfItems", width: 35 },
-            { header: "Total Cost", key: "totalCost", width: 25 },
+            { header: "Price before offer in dollars", key: "beforeOffer", width: 35 },
+            { header: "Total Cost after Offer(if applied)", key: "totalCost", width: 25 },
             { header: "Payment Method", key: "paymentMethod", width: 25 },
             { header: "Status", key: "status", width: 20 },
         ];
@@ -141,13 +142,21 @@ const salesReportDownload = async (req, res) => {
             endDate = new Date();   // End date set to the current date
         }
         endDate.setHours(23, 59, 59, 999);
-      
+
         const salesData = await orderCollection.find({
             orderDate: { $gte: startDate, $lte: endDate },
             orderStatus: "Delivered", paymentId: { $ne: null }
-        }).sort({ _id: -1 }).populate('userId') // Make sure to use .toArray() if you're using MongoDB
+        }).sort({ _id: -1 }).populate({
+            path: 'userId',
+            select: 'name email' // Select fields from the 'users' collection
+        }).populate({
+            path: 'cartData.productId',
+            model: 'products', // Model name of the Product collection
+            select: 'productName productPrice offerPrice' // Select the 'name' field from the 'Product' collection
+        })
+            .exec(); // Make sure to use .toArray() if you're using MongoDB
 
-
+console.log(salesData)
 
         salesData.forEach((v) => {
             sheet.addRow({
@@ -156,7 +165,8 @@ const salesReportDownload = async (req, res) => {
                 orderDate: v.orderDate,
                 products: v.cartData.map((v) => v.productName).join(", "),
                 noOfItems: v.cartData.map((v) => v.productQuantity).join(", "),
-                totalCost: "₹" + v.grandTotalCost,
+                beforeOffer: v.cartData.map((v) => v.productId.productPrice).join(", "),
+                totalCost: "$" + v.grandTotalCost,
                 paymentMethod: v.paymentType,
                 status: v.orderStatus,
             });

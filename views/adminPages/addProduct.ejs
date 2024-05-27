@@ -215,7 +215,7 @@
           },
           productPrice: {
             required: true,
-            pattern: "[0-9]+"
+            pattern: "[1-9]+"
           },
           productStock: {
             required: true,
@@ -278,6 +278,11 @@
               await Swal.fire({
                 icon: "error",
                 title: "Add at least 3 images"
+              });
+            }else if(result.whitespaceAlert){
+              await Swal.fire({
+                icon: "error",
+                title: "Enter proper format for product name"
               });
             }
           } catch (error) {

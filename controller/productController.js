@@ -71,10 +71,11 @@ const addProducts = async (req, res) => {
             const productDetails = await productCollection.find({ productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
             if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
                 res.send({ noValue: true })
-            }
-            else if (productDetails.length > 0) {
+            } else if (/^\s/.test(req.body.productName)) { // Check if there are leading whitespaces
+                res.send({ whitespaceAlert: true });
+            } else if (productDetails.length > 0) {
                 res.send({ exists: true })
-            } else {
+            }else {
                 await addproduct.save()
                 res.send({ success: true })
             
@@ -115,7 +116,9 @@ const editProducts = async (req, res) => {
         
 
         const productDetails = await productCollection.find({ _id: { $ne: req.params.id }, productName: { $regex: new RegExp('^' + req.body.productName.toLowerCase() + '$', 'i') }, isDeleted: false })
-        if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
+        if (/^\s/.test(req.body.productName)) { // Check if there are leading whitespaces
+            res.send({ whitespaceAlert: true });
+        } else if (/^\s*$/.test(req.body.productName) || /^\s*$/.test(req.body.productPrice) || /^\s*$/.test(req.body.productStock)) {
             res.send({ noValue: true })
         }
         // catDetails._id != req.body.categoryId

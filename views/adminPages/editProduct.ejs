@@ -338,6 +338,12 @@
             title: "Select at least 3 images"
           });
         }
+        if(result.whitespaceAlert){
+          await Swal.fire({
+            icon: "error",
+            title: "Enter proper format for product name"
+          });
+        }
       }
     });
 

@@ -60,16 +60,19 @@ const categoryList = async (req, res) => {
 
 const editCategory = async (req, res) => {
     try {
-        const catDetails = await categoryCollection.findOne({ categoryName: { $regex: new RegExp('^' + req.body.categoryName.toLowerCase() + '$', 'i') } })
+        const catDetails = await categoryCollection.findOne({ categoryName: { $regex: new RegExp('^' + req.body.categoryName.trim().toLowerCase() + '$', 'i') } })
 
-        if (/^\s*$/.test(req.body.categoryName) || /^\s*$/.test(req.body.categoryDes)) {
+
+        if (/^\s/.test(req.body.categoryName)) { // Check if there are leading whitespaces
+            res.send({ whitespaceAlert: true });
+        } else if (/^\s*$/.test(req.body.categoryName.trim()) || /^\s*$/.test(req.body.categoryDes)) {
             res.send({ noValue: true })
         }
         else if (catDetails && catDetails._id != req.body.categoryId) {
             res.send({ exists: true })
         }
         else {
-            await categoryCollection.updateOne({ _id: req.body.categoryId }, { $set: { categoryName: req.body.categoryName, categoryDescription: req.body.categoryDes } })
+            await categoryCollection.updateOne({ _id: req.body.categoryId }, { $set: { categoryName: req.body.categoryName.trim(), categoryDescription: req.body.categoryDes } })
             res.send({ success: true })
         }
     } catch (err) {
