@@ -338,11 +338,14 @@ const updatePassword = async (req, res) => {
 const googleCallback=async (req, res) => {
     try {
       // Add the user's name to the database
+      let referralCode= Math.floor(1000 + Math.random() * 9000);
+      req.session.referralCode = referralCode;
       const user = await userCollection.findOneAndUpdate(
-        { email: req.user.email },
-        { $set: { name: req.user.displayName } },
+        { email: req.user.email},
+        { $set: { name: req.user.displayName,referralCode:referralCode  } },
         { upsert: true,new :true }
       );
+  
   
       // Set the user session
         req.session.logged = user
