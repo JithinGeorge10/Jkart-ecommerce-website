@@ -23,7 +23,7 @@ const applyProductOffer = async () => {
     }
 };
 
-const applyCategoryOffer = async () => {
+const applyCategoryOffer = async () => { 
     try {
         const today = new Date();
 
