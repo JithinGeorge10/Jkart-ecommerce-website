@@ -58,7 +58,7 @@ const salesReportDownloadPDF = async (req, res) => {
 
         const browser = await puppeteer.launch({
             // Specify the correct executablePath if needed
-            // executablePath: '/path/to/your/chrome'
+            executablePath: '/usr/bin/google-chrome',
             channel: 'chrome'
         });
 
