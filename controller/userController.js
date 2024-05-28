@@ -5,10 +5,10 @@ const walletCollection = require('../model/walletModel');
 const sendotp = require('../helper/sendOtp')
 const bcrypt = require('bcrypt')
 const applyReferralOffer = require("../helper/referralOffer.js");
+const AppError = require("../middleware/errorHandlingMiddleware.js")
 
 
-
-const landingPage = async (req, res) => {
+const landingPage = async (req, res,next) => {
     try {
       const productDetails = await productCollection.aggregate([
         {
@@ -70,11 +70,11 @@ const landingPage = async (req, res) => {
         res.render('userPages/landingPage', { userLogged: null, productDetails });
       }
     } catch (err) {
-      console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
   };
 
-const signUp = (req, res) => {
+const signUp = (req, res,next) => {
     try {
         const referral = req.query.referral
         if (req.session.logged) {
@@ -83,11 +83,11 @@ const signUp = (req, res) => {
             res.render('userPages/signUp',{referral})
         }
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 
 }
-const login = async (req, res) => {
+const login = async (req, res,next) => {
     try {
         if (req.session.logged) {
 
@@ -96,21 +96,21 @@ const login = async (req, res) => {
             res.render('userPages/login')
         }
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const logout = (req, res) => {
+const logout = (req, res,next) => {
     try {
         req.session.logged = null
         req.session.grandTotal = null
         res.redirect('/')
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const otpPage = (req, res) => {
+const otpPage = (req, res,next) => {
     try {
         if (req.session.user) {
             res.redirect('/')
@@ -119,11 +119,11 @@ const otpPage = (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const register = async (req, res) => {
+const register = async (req, res,next) => {
     try {
        
         const { email, phone } = req.body;
@@ -137,11 +137,11 @@ const register = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const saveUser = async (req, res) => {
+const saveUser = async (req, res,next) => {
     try {
         let referralCode= Math.floor(1000 + Math.random() * 9000);
         req.session.referralCode = referralCode;
@@ -179,11 +179,11 @@ const saveUser = async (req, res) => {
         }
         res.status(200).send({ userSaved: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const verifyOtp = async (req, res) => {
+const verifyOtp = async (req, res,next) => {
 
     try {
         const usersOTP = await otpCollection.findOne({ userId: req.session.logged._id })
@@ -201,11 +201,11 @@ const verifyOtp = async (req, res) => {
             res.status(200).send({ otpinvalid: true })
         }
     } catch (error) {
-        console.log(error);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const resendOtp = async (req, res) => {
+const resendOtp = async (req, res,next) => {
     try {
 
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
@@ -215,12 +215,12 @@ const resendOtp = async (req, res) => {
 
         res.status(200).send({ otpsend: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const userLogin = async (req, res) => {
+const userLogin = async (req, res,next) => {
     try {
         const user = await userCollection.findOne({ email: req.body.email })
         if (user?.isBlocked) {
@@ -239,22 +239,22 @@ const userLogin = async (req, res) => {
             res.send({ invalid: true })
         }
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
 
-const forgotPassword = (req, res) => {
+const forgotPassword = (req, res,next) => {
     try {
         res.render('userPages/forgotPassword')
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 
 }
 
-const forgotPasswordsendOtp = async (req, res) => {
+const forgotPasswordsendOtp = async (req, res,next) => {
     try {
         const userDet = await userCollection.findOne({ email: req.body.email })
      
@@ -266,11 +266,11 @@ const forgotPasswordsendOtp = async (req, res) => {
             res.send({ emailExists: true })
         }
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const forgotPasswordVerifyOtp = async (req, res) => {
+const forgotPasswordVerifyOtp = async (req, res,next) => {
     try {
       
         const user = await userCollection.findOne({ _id: req.session.forgotPasswordId })
@@ -281,10 +281,10 @@ const forgotPasswordVerifyOtp = async (req, res) => {
             { $set: { otp: bycryptotp, generatedDate: new Date().toISOString(), expiryDate: new Date(Date.now() + 60000).toISOString() } }, { $upsert: true })
         res.render('userPages/forgotPasswordVerifyOtp')
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
-const forgotPasswordVerifyOtpPost = async (req, res) => {
+const forgotPasswordVerifyOtpPost = async (req, res,next) => {
     try {
         const otpDet = await otpCollection.findOne({ userId: req.session.forgotPasswordId })
         const userDet = await userCollection.findOne({ _id: req.session.forgotPasswordId })
@@ -298,11 +298,11 @@ const forgotPasswordVerifyOtpPost = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const forgotPasswordresendOtp = async (req, res) => {
+const forgotPasswordresendOtp = async (req, res,next) => {
     try {
       
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
@@ -313,21 +313,21 @@ const forgotPasswordresendOtp = async (req, res) => {
 
         res.status(200).send({ otpsend: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const forgotPasswordnewPassword = async (req, res) => {
+const forgotPasswordnewPassword = async (req, res,next) => {
     try {
        res.render('userPages/newPassword')
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const updatePassword = async (req, res) => {
+const updatePassword = async (req, res,next) => {
     try {
 
        const bycryptpassword = bcrypt.hashSync(req.body.password, 10)
@@ -335,7 +335,7 @@ const updatePassword = async (req, res) => {
        await userCollection.updateOne({_id:req.session.forgotPasswordId},{$set:{password:bycryptpassword}})
        res.send({success:true})
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

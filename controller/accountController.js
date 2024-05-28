@@ -15,7 +15,7 @@ const account = async (req, res, next) => {
         const userDet = await userCollection.findOne({ email: req.session.logged.email })
         res.render('userPages/accountProfile', { userLogged: req.session.logged, userDetails: userDet })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const editProfile = async (req, res,next) => {
@@ -29,14 +29,14 @@ const editProfile = async (req, res,next) => {
         req.session.logged.name = req.body.name;
         res.send({ profileEdited: true })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const addAddress = async (req, res,next) => {
     try {
         res.render('userPages/addAddress', { userLogged: req.session.logged })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const addAddressPost = async (req, res,next) => {
@@ -63,7 +63,7 @@ const addAddressPost = async (req, res,next) => {
         }
 
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const myAddressget = async (req, res,next) => {
@@ -71,7 +71,7 @@ const myAddressget = async (req, res,next) => {
         const userAddress = await addressCollection.find({ userId: req.session.logged._id })
         res.render('userPages/myAddress', { userLogged: req.session.logged, userAddress: userAddress })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const addressDelete = async (req, res,next) => {
@@ -79,7 +79,7 @@ const addressDelete = async (req, res,next) => {
         await addressCollection.deleteOne({ _id: req.query.id })
         res.send({ success: true })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const editAddressGet = async (req, res,next) => {
@@ -89,7 +89,7 @@ const editAddressGet = async (req, res,next) => {
         res.render('userPages/editAddress', { userLogged: req.session.logged, userAddress })
 
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const editAddressPost = async (req, res,next) => {
@@ -115,7 +115,7 @@ const editAddressPost = async (req, res,next) => {
         }
 
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const allOrders = async (req, res,next) => {
@@ -132,7 +132,7 @@ const allOrders = async (req, res,next) => {
 
         res.render('userPages/allOrders', { userLogged: req.session.logged, orderDet, totalPages })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const cancelOrder = async (req, res,next) => {
@@ -167,7 +167,7 @@ const cancelOrder = async (req, res,next) => {
 
         res.send({ success: true })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const returnOrder = async (req, res,next) => {
@@ -176,7 +176,7 @@ const returnOrder = async (req, res,next) => {
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Request Return', returnReason: req.query.reason } })
         res.send({ success: true })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const viewOrder = async (req, res,next) => {
@@ -185,7 +185,7 @@ const viewOrder = async (req, res,next) => {
         let orderId = req.query.id
         res.send({ success: true, orderId })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 const accountViewOrder = async (req, res,next) => {
@@ -203,7 +203,7 @@ const accountViewOrder = async (req, res,next) => {
 
         res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet, productDet })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -214,7 +214,7 @@ const setDefault = async (req, res,next) => {
         await addressCollection.updateOne({ _id: req.query.id, userId: req.session.logged._id }, { $set: { setAsDefault: true } })
         res.send({ success: true })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -268,7 +268,7 @@ const singleProductCancel = async (req, res,next) => {
 
 
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -301,7 +301,7 @@ const singleReturnOrder = async (req, res,next) => {
         }
         res.send({ success: true })
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -331,7 +331,7 @@ const downloadInvoice = async (req, res,next) => {
             orderData
         );
     } catch (err) {
-        next(new AppError('Sorry...Internal server crash', 500));
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

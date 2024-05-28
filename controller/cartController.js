@@ -18,7 +18,11 @@ paypal.configure({
     'client_secret': process.env.PAYPAL_SECRET_KEY
 });
 
-const addToCart = async (req, res) => {
+
+const AppError = require("../middleware/errorHandlingMiddleware.js")
+
+
+const addToCart = async (req, res, next) => {
     try {
         const productDet = await productCollection.findOne({ _id: req.query.pid });
         const categoryDet = await categoryCollection.findOne({ _id: productDet.parentCategory });
@@ -47,13 +51,13 @@ const addToCart = async (req, res) => {
         req.session.cartDetails = await cartCollection.find({ userId: req.session.logged._id });
         res.send({ success: true });
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
         res.status(500).send({ success: false, error: err.message });
     }
 };
 
 
-const cart = async (req, res) => {
+const cart = async (req, res, next) => {
     try {
         const cartDetails = await cartCollection.find({ userId: req.session.logged._id }).populate('productId')
 
@@ -62,11 +66,11 @@ const cart = async (req, res) => {
         req.session.grandTotal = cartTotal
         res.render('userPages/Cart', { userLogged: req.session.logged, cartDetails, grandTotal: req.session.grandTotal })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const qtyInc = async (req, res) => {
+const qtyInc = async (req, res, next) => {
     try {
 
         let productDet = await productCollection.findOne({ _id: req.query.id })
@@ -80,12 +84,12 @@ const qtyInc = async (req, res) => {
         req.session.grandTotal = req.session.grandTotal + productDet.offerPrice
         res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const qtyDec = async (req, res) => {
+const qtyDec = async (req, res, next) => {
     try {
 
         let productDet = await productCollection.findOne({ _id: req.query.id })
@@ -100,75 +104,78 @@ const qtyDec = async (req, res) => {
 
         res.send({ success: true, updatedPrice: req.session.updatedPrice, grandTotal: req.session.grandTotal })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const removeCart = async (req, res) => {
+const removeCart = async (req, res, next) => {
     try {
         await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { couponApplied: null } })
         await cartCollection.deleteOne({ productId: req.query.pid })
         req.session.orderDetails = null
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const cartCheckout = async (req, res) => {
+const cartCheckout = async (req, res, next) => {
     try {
         const addressDet = await addressCollection.find({ userId: req.session.logged._id, setAsDefault: true })
         res.render('userPages/cartCheckout', { userLogged: req.session.logged, userAddress: addressDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const changeAddressGet = async (req, res) => {
+const changeAddressGet = async (req, res, next) => {
     try {
         const addressDet = await addressCollection.find({ userId: req.session.logged._id, setAsDefault: false })
         res.render('userPages/changeAddress', { userLogged: req.session.logged, userAddress: addressDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
 
-const cartCheckoutAddress = async (req, res) => {
+const cartCheckoutAddress = async (req, res, next) => {
     try {
         req.session.selectedAddress = req.query.id
         // const addressDet=await addressCollection.find({userId:req.session.logged._id})
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const cartCheckoutPayment = async (req, res) => {
+const cartCheckoutPayment = async (req, res, next) => {
     try {
         const shippingAddress = await addressCollection.findOne({ _id: req.session.selectedAddress })
         res.render('userPages/cartCheckoutPayment', { userLogged: req.session.logged, shippingAddress })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const cartCheckoutreview = async (req, res) => {
+const cartCheckoutreview = async (req, res, next) => {
     try {
-      
-        const walletDetails =await walletCollection.findOne({userId:req.session.logged._id})
-      
+
+        const walletDetails = await walletCollection.findOne({ userId: req.session.logged._id })
+
         if (req.query.id === 'null') {
             res.send({ noPaymentMethod: true })
         } else if (req.query.id == 'Cash On Delivery' && req.session.grandTotal > 1000) {
             res.send({ codLimit: true })
-        }else if(walletDetails && walletDetails.walletBalance<=0 && req.query.id == 'wallet'){
-         
-            res.send({walletBalanceZero:true})
+        } else if (walletDetails && walletDetails.walletBalance <= 0 && req.query.id == 'wallet') {
+
+            res.send({ walletBalanceZero: true })
+
+        } else if (walletDetails.walletBalance < req.session.grandTotal && req.query.id == 'wallet') {
+            res.send({ noWalletBalance: true })
         } else {
 
             const cartDet = await cartCollection.find({ userId: req.session.logged._id })
@@ -203,12 +210,12 @@ const cartCheckoutreview = async (req, res) => {
 
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const orderSummary = async (req, res) => {
+const orderSummary = async (req, res, next) => {
     try {
 
         const orderDet = await orderCollection.findOne({ _id: req.session.orderDetails })
@@ -218,11 +225,11 @@ const orderSummary = async (req, res) => {
         const couponAmount = await couponCollection.findOne({ _id: orderDet.couponApplied })
         res.render('userPages/orderSummary', { couponDet, orderDet, couponAmount, userLogged: req.session.logged, cartDetails, shippingAddress, paymentMethod: orderDet.paymentType, grandTotal: orderDet.grandTotalCost })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const orderPlace = async (req, res) => {
+const orderPlace = async (req, res, next) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
         const orderDet = await orderCollection.findOne({ _id: req.session.orderDetails })
@@ -243,47 +250,47 @@ const orderPlace = async (req, res) => {
         } else if (orderDet.paymentType === 'paypal') {
             res.send({ paypal: true })
         } else if (orderDet.paymentType === 'wallet') {
-         
-         
-                await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'Wallet' } })
-                for (let cart of cartDet) {
-                    await productCollection.updateOne(
-                        { _id: cart.productId },
-                        { $inc: { productStock: -cart.productQuantity } }
-                    );
-                }
-                await cartCollection.deleteMany({ userId: req.session.logged._id })
-                ////
 
-                await walletCollection.updateOne(
-                    { userId: req.session.logged._id },
-                    {
-                        $inc: {
-                            walletBalance: -orderDet.grandTotalCost
-                        },
-                        $push: {
-                            walletTransaction: {
-                                transactionDate: new Date(),
-                                transactionAmount: orderDet.grandTotalCost,
-                                transactionType: 'Debit on online payment'
-                            }
-                        }
-                    },
-                    { upsert: true }
+
+            await orderCollection.updateOne({ _id: req.session.orderDetails }, { $set: { paymentId: 'Wallet' } })
+            for (let cart of cartDet) {
+                await productCollection.updateOne(
+                    { _id: cart.productId },
+                    { $inc: { productStock: -cart.productQuantity } }
                 );
-                res.send({ success: true })
-            
+            }
+            await cartCollection.deleteMany({ userId: req.session.logged._id })
+            ////
+
+            await walletCollection.updateOne(
+                { userId: req.session.logged._id },
+                {
+                    $inc: {
+                        walletBalance: -orderDet.grandTotalCost
+                    },
+                    $push: {
+                        walletTransaction: {
+                            transactionDate: new Date(),
+                            transactionAmount: orderDet.grandTotalCost,
+                            transactionType: 'Debit on online payment'
+                        }
+                    }
+                },
+                { upsert: true }
+            );
+            res.send({ success: true })
+
 
 
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
-const orderPlaceComleted = async (req, res) => {
+const orderPlaceComleted = async (req, res, next) => {
     try {
         const cartDet = await cartCollection.find({ userId: req.session.logged._id })
 
@@ -306,7 +313,7 @@ const orderPlaceComleted = async (req, res) => {
         req.session.grandTotal = null
         res.render('userPages/orderPlaced', { userLogged: req.session.logged, orderDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -373,7 +380,7 @@ const phonePay = async (req, res) => {
 }
 
 
-const payPal = async (req, res) => {
+const payPal = async (req, res, next) => {
     try {
         await orderCollection.updateOne(
             { _id: req.session.orderDetails },
@@ -427,7 +434,7 @@ const payPal = async (req, res) => {
             }
         });
     } catch (err) {
-        console.error("Error in onlinePayment:", err);
+        next(new AppError('Sorry...Something went wrong', 500));
         res.status(500).send('Internal Server Error');
     }
 };

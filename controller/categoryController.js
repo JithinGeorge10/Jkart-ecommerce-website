@@ -1,9 +1,10 @@
 const categoryCollection = require('../model/categoryModel')
 const productCollection = require('../model/productModel')
 
+const AppError = require("../middleware/errorHandlingMiddleware.js")
 
 
-const categoryManagement = async (req, res) => {
+const categoryManagement = async (req, res,next) => {
     try {
         let catcollection = req.session.searchCategory||await categoryCollection.find().sort({ _id: -1 })
         req.session.searchCategory=null
@@ -16,11 +17,12 @@ const categoryManagement = async (req, res) => {
 
         res.render('adminPages/categoryManagement', { categoryDet: catcollection ,totalPages})
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
+
     }
 }
 
-const addCategory = async (req, res) => {
+const addCategory = async (req, res,next) => {
     try {
         const newCategory = new categoryCollection({
             categoryName: req.body.categoryName,
@@ -39,10 +41,10 @@ const addCategory = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
-const categoryList = async (req, res) => {
+const categoryList = async (req, res,next) => {
     try {
         let catList
         if (req.query.action === 'list') {
@@ -54,11 +56,11 @@ const categoryList = async (req, res) => {
         await categoryCollection.updateOne({ _id: req.query.id }, { $set: { isListed: catList } })
         res.send({ list: catList })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const editCategory = async (req, res) => {
+const editCategory = async (req, res,next) => {
     try {
         const catDetails = await categoryCollection.findOne({ categoryName: { $regex: new RegExp('^' + req.body.categoryName.trim().toLowerCase() + '$', 'i') } })
 
@@ -76,11 +78,11 @@ const editCategory = async (req, res) => {
             res.send({ success: true })
         }
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const searchCategory = async (req, res) => {
+const searchCategory = async (req, res,next) => {
     try {
         const categoryDet = await categoryCollection.find({ categoryName: { $regex: new RegExp(req.body.search, 'i') } });
 
@@ -95,7 +97,7 @@ const searchCategory = async (req, res) => {
         }
         // res.send({ userStat: userBlock })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

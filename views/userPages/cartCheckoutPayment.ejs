@@ -323,6 +323,12 @@
           title: "Your wallet balance: 0.",
           text: "Please select other payment options."
         })
+      }if(result.noWalletBalance){
+        await Swal.fire({
+          icon: "error",
+          title: "check wallet balance",
+          text: "Please select other payment options."
+        })
       }
     }
   </script>

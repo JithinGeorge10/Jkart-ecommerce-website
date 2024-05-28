@@ -1,7 +1,8 @@
 const dashboardHelper = require("../helper/dashboardHelper");
 const orderCollection = require('../model/ordersModel')
 const productCollection = require('../model/productModel')
-const dashboardData = async (req, res) => {
+const AppError = require("../middleware/errorHandlingMiddleware.js")
+const dashboardData = async (req, res,next) => {
   try {
     const [
       productsCount,
@@ -44,12 +45,12 @@ const dashboardData = async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.log(error);
+    next(new AppError('Sorry...Something went wrong', 500));
   }
 };
 
 
-const topProduct = async (req, res) => {
+const topProduct = async (req, res,next) => {
   try {
     const topProducts = await orderCollection.aggregate([
       {
@@ -94,7 +95,7 @@ const topProduct = async (req, res) => {
 
     res.render('adminPages/topProducts', { topProducts })
   } catch (err) {
-    console.error(err);
+    next(new AppError('Sorry...Something went wrong', 500));
     res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };
@@ -102,7 +103,7 @@ const topProduct = async (req, res) => {
 
 
 
-const topCategory = async (req, res) => {
+const topCategory = async (req, res,next) => {
   try {
     const topCategories = await orderCollection.aggregate([
       {
@@ -150,7 +151,7 @@ const topCategory = async (req, res) => {
     res.render('adminPages/topCategory', { topCategories });
   } catch (err) {
     // Consider using a centralized error handler
-    console.error(err);
+    next(new AppError('Sorry...Something went wrong', 500));
     res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };
@@ -159,7 +160,7 @@ const topCategory = async (req, res) => {
 
 
 
-const topSellingBrands = async (req, res) => {
+const topSellingBrands = async (req, res,next) => {
   try {
     const topBrands = await orderCollection.aggregate([
       {
@@ -201,7 +202,7 @@ const topSellingBrands = async (req, res) => {
     res.render('adminPages/topBrand', { topBrands });
   } catch (err) {
     // Consider using a centralized error handler
-    console.error(err);
+    next(new AppError('Sorry...Something went wrong', 500));
     res.status(500).send({ success: false, message: 'Internal Server Error' });
   }
 };

@@ -1,18 +1,20 @@
 
 const couponCollection = require('../model/couponModel')
 const orderCollection = require('../model/ordersModel')
-const couponManagement = async (req, res) => {
+const AppError = require("../middleware/errorHandlingMiddleware.js")
+
+const couponManagement = async (req, res,next) => {
     try {
         const couponDet = await couponCollection.find({ isListed: true }).sort({ _id: -1 })
         res.render('adminPages/couponManagement', { couponDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
 
-const addCoupon = async (req, res) => {
+const addCoupon = async (req, res,next) => {
     try {
 
         const newCoupon = new couponCollection({
@@ -26,21 +28,21 @@ const addCoupon = async (req, res) => {
 
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const editCouponGet = async (req, res) => {
+const editCouponGet = async (req, res,next) => {
     try {
       
         const couponDet = await couponCollection.findOne({ _id: req.query.couponId, isListed: true })
    
         res.render('adminPages/couponEdit', { couponDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
-const adminEditCoupon = async (req, res) => {
+const adminEditCoupon = async (req, res,next) => {
     try {
         const couponExists = await couponCollection.findOne({
             couponCode: { $regex: new RegExp('^' + req.body.couponCode + '$', 'i') }
@@ -64,13 +66,13 @@ const adminEditCoupon = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 
 
-const applyCoupon = async (req, res) => {
+const applyCoupon = async (req, res,next) => {
     try {
         if (/^\s*$/.test(req.query.code)) {
             res.send({ noValue: true })
@@ -109,7 +111,7 @@ const applyCoupon = async (req, res) => {
         }
        
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -117,7 +119,7 @@ const applyCoupon = async (req, res) => {
 
 
 
-const removeCoupon = async (req, res) => {
+const removeCoupon = async (req, res,next) => {
     try {
         const order = await orderCollection.findOne({ _id: req.session.orderDetails });
         const coupon = await couponCollection.findOne({ _id: order.couponApplied });
@@ -135,19 +137,19 @@ const removeCoupon = async (req, res) => {
         );
         res.send({ success: true });
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
         res.status(500).send({ success: false, error: err.message }); // Sending an error response if something goes wrong
     }
 };
 
 
 
-const deleteCoupon = async (req, res) => {
+const deleteCoupon = async (req, res,next) => {
     try {
         await couponCollection.updateOne({ _id: req.query.id }, { $set: { isListed: false } })
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
         res.status(500).send({ success: false, error: err.message }); // Sending an error response if something goes wrong
     }
 };

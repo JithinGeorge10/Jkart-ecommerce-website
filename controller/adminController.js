@@ -1,7 +1,7 @@
 const userCollection = require('../model/userModel')
 const categoryCollection = require('../model/categoryModel')
-
-const loginpage = async (req, res) => {
+const AppError = require("../middleware/errorHandlingMiddleware.js")
+const loginpage = async (req, res,next) => {
     try {
         if (req.session.admin) {
             res.render('adminPages/adminHome')
@@ -10,12 +10,12 @@ const loginpage = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 
 }
 
-const adminlogin = async (req, res) => {
+const adminlogin = async (req, res,next) => {
     try {
         if (req.body.email == process.env.ADMINMAIL && req.body.password == process.env.ADMINPASS) {
             req.session.admin = true
@@ -24,22 +24,22 @@ const adminlogin = async (req, res) => {
             res.send({ invalidPass: true })
         }
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 
 }
 
-const adminLogout = async (req, res) => {
+const adminLogout = async (req, res,next) => {
     try {
         req.session.admin = false
         res.redirect('/admin')
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 
 }
 
-const userManagement = async (req, res) => {
+const userManagement = async (req, res,next) => {
     try {
         let userDetail =  req.session.searchUser||await userCollection.find().sort({ _id: -1 })
         req.session.searchUser=null
@@ -52,11 +52,11 @@ const userManagement = async (req, res) => {
 
         res.render('adminPages/userManagement', { userDet: userDetail, totalPages })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const userBlock = async (req, res) => {
+const userBlock = async (req, res,next) => {
     try {
         // let userBlock
         // if (req.query.action == 'unblock') {
@@ -72,11 +72,11 @@ const userBlock = async (req, res) => {
         await user.save()
         res.send({ userStat: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
-const searchUser = async (req, res) => {
+const searchUser = async (req, res,next) => {
     try {
         const userDet = await userCollection.find({ name: { $regex: new RegExp(req.body.search, 'i') } });
 
@@ -91,7 +91,7 @@ const searchUser = async (req, res) => {
         }
         // res.send({ userStat: userBlock })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
