@@ -8,16 +8,17 @@ const walletCollection = require('../model/walletModel');
 const mongoose = require("mongoose");
 const { productList } = require('./productController');
 const { generateInvoice } = require("../services/generatePDF.js");
+const AppError = require("../middleware/errorHandlingMiddleware.js")
 
-const account = async (req, res) => {
+const account = async (req, res, next) => {
     try {
         const userDet = await userCollection.findOne({ email: req.session.logged.email })
         res.render('userPages/accountProfile', { userLogged: req.session.logged, userDetails: userDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const editProfile = async (req, res) => {
+const editProfile = async (req, res,next) => {
     try {
         const contactDet = await userCollection.find({ phone: req.body.phone })
         const userDet = await userCollection.findOne({ email: req.session.logged.email })
@@ -28,16 +29,17 @@ const editProfile = async (req, res) => {
         req.session.logged.name = req.body.name;
         res.send({ profileEdited: true })
     } catch (err) {
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const addAddress = async (req, res) => {
+const addAddress = async (req, res,next) => {
     try {
         res.render('userPages/addAddress', { userLogged: req.session.logged })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const addAddressPost = async (req, res) => {
+const addAddressPost = async (req, res,next) => {
     try {
         if (/^\s*$/.test(req.body.address1) || /^\s*$/.test(req.body.address2) || /^\s*$/.test(req.body.city) || /^\s*$/.test(req.body.pincode)) {
             res.send({ noValue: true })
@@ -61,36 +63,36 @@ const addAddressPost = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const myAddressget = async (req, res) => {
+const myAddressget = async (req, res,next) => {
     try {
         const userAddress = await addressCollection.find({ userId: req.session.logged._id })
         res.render('userPages/myAddress', { userLogged: req.session.logged, userAddress: userAddress })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const addressDelete = async (req, res) => {
+const addressDelete = async (req, res,next) => {
     try {
         await addressCollection.deleteOne({ _id: req.query.id })
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const editAddressGet = async (req, res) => {
+const editAddressGet = async (req, res,next) => {
     try {
 
         const userAddress = await addressCollection.findOne({ _id: req.query.id })
         res.render('userPages/editAddress', { userLogged: req.session.logged, userAddress })
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const editAddressPost = async (req, res) => {
+const editAddressPost = async (req, res,next) => {
     try {
 
         if (/^\s*$/.test(req.body.address1) || /^\s*$/.test(req.body.address2) || /^\s*$/.test(req.body.city) || /^\s*$/.test(req.body.pincode)) {
@@ -113,10 +115,10 @@ const editAddressPost = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const allOrders = async (req, res) => {
+const allOrders = async (req, res,next) => {
     try {
         let orderDet = await orderCollection.find({ userId: req.session.logged._id, paymentId: { $ne: null } }).sort({ _id: -1 })
         const ordersPerPage = 10
@@ -130,10 +132,10 @@ const allOrders = async (req, res) => {
 
         res.render('userPages/allOrders', { userLogged: req.session.logged, orderDet, totalPages })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const cancelOrder = async (req, res) => {
+const cancelOrder = async (req, res,next) => {
     try {
         await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Cancelled', cancelReason: req.query.reason } })
         const orderDet = await orderCollection.findOne({ _id: req.query.id })
@@ -165,30 +167,30 @@ const cancelOrder = async (req, res) => {
 
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const returnOrder = async (req, res) => {
+const returnOrder = async (req, res,next) => {
     try {
 
-        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Request Return' ,returnReason: req.query.reason} })
+        await orderCollection.updateOne({ _id: req.query.id }, { $set: { orderStatus: 'Request Return', returnReason: req.query.reason } })
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const viewOrder = async (req, res) => {
+const viewOrder = async (req, res,next) => {
     try {
 
         let orderId = req.query.id
         res.send({ success: true, orderId })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
-const accountViewOrder = async (req, res) => {
+const accountViewOrder = async (req, res,next) => {
     try {
-        
+
         const orderDet = await orderCollection.findOne({ _id: req.query.id }).populate('userId')
         const addressDet = await addressCollection.findOne({ _id: orderDet.addressChosen })
 
@@ -201,22 +203,22 @@ const accountViewOrder = async (req, res) => {
 
         res.render('userPages/viewOrder', { userLogged: req.session.logged, orderDet, addressDet, productDet })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
 
 
-const setDefault = async (req, res) => {
+const setDefault = async (req, res,next) => {
     try {
-        await addressCollection.updateMany({userId:req.session.logged._id}, { $set: { setAsDefault: false } })
-        await addressCollection.updateOne({ _id: req.query.id,userId:req.session.logged._id }, { $set: { setAsDefault: true } })
+        await addressCollection.updateMany({ userId: req.session.logged._id }, { $set: { setAsDefault: false } })
+        await addressCollection.updateOne({ _id: req.query.id, userId: req.session.logged._id }, { $set: { setAsDefault: true } })
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
 
-const singleProductCancel = async (req, res) => {
+const singleProductCancel = async (req, res,next) => {
     try {
         const orderId = req.query.orderId.trim();
         const cartId = req.query.cartId.trim()
@@ -241,9 +243,9 @@ const singleProductCancel = async (req, res) => {
                 { $inc: { productStock: order.cartData[i].productQuantity } }
             );
         }
-      
+
         if (order.paymentType == 'paypal') {
-    
+
             await walletCollection.updateOne(
                 { userId: req.session.logged._id },
                 {
@@ -266,7 +268,7 @@ const singleProductCancel = async (req, res) => {
 
 
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
 
@@ -274,14 +276,14 @@ const singleProductCancel = async (req, res) => {
 
 
 
-const singleReturnOrder = async (req, res) => {
+const singleReturnOrder = async (req, res,next) => {
     try {
-      
+
         const id = req.query.id.trim();
         const cartId = req.query.cartId.trim()
 
         const order = await orderCollection.find({ _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) })
-      
+
 
         await orderCollection.findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(id), 'cartData._id': new mongoose.Types.ObjectId(cartId) },
@@ -299,19 +301,19 @@ const singleReturnOrder = async (req, res) => {
         }
         res.send({ success: true })
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
 
 
-const downloadInvoice = async (req, res) => {
+const downloadInvoice = async (req, res,next) => {
     try {
-      
+
         let orderData = await orderCollection
             .findOne({ _id: req.query.id })
             .populate("addressChosen");
-            
-     
+
+
         // Extract order number
         const orderNumber = orderData._id;
 
@@ -329,7 +331,7 @@ const downloadInvoice = async (req, res) => {
             orderData
         );
     } catch (err) {
-        console.log(err);
+        next(new AppError('Sorry...Internal server crash', 500));
     }
 }
 

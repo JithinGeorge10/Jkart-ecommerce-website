@@ -30,6 +30,11 @@ const adminRouter=require('./routes/adminRoute.js')
 app.use(userRouter)
 app.use(adminRouter)
 
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const status = err.status || 'error';
+    res.status(statusCode).render('userPages/error', { statusCode, status, message: err.message });
+  })
 
 app.listen(process.env.PORT, () => {
     console.log('port started');

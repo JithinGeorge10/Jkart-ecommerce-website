@@ -142,7 +142,9 @@
                             <%= orderDet[i]?.orderStatus %>
                         </td>
                         <td>
-                            <% if (orderDet[i].orderStatus !=='Cancelled' ) { %>
+                           <% if(orderDet[i].orderStatus =='Delivered'){%>
+                           
+                           <% }else if (orderDet[i].orderStatus !=='Cancelled') { %>
                                 <div class="btn-group">
                                     <select id="changeStatus<%= i %>" name="changeStatus" class="form control"
                                         onchange="orderStatusChange('<%= i %>','<%= orderDet[i]._id %>')">
