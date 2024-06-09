@@ -131,7 +131,7 @@
       // Function to handle file input change event and display image previews
       function previewImages() {
         var preview = document.getElementById('image-preview');
-        preview.innerHTML = ''; // Clear previous preview
+     //   preview.innerHTML = ''; // Clear previous preview
 
         var files = document.getElementById('images').files;
         for (var i = 0; i < files.length; i++) {
@@ -215,7 +215,7 @@
           },
           productPrice: {
             required: true,
-            pattern: "[1-9]+"
+            pattern: "[0-9]+"
           },
           productStock: {
             required: true,

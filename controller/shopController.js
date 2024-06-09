@@ -7,8 +7,6 @@ const { applyProductOffer, applyCategoryOffer } = require("../helper/offer");
 const shopPage = async (req, res) => {
     try {
 
-         await applyProductOffer()   
-         await applyCategoryOffer()
 
         const catProducts = await productCollection({ parentCategory: req.query.id, isListed: true, isDeleted: false })
 
